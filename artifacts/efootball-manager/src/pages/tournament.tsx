@@ -527,6 +527,7 @@ type Registration = {
 
 function RegistrationsTab({ tournamentId }: { tournamentId: number }) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<number | null>(null);
@@ -559,6 +560,11 @@ function RegistrationsTab({ tournamentId }: { tournamentId: number }) {
       if (res.ok) {
         setRegistrations(prev => prev.map(r => r.id === id ? { ...r, status } : r));
         toast({ title: status === "approved" ? "Registration approved ✓" : "Registration rejected" });
+        // If approved, the player was added to the tournament — refresh tournament data
+        if (status === "approved") {
+          queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournamentId}`] });
+          queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournamentId}/standings`] });
+        }
       }
     } catch {
       toast({ title: "Update failed", variant: "destructive" });
