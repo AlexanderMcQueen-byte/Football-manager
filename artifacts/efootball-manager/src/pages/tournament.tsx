@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRoute } from "wouter";
 import { 
   useGetTournament, 
@@ -10,13 +10,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getFormBadgeColor, cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth";
-import { Trophy, CalendarDays, GitMerge, Loader2, Save } from "lucide-react";
+import { Trophy, CalendarDays, GitMerge, Loader2, Save, UserPlus, Phone, Gamepad2, CheckCircle, XCircle, Clock, ClipboardList, AlertCircle } from "lucide-react";
 
 export default function TournamentDetail() {
   const [, params] = useRoute("/tournaments/:id");
   const tournamentId = parseInt(params?.id || "0", 10);
   
-  const [activeTab, setActiveTab] = useState<"standings" | "fixtures" | "bracket">("standings");
+  const [activeTab, setActiveTab] = useState<"standings" | "fixtures" | "bracket" | "registrations">("standings");
   const { isAdmin } = useAuth();
 
   const { data: tournament, isLoading: isTourneyLoading } = useGetTournament(tournamentId, {
@@ -80,16 +80,22 @@ export default function TournamentDetail() {
         </div>
       </header>
 
+      {/* Register to Play — shown to viewers */}
+      {!isAdmin && <RegisterCard tournamentId={tournamentId} tournamentName={tournament.name} />}
+
       {/* Tabs */}
-      <div className="flex space-x-2 border-b border-white/10">
-        {(tournament.type === 'league' ? ['standings', 'fixtures'] : ['bracket', 'fixtures']).map((tab) => (
+      <div className="flex space-x-2 border-b border-white/10 overflow-x-auto">
+        {[
+          ...(tournament.type === 'league' ? ['standings', 'fixtures'] : ['bracket', 'fixtures']),
+          ...(isAdmin ? ['registrations'] : []),
+        ].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab as any)}
             className={cn(
-              "px-6 py-4 font-semibold capitalize tracking-wider text-sm transition-all relative",
-              activeTab === tab 
-                ? "text-primary" 
+              "px-5 py-4 font-semibold capitalize tracking-wider text-sm transition-all relative whitespace-nowrap shrink-0",
+              activeTab === tab
+                ? "text-primary"
                 : "text-zinc-500 hover:text-zinc-300"
             )}
           >
@@ -97,6 +103,7 @@ export default function TournamentDetail() {
               {tab === 'standings' && <Trophy className="w-4 h-4" />}
               {tab === 'fixtures' && <CalendarDays className="w-4 h-4" />}
               {tab === 'bracket' && <GitMerge className="w-4 h-4 rotate-90" />}
+              {tab === 'registrations' && <ClipboardList className="w-4 h-4" />}
               {tab}
             </div>
             {activeTab === tab && (
@@ -108,8 +115,9 @@ export default function TournamentDetail() {
 
       <div className="min-h-[400px]">
         {activeTab === "standings" && <StandingsTab tournamentId={tournamentId} />}
-        {activeTab === "fixtures" && <FixturesTab tournamentId={tournamentId} />}
+        {activeTab === "fixtures" && <FixturesTab tournamentId={tournamentId} isAdmin={isAdmin} />}
         {activeTab === "bracket" && <BracketTab tournamentId={tournamentId} />}
+        {activeTab === "registrations" && isAdmin && <RegistrationsTab tournamentId={tournamentId} />}
       </div>
     </div>
   );
@@ -183,7 +191,7 @@ function StandingsTab({ tournamentId }: { tournamentId: number }) {
   );
 }
 
-function FixturesTab({ tournamentId }: { tournamentId: number }) {
+function FixturesTab({ tournamentId, isAdmin }: { tournamentId: number; isAdmin: boolean }) {
   const { data: fixtures, isLoading } = useListFixtures({ tournamentId });
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -406,5 +414,253 @@ function BracketNode({ match, hasConnector = false, isFinal = false }: { match: 
         </div>
       </div>
     </div>
+  );
+}
+
+// ── Register to Play card (shown to viewers) ─────────────────────────────────
+
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+function RegisterCard({ tournamentId, tournamentName }: { tournamentId: number; tournamentName: string }) {
+  const { toast } = useToast();
+  const [efootballUsername, setEfootballUsername] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch(`${BASE}/api/tournaments/${tournamentId}/register`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ efootballUsername: efootballUsername.trim(), whatsappNumber: whatsappNumber.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast({ title: data.error ?? "Registration failed", variant: "destructive" });
+      } else {
+        setDone(true);
+        toast({ title: "Registration submitted!", description: "The admin will review your entry." });
+      }
+    } catch {
+      toast({ title: "Network error", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (done) {
+    return (
+      <div className="glass-card rounded-2xl p-6 border border-primary/20 flex flex-col sm:flex-row items-center gap-4">
+        <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
+          <CheckCircle className="w-6 h-6 text-primary" />
+        </div>
+        <div>
+          <h3 className="font-display font-bold text-white text-lg">Registration Submitted!</h3>
+          <p className="text-zinc-400 text-sm mt-0.5">Your entry for <span className="text-primary font-semibold">{tournamentName}</span> is pending review. The admin will confirm via WhatsApp.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="glass-card rounded-2xl p-6 border border-white/8">
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/20 flex items-center justify-center shrink-0">
+          <UserPlus className="w-5 h-5 text-primary" />
+        </div>
+        <div>
+          <h3 className="font-display font-bold text-white text-lg leading-tight">Register to Play</h3>
+          <p className="text-zinc-500 text-xs mt-0.5">Submit your details to join <span className="text-zinc-300">{tournamentName}</span></p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+        <div className="flex-1 relative">
+          <Gamepad2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+          <input
+            type="text"
+            value={efootballUsername}
+            onChange={e => setEfootballUsername(e.target.value)}
+            placeholder="eFootball username"
+            required
+            minLength={2}
+            className="w-full bg-input border border-border text-white placeholder:text-zinc-600 rounded-xl px-4 py-3 pl-10 text-sm focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/10 transition-all"
+          />
+        </div>
+        <div className="flex-1 relative">
+          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+          <input
+            type="tel"
+            value={whatsappNumber}
+            onChange={e => setWhatsappNumber(e.target.value)}
+            placeholder="WhatsApp number (e.g. +1234567890)"
+            required
+            className="w-full bg-input border border-border text-white placeholder:text-zinc-600 rounded-xl px-4 py-3 pl-10 text-sm focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/10 transition-all"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="shrink-0 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all text-sm btn-primary-glow disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : "Register"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+// ── Registrations tab (admin only) ───────────────────────────────────────────
+
+type Registration = {
+  id: number;
+  tournamentId: number;
+  efootballUsername: string;
+  whatsappNumber: string;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string;
+};
+
+function RegistrationsTab({ tournamentId }: { tournamentId: number }) {
+  const { toast } = useToast();
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState<number | null>(null);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const res = await fetch(`${BASE}/api/tournaments/${tournamentId}/registrations`, { credentials: "include" });
+      const data = await res.json();
+      setRegistrations(Array.isArray(data) ? data : []);
+    } catch {
+      toast({ title: "Failed to load registrations", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // load on mount
+  useEffect(() => { load(); }, [tournamentId]);
+
+  async function updateStatus(id: number, status: "approved" | "rejected") {
+    setUpdating(id);
+    try {
+      const res = await fetch(`${BASE}/api/registrations/${id}`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (res.ok) {
+        setRegistrations(prev => prev.map(r => r.id === id ? { ...r, status } : r));
+        toast({ title: status === "approved" ? "Registration approved ✓" : "Registration rejected" });
+      }
+    } catch {
+      toast({ title: "Update failed", variant: "destructive" });
+    } finally {
+      setUpdating(null);
+    }
+  }
+
+  if (loading) return <div className="py-12 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
+
+  if (registrations.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+        <ClipboardList className="w-10 h-10 text-zinc-700" />
+        <p className="text-zinc-500 text-sm">No registrations yet. Share the tournament link so players can register.</p>
+      </div>
+    );
+  }
+
+  const counts = {
+    pending:  registrations.filter(r => r.status === "pending").length,
+    approved: registrations.filter(r => r.status === "approved").length,
+    rejected: registrations.filter(r => r.status === "rejected").length,
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Summary badges */}
+      <div className="flex gap-3 flex-wrap">
+        {([
+          { label: "Pending",  count: counts.pending,  cls: "badge-draw", Icon: Clock },
+          { label: "Approved", count: counts.approved, cls: "badge-win",  Icon: CheckCircle },
+          { label: "Rejected", count: counts.rejected, cls: "badge-loss", Icon: XCircle },
+        ] as const).map(({ label, count, cls, Icon }) => (
+          <div key={label} className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold", cls)}>
+            <Icon className="w-3.5 h-3.5" />
+            {count} {label}
+          </div>
+        ))}
+      </div>
+
+      {/* Registration list */}
+      <div className="space-y-3">
+        {registrations.map(reg => (
+          <div key={reg.id} className={cn(
+            "glass-card rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-3 transition-opacity",
+            reg.status === "approved" && "border-primary/20",
+            reg.status === "rejected" && "opacity-50",
+          )}>
+            <div className="flex-1 min-w-0 space-y-1.5">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Gamepad2 className="w-4 h-4 text-primary shrink-0" />
+                <span className="font-semibold text-white truncate">{reg.efootballUsername}</span>
+                <StatusBadge status={reg.status} />
+              </div>
+              <div className="flex items-center gap-2 text-zinc-400 text-sm">
+                <Phone className="w-3.5 h-3.5 shrink-0 text-zinc-500" />
+                <span>{reg.whatsappNumber}</span>
+              </div>
+            </div>
+
+            {reg.status === "pending" && (
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => updateStatus(reg.id, "approved")}
+                  disabled={updating === reg.id}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg badge-win text-xs font-semibold hover:opacity-80 transition-opacity disabled:opacity-40 cursor-pointer"
+                >
+                  {updating === reg.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
+                  Approve
+                </button>
+                <button
+                  onClick={() => updateStatus(reg.id, "rejected")}
+                  disabled={updating === reg.id}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg badge-loss text-xs font-semibold hover:opacity-80 transition-opacity disabled:opacity-40 cursor-pointer"
+                >
+                  {updating === reg.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
+                  Reject
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  if (status === "approved") return (
+    <span className="badge-win text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+      <CheckCircle className="w-3 h-3" /> Approved
+    </span>
+  );
+  if (status === "rejected") return (
+    <span className="badge-loss text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+      <XCircle className="w-3 h-3" /> Rejected
+    </span>
+  );
+  return (
+    <span className="badge-draw text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+      <Clock className="w-3 h-3" /> Pending
+    </span>
   );
 }
