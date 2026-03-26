@@ -50,20 +50,25 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed md:sticky top-0 left-0 h-screen w-64 glass-card border-r border-y-0 border-l-0 border-white/5 flex flex-col transition-transform duration-300 z-40",
+        "fixed md:sticky top-0 left-0 h-screen w-64 sidebar-bg flex flex-col transition-transform duration-300 z-40 overflow-hidden",
         isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       )}>
-        <div className="p-6 hidden md:flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-emerald-700 flex items-center justify-center shadow-lg shadow-primary/20">
+        {/* Pitch stripe texture */}
+        <div className="absolute inset-0 pitch-overlay pointer-events-none" />
+        {/* Green glow at top */}
+        <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-40 h-40 bg-primary/10 rounded-full blur-[60px] pointer-events-none" />
+
+        <div className="relative p-6 hidden md:flex items-center gap-3 border-b border-white/5 pb-5">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-emerald-700 flex items-center justify-center shadow-lg shadow-primary/30">
             <Gamepad2 className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
             <h1 className="font-display font-bold text-xl leading-none text-white tracking-tight">eFOOTBALL</h1>
-            <span className="text-xs text-primary font-gaming font-semibold tracking-wider">MANAGER</span>
+            <span className="text-xs text-primary font-gaming font-semibold tracking-widest">MANAGER</span>
           </div>
         </div>
 
-        <nav className="flex-1 px-4 py-6 md:py-2 space-y-2">
+        <nav className="relative flex-1 px-3 py-4 md:py-4 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location === item.href;
@@ -71,17 +76,25 @@ export function Layout({ children }: LayoutProps) {
               <Link key={item.href} href={item.href} onClick={() => setIsMobileMenuOpen(false)}>
                 <div className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 group",
-                  isActive 
-                    ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]" 
-                    : "text-zinc-400 hover:bg-white/5 hover:text-white border border-transparent"
+                  isActive
+                    ? "nav-active"
+                    : "text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent"
                 )}>
-                  <Icon className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110", isActive && "text-primary")} />
-                  <span className="font-medium">{item.label}</span>
+                  <Icon className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", isActive && "text-primary")} />
+                  <span className="font-medium text-sm">{item.label}</span>
+                  {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(145_80%_42%)]" />}
                 </div>
               </Link>
             );
           })}
         </nav>
+
+        {/* Bottom branding */}
+        <div className="relative p-4 border-t border-white/5">
+          <p className="text-[10px] font-gaming text-zinc-600 tracking-widest uppercase text-center">
+            eFootball · Friendly Manager
+          </p>
+        </div>
       </aside>
 
       {/* Main Content */}

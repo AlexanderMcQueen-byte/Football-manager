@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Rajdhani:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&family=Rajdhani:wght@500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme inline {
@@ -28,64 +28,137 @@
 }
 
 :root {
-  /* Dark Mode Default - eFootball/Gaming Theme */
-  --background: 222 47% 7%; /* Deep navy blue almost black */
-  --foreground: 210 40% 98%;
-  
-  --card: 217 33% 12%;
-  --card-foreground: 210 40% 98%;
-  
-  --popover: 222 47% 11%;
-  --popover-foreground: 210 40% 98%;
-  
-  --primary: 152 69% 51%; /* Neon pitch green */
-  --primary-foreground: 222 47% 11%;
-  
-  --secondary: 217 33% 17%;
-  --secondary-foreground: 210 40% 98%;
-  
-  --muted: 217 33% 17%;
-  --muted-foreground: 215 20.2% 65.1%;
-  
-  --accent: 217 33% 17%;
-  --accent-foreground: 210 40% 98%;
-  
-  --destructive: 350 89% 60%;
-  --destructive-foreground: 210 40% 98%;
-  
-  --border: 217 33% 20%;
-  --input: 217 33% 17%;
-  --ring: 152 69% 51%;
+  /* ── eFootball Official Dark Theme ─────────────────────────────────────────
+     Inspired by Konami eFootball's interface: deep navy, electric green,
+     glass surfaces, cinematic contrast.
+  ─────────────────────────────────────────────────────────────────────────── */
+
+  /* Base surfaces */
+  --background:    220 40% 5%;    /* #080D17 — near-black navy */
+  --foreground:    210 30% 96%;   /* #F0F4FA — near-white */
+
+  /* Cards */
+  --card:          220 35% 9%;    /* #0E1520 — dark blue-grey */
+  --card-foreground: 210 30% 96%;
+
+  /* Popover */
+  --popover:       220 35% 10%;
+  --popover-foreground: 210 30% 96%;
+
+  /* Primary — eFootball electric green */
+  --primary:       145 80% 42%;   /* #15C55A */
+  --primary-foreground: 220 40% 5%;
+
+  /* Secondary */
+  --secondary:     220 30% 14%;   /* #182030 */
+  --secondary-foreground: 210 30% 85%;
+
+  /* Muted */
+  --muted:         220 30% 12%;
+  --muted-foreground: 215 20% 50%;
+
+  /* Accent — electric blue highlight */
+  --accent:        210 80% 50%;   /* #1A6FE8 */
+  --accent-foreground: 0 0% 100%;
+
+  /* Destructive */
+  --destructive:   0 85% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Structural */
+  --border:        220 25% 16%;   /* subtle blue-grey border */
+  --input:         220 30% 12%;
+  --ring:          145 80% 42%;
 
   --radius: 0.75rem;
 }
 
+/* ── Base reset ──────────────────────────────────────────────────────────── */
 @layer base {
   * {
     @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/30 selection:text-primary;
+
+  html {
+    color-scheme: dark;
   }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 20% -10%, hsl(145 80% 42% / 0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, hsl(210 80% 50% / 0.05) 0%, transparent 60%);
+    background-attachment: fixed;
+    selection-color: hsl(145 80% 42% / 0.3);
+  }
+
+  ::selection {
+    background: hsl(145 80% 42% / 0.3);
+    color: hsl(var(--primary));
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     @apply tracking-tight;
   }
-  
+
   .font-gaming {
     font-family: var(--font-gaming);
+    letter-spacing: 0.04em;
   }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar        { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track  { background: hsl(var(--background)); }
+  ::-webkit-scrollbar-thumb  { background: hsl(var(--border)); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary) / 0.6); }
 }
 
+/* ── Utility classes ─────────────────────────────────────────────────────── */
 @layer utilities {
+
+  /* Glass card — main surface */
   .glass-card {
-    @apply bg-card/60 backdrop-blur-xl border border-white/5 shadow-2xl shadow-black/40;
-  }
-  
-  .text-glow {
-    text-shadow: 0 0 20px hsl(var(--primary) / 0.5);
+    background: hsl(var(--card) / 0.7);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid hsl(var(--border));
+    box-shadow:
+      0 1px 0 0 hsl(210 30% 96% / 0.04) inset,
+      0 4px 32px -4px hsl(0 0% 0% / 0.5);
   }
 
+  /* Highlighted card variant */
+  .glass-card-glow {
+    background: hsl(var(--card) / 0.75);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid hsl(var(--primary) / 0.25);
+    box-shadow:
+      0 0 0 1px hsl(var(--primary) / 0.08),
+      0 0 30px -5px hsl(var(--primary) / 0.18),
+      0 4px 32px -4px hsl(0 0% 0% / 0.5);
+  }
+
+  /* Text glow — primary colour */
+  .text-glow {
+    text-shadow: 0 0 24px hsl(var(--primary) / 0.55), 0 0 6px hsl(var(--primary) / 0.25);
+  }
+
+  /* Neon border pulse */
+  .neon-border {
+    border: 1px solid hsl(var(--primary) / 0.5);
+    box-shadow: 0 0 12px hsl(var(--primary) / 0.3), inset 0 0 12px hsl(var(--primary) / 0.05);
+  }
+
+  /* Pitch green gradient button glow */
+  .btn-primary-glow {
+    box-shadow:
+      0 0 20px hsl(var(--primary) / 0.4),
+      0 4px 12px hsl(0 0% 0% / 0.4);
+  }
+
+  /* Bracket connector line */
   .bracket-connector {
     position: relative;
   }
@@ -96,6 +169,54 @@
     top: 50%;
     width: 1rem;
     height: 1px;
-    background-color: hsl(var(--border));
+    background: linear-gradient(to right, hsl(var(--border)), transparent);
+  }
+
+  /* Sidebar with subtle pitch texture overlay */
+  .sidebar-bg {
+    background:
+      linear-gradient(180deg,
+        hsl(220 40% 6% / 0.97) 0%,
+        hsl(220 35% 7% / 0.97) 60%,
+        hsl(220 40% 5% / 0.99) 100%
+      );
+    border-right: 1px solid hsl(var(--border));
+  }
+
+  /* Active nav item */
+  .nav-active {
+    background: linear-gradient(90deg, hsl(var(--primary) / 0.15) 0%, hsl(var(--primary) / 0.05) 100%);
+    border: 1px solid hsl(var(--primary) / 0.3);
+    box-shadow: 0 0 16px hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+  }
+
+  /* Stat badge styles for standings */
+  .badge-win  { background: hsl(145 70% 35% / 0.25); color: hsl(145 80% 65%); border: 1px solid hsl(145 70% 35% / 0.4); }
+  .badge-draw { background: hsl(45 60% 40% / 0.25);  color: hsl(45 80% 70%);  border: 1px solid hsl(45 60% 40% / 0.4); }
+  .badge-loss { background: hsl(0 70% 40% / 0.25);   color: hsl(0 80% 65%);   border: 1px solid hsl(0 70% 40% / 0.4); }
+
+  /* Progress bar fill */
+  .progress-fill {
+    background: linear-gradient(90deg, hsl(var(--primary)), hsl(145 90% 60%));
+    box-shadow: 0 0 8px hsl(var(--primary) / 0.5);
+  }
+
+  /* Input focus ring */
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: hsl(var(--primary) / 0.6) !important;
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.12);
+  }
+
+  /* Pitch stripe overlay for header backgrounds */
+  .pitch-overlay {
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 40px,
+      hsl(145 50% 30% / 0.03) 40px,
+      hsl(145 50% 30% / 0.03) 80px
+    );
   }
 }

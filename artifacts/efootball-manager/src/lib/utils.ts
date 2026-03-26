@@ -7,9 +7,9 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getFormBadgeColor(result: "W" | "D" | "L") {
   switch (result) {
-    case "W": return "bg-green-500 text-white border-green-600";
-    case "D": return "bg-zinc-500 text-white border-zinc-600";
-    case "L": return "bg-red-500 text-white border-red-600";
-    default: return "bg-zinc-700 text-white";
+    case "W": return "badge-win";
+    case "D": return "badge-draw";
+    case "L": return "badge-loss";
+    default: return "bg-zinc-800 text-zinc-500 border border-zinc-700";
   }
 }

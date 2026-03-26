@@ -70,7 +70,7 @@ export default function TournamentDetail() {
             </div>
             <div className="h-2 bg-white/10 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full" 
+                className="h-full progress-fill rounded-full transition-all duration-700" 
                 style={{ width: `${(tournament.completedFixtures / (tournament.totalFixtures || 1)) * 100}%` }}
               />
             </div>
