@@ -1,0 +1,18 @@
+packages:
+  "framer-motion": "For smooth layout transitions and bracket animations"
+  "date-fns": "For formatting tournament creation dates"
+  "@hookform/resolvers": "Zod validation for forms"
+  "zod": "Schema validation"
+  "react-hook-form": "Form state management"
+
+images:
+  - path: "artifacts/efootball-manager/public/images/hero-bg.png"
+    description: "Dark, moody stadium lights background with subtle neon green and navy blue volumetric fog, very abstract and gaming focused"
+    aspect_ratio: "16:9"
+  - path: "artifacts/efootball-manager/public/images/pitch-pattern.png"
+    description: "Abstract subtle football pitch line patterns in dark navy and faint neon green, geometric and clean"
+    aspect_ratio: "16:9"
+
+notes:
+  - "App uses generated React Query hooks from @workspace/api-client-react"
+  - "Dark mode default aesthetic for a gaming/sports vibe"
