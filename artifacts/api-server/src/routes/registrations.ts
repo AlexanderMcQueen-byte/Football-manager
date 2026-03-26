@@ -1,6 +1,11 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { tournamentRegistrationsTable, tournamentsTable } from "@workspace/db/schema";
+import {
+  tournamentRegistrationsTable,
+  tournamentsTable,
+  playersTable,
+  tournamentPlayersTable,
+} from "@workspace/db/schema";
 import { eq, and } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/requireAdmin";
 import { z } from "zod";
@@ -95,15 +100,62 @@ router.patch("/registrations/:id", requireAdmin, async (req, res) => {
     return;
   }
 
+  // Fetch the registration first so we have username + tournamentId
+  const [registration] = await db
+    .select()
+    .from(tournamentRegistrationsTable)
+    .where(eq(tournamentRegistrationsTable.id, id))
+    .limit(1);
+
+  if (!registration) {
+    res.status(404).json({ error: "Registration not found" });
+    return;
+  }
+
+  // Update the status
   const [updated] = await db
     .update(tournamentRegistrationsTable)
     .set({ status: parsed.data.status })
     .where(eq(tournamentRegistrationsTable.id, id))
     .returning();
 
-  if (!updated) {
-    res.status(404).json({ error: "Registration not found" });
-    return;
+  // When approving: find-or-create the player and add them to the tournament
+  if (parsed.data.status === "approved") {
+    const playerName = registration.efootballUsername;
+    const { tournamentId } = registration;
+
+    // Find existing player with this name (exact match)
+    let [player] = await db
+      .select()
+      .from(playersTable)
+      .where(eq(playersTable.name, playerName))
+      .limit(1);
+
+    // Create the player if they don't exist yet
+    if (!player) {
+      [player] = await db
+        .insert(playersTable)
+        .values({ name: playerName })
+        .returning();
+    }
+
+    // Only add to tournament if not already a participant
+    const [alreadyIn] = await db
+      .select()
+      .from(tournamentPlayersTable)
+      .where(
+        and(
+          eq(tournamentPlayersTable.tournamentId, tournamentId),
+          eq(tournamentPlayersTable.playerId, player.id),
+        ),
+      )
+      .limit(1);
+
+    if (!alreadyIn) {
+      await db
+        .insert(tournamentPlayersTable)
+        .values({ tournamentId, playerId: player.id });
+    }
   }
 
   res.json(updated);
