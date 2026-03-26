@@ -10,7 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getFormBadgeColor, cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth";
-import { Trophy, CalendarDays, GitMerge, Loader2, Save, UserPlus, Phone, Gamepad2, CheckCircle, XCircle, Clock, ClipboardList, AlertCircle, Users } from "lucide-react";
+import { Trophy, CalendarDays, GitMerge, Loader2, Save, UserPlus, Phone, Gamepad2, CheckCircle, XCircle, Clock, ClipboardList, AlertCircle, Users, Pencil, X, ChevronDown, ChevronUp } from "lucide-react";
 
 export default function TournamentDetail() {
   const [, params] = useRoute("/tournaments/:id");
@@ -59,9 +59,19 @@ export default function TournamentDetail() {
             <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-2 text-glow">
               {tournament.name}
             </h1>
-            <p className="text-zinc-400 text-lg flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-primary" /> {tournament.players.length} Players Competing
-            </p>
+            <div className="flex flex-wrap items-center gap-4">
+              <p className="text-zinc-400 text-lg flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-primary" /> {tournament.players.length} Players Competing
+              </p>
+              {tournament.scheduledAt && (
+                <p className="text-zinc-400 text-sm flex items-center gap-1.5">
+                  <CalendarDays className="w-4 h-4 text-primary/80" />
+                  <span>{new Date(tournament.scheduledAt).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                  <span className="text-zinc-600">·</span>
+                  <span>{new Date(tournament.scheduledAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="bg-black/40 rounded-2xl p-4 border border-white/5 min-w-[200px]">
@@ -117,8 +127,11 @@ export default function TournamentDetail() {
         {/* Show waiting state for fixtures/bracket/standings while tournament is in setup */}
         {tournament.status === "setup" && activeTab !== "registrations"
           ? <SetupWaitingTab
+              tournamentId={tournamentId}
+              tournamentName={tournament.name}
               currentPlayers={tournament.players.length}
               maxPlayers={tournament.maxPlayers ?? 0}
+              scheduledAt={tournament.scheduledAt ? new Date(tournament.scheduledAt) : null}
               isAdmin={isAdmin}
               onSwitchToRegistrations={() => setActiveTab("registrations")}
             />
@@ -684,81 +697,220 @@ function StatusBadge({ status }: { status: string }) {
 
 // ── Setup / Waiting for players ───────────────────────────────────────────────
 
+function toDatetimeLocal(d: Date | null): string {
+  if (!d) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 function SetupWaitingTab({
+  tournamentId,
+  tournamentName,
   currentPlayers,
   maxPlayers,
+  scheduledAt,
   isAdmin,
   onSwitchToRegistrations,
 }: {
+  tournamentId: number;
+  tournamentName: string;
   currentPlayers: number;
   maxPlayers: number;
+  scheduledAt: Date | null;
   isAdmin: boolean;
   onSwitchToRegistrations: () => void;
 }) {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [editName, setEditName] = useState(tournamentName);
+  const [editMax, setEditMax] = useState(String(maxPlayers));
+  const [editDate, setEditDate] = useState(toDatetimeLocal(scheduledAt));
+
   const pct = maxPlayers > 0 ? Math.round((currentPlayers / maxPlayers) * 100) : 0;
   const remaining = Math.max(0, maxPlayers - currentPlayers);
 
+  async function handleSave() {
+    setSaving(true);
+    try {
+      const body: Record<string, unknown> = {};
+      if (editName.trim() && editName.trim() !== tournamentName) body.name = editName.trim();
+      const newMax = parseInt(editMax, 10);
+      if (!isNaN(newMax) && newMax !== maxPlayers) body.maxPlayers = newMax;
+      body.scheduledAt = editDate ? new Date(editDate).toISOString() : null;
+
+      const res = await fetch(`${import.meta.env.BASE_URL}api/tournaments/${tournamentId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to save");
+      }
+      await queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournamentId}`] });
+      toast({ title: "Tournament updated", description: "Changes saved successfully." });
+      setEditing(false);
+    } catch (e: unknown) {
+      toast({ title: "Save failed", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-4 text-center gap-6">
-      {/* Animated waiting icon */}
-      <div className="relative">
-        <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-          <Clock className="w-10 h-10 text-primary animate-pulse" />
+    <div className="space-y-6">
+      {/* Main waiting card */}
+      <div className="flex flex-col items-center justify-center py-12 px-4 text-center gap-6">
+        {/* Animated waiting icon */}
+        <div className="relative">
+          <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <Clock className="w-10 h-10 text-primary animate-pulse" />
+          </div>
+          <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center">
+            <Users className="w-4 h-4 text-zinc-400" />
+          </div>
         </div>
-        <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center">
-          <Users className="w-4 h-4 text-zinc-400" />
-        </div>
-      </div>
 
-      <div className="space-y-1 max-w-sm">
-        <h3 className="font-display font-bold text-white text-xl">Waiting for Players</h3>
-        <p className="text-zinc-400 text-sm">
-          Fixtures will be generated automatically once all <span className="text-primary font-semibold">{maxPlayers} spots</span> are filled.
-        </p>
-      </div>
-
-      {/* Progress */}
-      <div className="w-full max-w-sm space-y-2">
-        <div className="flex justify-between text-xs text-zinc-500 font-semibold">
-          <span>{currentPlayers} approved</span>
-          <span>{remaining} remaining</span>
+        <div className="space-y-1 max-w-sm">
+          <h3 className="font-display font-bold text-white text-xl">Waiting for Players</h3>
+          <p className="text-zinc-400 text-sm">
+            Fixtures will be generated automatically once all <span className="text-primary font-semibold">{maxPlayers} spots</span> are filled.
+          </p>
+          {scheduledAt && (
+            <p className="text-zinc-500 text-xs flex items-center justify-center gap-1.5 mt-2">
+              <CalendarDays className="w-3.5 h-3.5 text-primary/60" />
+              Scheduled for {scheduledAt.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              {' at '}
+              {scheduledAt.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+            </p>
+          )}
         </div>
-        <div className="h-3 bg-white/5 rounded-full overflow-hidden border border-white/5">
-          <div
-            className="h-full progress-fill rounded-full transition-all duration-700"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-        <div className="text-center text-xs text-zinc-600 font-gaming">{pct}% filled</div>
-      </div>
 
-      {/* Slots grid */}
-      {maxPlayers <= 16 && (
-        <div className="flex flex-wrap justify-center gap-2 max-w-xs">
-          {Array.from({ length: maxPlayers }).map((_, i) => (
+        {/* Progress bar */}
+        <div className="w-full max-w-sm space-y-2">
+          <div className="flex justify-between text-xs text-zinc-500 font-semibold">
+            <span>{currentPlayers} approved</span>
+            <span>{remaining} remaining</span>
+          </div>
+          <div className="h-3 bg-white/5 rounded-full overflow-hidden border border-white/5">
             <div
-              key={i}
-              className={cn(
-                "w-8 h-8 rounded-lg border flex items-center justify-center text-xs font-gaming font-bold transition-all",
-                i < currentPlayers
-                  ? "bg-primary/20 border-primary/40 text-primary"
-                  : "bg-white/3 border-white/8 text-zinc-700"
-              )}
-            >
-              {i < currentPlayers ? "✓" : i + 1}
-            </div>
-          ))}
+              className="h-full progress-fill rounded-full transition-all duration-700"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          <div className="text-center text-xs text-zinc-600 font-gaming">{pct}% filled</div>
         </div>
-      )}
 
-      {isAdmin && (
-        <button
-          onClick={onSwitchToRegistrations}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary font-semibold text-sm hover:bg-primary/15 transition-all"
-        >
-          <ClipboardList className="w-4 h-4" />
-          Manage Registrations
-        </button>
+        {/* Slots grid */}
+        {maxPlayers <= 16 && (
+          <div className="flex flex-wrap justify-center gap-2 max-w-xs">
+            {Array.from({ length: maxPlayers }).map((_, i) => (
+              <div
+                key={i}
+                className={cn(
+                  "w-8 h-8 rounded-lg border flex items-center justify-center text-xs font-gaming font-bold transition-all",
+                  i < currentPlayers
+                    ? "bg-primary/20 border-primary/40 text-primary"
+                    : "bg-white/5 border-white/8 text-zinc-700"
+                )}
+              >
+                {i < currentPlayers ? "✓" : i + 1}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {isAdmin && (
+          <div className="flex gap-3">
+            <button
+              onClick={onSwitchToRegistrations}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary font-semibold text-sm hover:bg-primary/15 transition-all"
+            >
+              <ClipboardList className="w-4 h-4" />
+              Manage Registrations
+            </button>
+            <button
+              onClick={() => {
+                setEditName(tournamentName);
+                setEditMax(String(maxPlayers));
+                setEditDate(toDatetimeLocal(scheduledAt));
+                setEditing((v) => !v);
+              }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-zinc-300 font-semibold text-sm hover:bg-white/8 transition-all"
+            >
+              {editing ? <ChevronUp className="w-4 h-4" /> : <Pencil className="w-4 h-4" />}
+              {editing ? "Close" : "Edit"}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* ── Inline edit panel ── */}
+      {isAdmin && editing && (
+        <div className="mx-auto max-w-lg rounded-2xl bg-white/3 border border-white/8 p-6 space-y-5">
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="font-display font-semibold text-white text-base flex items-center gap-2">
+              <Pencil className="w-4 h-4 text-primary" /> Edit Tournament
+            </h4>
+            <button onClick={() => setEditing(false)} className="text-zinc-600 hover:text-zinc-400 transition-colors">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Name */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Tournament Name</label>
+            <input
+              type="text"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all"
+            />
+          </div>
+
+          {/* Player cap */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+              Player Cap <span className="text-zinc-700 normal-case font-normal">(min: {currentPlayers} approved)</span>
+            </label>
+            <input
+              type="number"
+              min={Math.max(2, currentPlayers)}
+              value={editMax}
+              onChange={(e) => setEditMax(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all"
+            />
+            <p className="text-xs text-zinc-600">Cannot decrease below the number of already-approved players.</p>
+          </div>
+
+          {/* Scheduled date */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Tournament Date &amp; Time</label>
+            <input
+              type="datetime-local"
+              value={editDate}
+              onChange={(e) => setEditDate(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all [color-scheme:dark]"
+            />
+            {editDate && (
+              <button onClick={() => setEditDate("")} className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors flex items-center gap-1">
+                <X className="w-3 h-3" /> Clear date
+              </button>
+            )}
+          </div>
+
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-black font-bold text-sm hover:bg-primary/90 transition-all disabled:opacity-60"
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {saving ? "Saving…" : "Save Changes"}
+          </button>
+        </div>
       )}
     </div>
   );

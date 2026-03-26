@@ -46,6 +46,7 @@ export const ListTournamentsResponseItem = zod.object({
   name: zod.string(),
   type: zod.enum(["league", "knockout"]),
   status: zod.enum(["setup", "active", "completed"]),
+  scheduledAt: zod.coerce.date().nullable().optional(),
   createdAt: zod.date(),
 });
 export const ListTournamentsResponse = zod.array(ListTournamentsResponseItem);
@@ -67,12 +68,22 @@ export const GetTournamentParams = zod.object({
   id: zod.coerce.number(),
 });
 
+export const PatchTournamentParams = zod.object({
+  id: zod.coerce.number(),
+});
+export const PatchTournamentBody = zod.object({
+  name: zod.string().min(1).optional(),
+  maxPlayers: zod.number().int().min(2).nullable().optional(),
+  scheduledAt: zod.string().nullable().optional(),
+});
+
 export const GetTournamentResponse = zod.object({
   id: zod.number(),
   name: zod.string(),
   type: zod.enum(["league", "knockout"]),
   status: zod.enum(["setup", "active", "completed"]),
   maxPlayers: zod.number().nullable().optional(),
+  scheduledAt: zod.coerce.date().nullable().optional(),
   createdAt: zod.date(),
   players: zod.array(
     zod.object({

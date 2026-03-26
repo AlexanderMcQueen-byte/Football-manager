@@ -11,6 +11,7 @@ export const tournamentsTable = pgTable("tournaments", {
   type: tournamentTypeEnum("type").notNull(),
   status: tournamentStatusEnum("status").notNull().default("active"),
   maxPlayers: integer("max_players"),
+  scheduledAt: timestamp("scheduled_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

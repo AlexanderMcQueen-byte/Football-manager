@@ -13,6 +13,8 @@ import {
   GetTournamentParams,
   DeleteTournamentParams,
   GetStandingsParams,
+  PatchTournamentParams,
+  PatchTournamentBody,
 } from "@workspace/api-zod";
 import { buildFixturesData } from "../lib/generateFixtures";
 
@@ -76,6 +78,49 @@ router.get("/tournaments/:id", async (req, res) => {
   const completedFixtures = allFixtures.filter((f) => f.played).length;
 
   res.json({ ...tournament, players, totalFixtures, completedFixtures });
+});
+
+router.patch("/tournaments/:id", requireAdmin, async (req, res) => {
+  const { id } = PatchTournamentParams.parse({ id: Number(req.params.id) });
+  const body = PatchTournamentBody.parse(req.body);
+
+  const [tournament] = await db.select().from(tournamentsTable).where(eq(tournamentsTable.id, id));
+  if (!tournament) {
+    res.status(404).json({ error: "Tournament not found" });
+    return;
+  }
+
+  // Only allow edits while still in setup (or scheduling date on any non-completed)
+  const updates: Record<string, unknown> = {};
+
+  if (body.scheduledAt !== undefined) {
+    updates.scheduledAt = body.scheduledAt ? new Date(body.scheduledAt) : null;
+  }
+
+  if (tournament.status === "setup") {
+    if (body.name !== undefined) updates.name = body.name;
+    if (body.maxPlayers !== undefined) {
+      // Don't allow reducing below already-approved count
+      const approvedCount = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(tournamentPlayersTable)
+        .where(eq(tournamentPlayersTable.tournamentId, id))
+        .then((r) => r[0]?.count ?? 0);
+      if (body.maxPlayers !== null && body.maxPlayers < approvedCount) {
+        res.status(400).json({ error: `Cannot set maxPlayers below current approved player count (${approvedCount})` });
+        return;
+      }
+      updates.maxPlayers = body.maxPlayers;
+    }
+  }
+
+  if (Object.keys(updates).length === 0) {
+    res.json(tournament);
+    return;
+  }
+
+  const [updated] = await db.update(tournamentsTable).set(updates).where(eq(tournamentsTable.id, id)).returning();
+  res.json(updated);
 });
 
 router.delete("/tournaments/:id", requireAdmin, async (req, res) => {
