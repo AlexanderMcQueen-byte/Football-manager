@@ -10,17 +10,29 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8 pb-12">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-4xl font-display font-bold text-white">Dashboard</h1>
-          <p className="text-zinc-400 mt-1">Manage your active tournaments and leagues.</p>
+      {/* Hero Banner */}
+      <header className="relative rounded-3xl overflow-hidden min-h-[220px] flex items-end">
+        <img
+          src={`${import.meta.env.BASE_URL}images/stadium-hero.png`}
+          alt="eFootball Stadium"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-4 w-full p-8">
+          <div>
+            <p className="text-primary font-gaming font-bold text-xs tracking-[0.3em] uppercase mb-2">⚽ eFootball Manager</p>
+            <h1 className="text-4xl md:text-5xl font-display font-bold text-white drop-shadow-lg">Dashboard</h1>
+            <p className="text-zinc-300 mt-1 text-sm">Manage your active tournaments and leagues.</p>
+          </div>
+          <Link href="/tournaments/new">
+            <button className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.4)] shrink-0">
+              <Plus className="w-5 h-5" />
+              Create Tournament
+            </button>
+          </Link>
         </div>
-        <Link href="/tournaments/new">
-          <button className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-            <Plus className="w-5 h-5" />
-            Create Tournament
-          </button>
-        </Link>
       </header>
 
       {isLoading ? (

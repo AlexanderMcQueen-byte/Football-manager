@@ -23,12 +23,13 @@ export function Layout({ children }: LayoutProps) {
       {/* Background elements */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <img 
-          src={`${import.meta.env.BASE_URL}images/hero-bg.png`} 
-          className="absolute inset-0 w-full h-full object-cover opacity-20"
+          src={`${import.meta.env.BASE_URL}images/stadium-crowd.png`} 
+          className="absolute inset-0 w-full h-full object-cover opacity-10"
           alt="Background"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background to-background" />
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/85 to-background/95" />
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/8 blur-[140px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-900/20 blur-[120px]" />
       </div>
 
       {/* Mobile Header */}

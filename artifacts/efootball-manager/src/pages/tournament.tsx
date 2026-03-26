@@ -31,10 +31,16 @@ export default function TournamentDetail() {
 
   return (
     <div className="space-y-8 pb-12">
-      <header className="glass-card rounded-3xl p-8 relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px]" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <header className="rounded-3xl relative overflow-hidden min-h-[200px] flex items-end">
+        <img
+          src={`${import.meta.env.BASE_URL}images/pitch-closeup.png`}
+          alt="Football pitch"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-transparent to-transparent" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6 w-full p-8">
           <div>
             <div className="flex items-center gap-3 mb-3">
               <span className="px-3 py-1 bg-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-300 border border-white/5">

@@ -64,9 +64,18 @@ export default function CreateTournament() {
 
   return (
     <div className="max-w-3xl mx-auto pb-12">
-      <header className="mb-8">
-        <h1 className="text-4xl font-display font-bold text-white">New Tournament</h1>
-        <p className="text-zinc-400 mt-1">Configure and generate fixtures instantly.</p>
+      <header className="relative rounded-3xl overflow-hidden min-h-[160px] flex items-end mb-8">
+        <img
+          src={`${import.meta.env.BASE_URL}images/trophy-bg.png`}
+          alt="Trophy background"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/20" />
+        <div className="relative z-10 p-8 w-full">
+          <p className="text-primary font-gaming font-bold text-xs tracking-[0.3em] uppercase mb-1">🏆 Create New</p>
+          <h1 className="text-4xl font-display font-bold text-white drop-shadow-lg">New Tournament</h1>
+          <p className="text-zinc-300 mt-1 text-sm">Configure and generate fixtures instantly.</p>
+        </div>
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-8">

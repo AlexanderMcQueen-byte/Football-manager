@@ -42,9 +42,18 @@ export default function Players() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
-      <header>
-        <h1 className="text-4xl font-display font-bold text-white">Player Roster</h1>
-        <p className="text-zinc-400 mt-1">Manage the pool of players available for tournaments.</p>
+      <header className="relative rounded-3xl overflow-hidden min-h-[160px] flex items-end">
+        <img
+          src={`${import.meta.env.BASE_URL}images/stadium-crowd.png`}
+          alt="Stadium crowd"
+          className="absolute inset-0 w-full h-full object-cover object-top"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/20" />
+        <div className="relative z-10 p-8 w-full">
+          <p className="text-primary font-gaming font-bold text-xs tracking-[0.3em] uppercase mb-1">👥 Manage</p>
+          <h1 className="text-4xl font-display font-bold text-white drop-shadow-lg">Player Roster</h1>
+          <p className="text-zinc-300 mt-1 text-sm">Manage the pool of players available for tournaments.</p>
+        </div>
       </header>
 
       <div className="glass-card rounded-2xl p-6 mb-8">
