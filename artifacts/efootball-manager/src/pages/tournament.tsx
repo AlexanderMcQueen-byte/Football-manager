@@ -92,7 +92,15 @@ export default function TournamentDetail() {
       </header>
 
       {/* Register to Play — shown to viewers */}
-      {!isAdmin && <RegisterCard tournamentId={tournamentId} tournamentName={tournament.name} />}
+      {!isAdmin && (
+        <RegisterCard
+          tournamentId={tournamentId}
+          tournamentName={tournament.name}
+          tournamentStatus={tournament.status}
+          approvedPlayers={tournament.players.length}
+          maxPlayers={tournament.maxPlayers ?? null}
+        />
+      )}
 
       {/* Tabs */}
       <div className="flex space-x-2 border-b border-white/10 overflow-x-auto">
@@ -517,7 +525,65 @@ function BracketNode({ match, hasConnector = false, isFinal = false }: { match: 
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-function RegisterCard({ tournamentId, tournamentName }: { tournamentId: number; tournamentName: string }) {
+function RegisterCard({
+  tournamentId,
+  tournamentName,
+  tournamentStatus,
+  approvedPlayers,
+  maxPlayers,
+}: {
+  tournamentId: number;
+  tournamentName: string;
+  tournamentStatus: string;
+  approvedPlayers: number;
+  maxPlayers: number | null;
+}) {
+  // Tournament finished — show a closed banner
+  if (tournamentStatus === "completed") {
+    return (
+      <div className="glass-card rounded-2xl p-6 border border-yellow-500/20 flex flex-col sm:flex-row items-center gap-4 bg-yellow-500/5">
+        <div className="w-12 h-12 rounded-xl bg-yellow-500/15 flex items-center justify-center shrink-0">
+          <Trophy className="w-6 h-6 text-yellow-500" />
+        </div>
+        <div>
+          <h3 className="font-display font-bold text-white text-lg">Tournament Finished</h3>
+          <p className="text-zinc-400 text-sm mt-0.5">
+            <span className="text-yellow-400 font-semibold">{tournamentName}</span> has ended. Registration is closed.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Tournament active (started or full) — show a "closed" banner
+  if (tournamentStatus === "active") {
+    const isFull = maxPlayers !== null && approvedPlayers >= maxPlayers;
+    return (
+      <div className="glass-card rounded-2xl p-6 border border-white/10 flex flex-col sm:flex-row items-center gap-4">
+        <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center shrink-0">
+          <XCircle className="w-6 h-6 text-zinc-400" />
+        </div>
+        <div>
+          <h3 className="font-display font-bold text-white text-lg">
+            {isFull ? "Tournament Full" : "Registration Closed"}
+          </h3>
+          <p className="text-zinc-400 text-sm mt-0.5">
+            {isFull
+              ? `All ${maxPlayers} spots for <span class="text-white font-semibold">${tournamentName}</span> have been filled.`
+              : `${tournamentName} has already started. No new registrations are being accepted.`}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Otherwise render the normal registration form below
+  return <RegisterForm tournamentId={tournamentId} tournamentName={tournamentName} maxPlayers={maxPlayers} approvedPlayers={approvedPlayers} />;
+}
+
+function RegisterForm({ tournamentId, tournamentName, maxPlayers, approvedPlayers }: {
+  tournamentId: number; tournamentName: string; maxPlayers: number | null; approvedPlayers: number;
+}) {
   const { toast } = useToast();
   const [efootballUsername, setEfootballUsername] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");

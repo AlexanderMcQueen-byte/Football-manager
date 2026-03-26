@@ -7,7 +7,7 @@ import {
   tournamentPlayersTable,
   fixturesTable,
 } from "@workspace/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, count } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/requireAdmin";
 import { z } from "zod";
 import { buildFixturesData } from "../lib/generateFixtures";
@@ -39,6 +39,41 @@ router.post("/tournaments/:id/register", async (req, res) => {
   if (!tournament) {
     res.status(404).json({ error: "Tournament not found" });
     return;
+  }
+
+  // Block registrations for finished tournaments
+  if (tournament.status === "completed") {
+    res.status(409).json({ error: "This tournament has finished. Registration is closed." });
+    return;
+  }
+
+  // Block registrations once fixtures are generated (tournament is active)
+  if (tournament.status === "active") {
+    res.status(409).json({ error: "This tournament has already started. Registration is closed." });
+    return;
+  }
+
+  // Block if the spot cap has been reached (count pending + approved)
+  if (tournament.maxPlayers) {
+    const [{ total: registeredCount }] = await db
+      .select({ total: count() })
+      .from(tournamentRegistrationsTable)
+      .where(
+        and(
+          eq(tournamentRegistrationsTable.tournamentId, tournamentId),
+          eq(tournamentRegistrationsTable.status, "pending"),
+        ),
+      );
+    const approvedCount = await db
+      .select({ playerId: tournamentPlayersTable.playerId })
+      .from(tournamentPlayersTable)
+      .where(eq(tournamentPlayersTable.tournamentId, tournamentId))
+      .then((r) => r.length);
+
+    if (registeredCount + approvedCount >= tournament.maxPlayers) {
+      res.status(409).json({ error: "This tournament is full. No more spots are available." });
+      return;
+    }
   }
 
   const parsed = RegisterBody.safeParse(req.body);
