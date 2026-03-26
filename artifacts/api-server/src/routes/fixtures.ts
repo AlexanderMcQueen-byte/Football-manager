@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { fixturesTable, playersTable } from "@workspace/db/schema";
-import { eq, and } from "drizzle-orm";
+import { fixturesTable, playersTable, tournamentsTable } from "@workspace/db/schema";
+import { eq, and, count } from "drizzle-orm";
 import {
   ListFixturesQueryParams,
   SubmitResultParams,
@@ -81,12 +81,28 @@ router.put("/fixtures/:id/result", requireAdmin, async (req, res) => {
     return;
   }
 
+  // Auto-complete tournament when all fixtures are played
+  const [{ total }] = await db
+    .select({ total: count() })
+    .from(fixturesTable)
+    .where(eq(fixturesTable.tournamentId, fixture.tournamentId));
+
+  const [{ done }] = await db
+    .select({ done: count() })
+    .from(fixturesTable)
+    .where(and(eq(fixturesTable.tournamentId, fixture.tournamentId), eq(fixturesTable.played, true)));
+
+  if (total > 0 && total === done) {
+    await db
+      .update(tournamentsTable)
+      .set({ status: "completed" })
+      .where(eq(tournamentsTable.id, fixture.tournamentId));
+  }
+
   const players = await db
     .select()
     .from(playersTable)
-    .where(
-      eq(playersTable.id, fixture.homePlayerId)
-    );
+    .where(eq(playersTable.id, fixture.homePlayerId));
 
   const awayPlayers = await db
     .select()

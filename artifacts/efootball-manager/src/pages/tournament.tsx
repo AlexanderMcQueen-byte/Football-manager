@@ -50,10 +50,11 @@ export default function TournamentDetail() {
               </span>
               <span className={cn(
                 "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest",
-                tournament.status === 'active' ? "bg-primary/20 text-primary border border-primary/20" : 
+                tournament.status === 'active' ? "bg-primary/20 text-primary border border-primary/20" :
+                tournament.status === 'completed' ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30" :
                 "bg-zinc-800 text-zinc-400 border border-zinc-700"
               )}>
-                {tournament.status}
+                {tournament.status === 'completed' ? '🏆 Finished' : tournament.status}
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-2 text-glow">
@@ -136,7 +137,7 @@ export default function TournamentDetail() {
               onSwitchToRegistrations={() => setActiveTab("registrations")}
             />
           : <>
-              {activeTab === "standings" && <StandingsTab tournamentId={tournamentId} />}
+              {activeTab === "standings" && <StandingsTab tournamentId={tournamentId} isCompleted={tournament.status === "completed"} />}
               {activeTab === "fixtures" && <FixturesTab tournamentId={tournamentId} isAdmin={isAdmin} />}
               {activeTab === "bracket" && <BracketTab tournamentId={tournamentId} />}
               {activeTab === "registrations" && isAdmin && <RegistrationsTab tournamentId={tournamentId} />}
@@ -149,68 +150,139 @@ export default function TournamentDetail() {
 
 // --- SUB-COMPONENTS ---
 
-function StandingsTab({ tournamentId }: { tournamentId: number }) {
+const PODIUM_CONFIG = [
+  { rank: 1, label: "Champion",    medal: "🥇", ringColor: "ring-yellow-400",  bg: "bg-yellow-500/10",  border: "border-yellow-500/40", text: "text-yellow-400",  height: "h-28", order: "order-2" },
+  { rank: 2, label: "Runner-Up",   medal: "🥈", ringColor: "ring-zinc-300",    bg: "bg-zinc-500/10",    border: "border-zinc-400/30",   text: "text-zinc-300",   height: "h-20", order: "order-1" },
+  { rank: 3, label: "3rd Place",   medal: "🥉", ringColor: "ring-amber-600",   bg: "bg-amber-700/10",   border: "border-amber-700/30",  text: "text-amber-500",  height: "h-14", order: "order-3" },
+];
+
+function PodiumBanner({ standings }: { standings: Array<{ playerName: string; points: number }> }) {
+  const top3 = standings.slice(0, Math.min(3, standings.length));
+  return (
+    <div className="rounded-2xl overflow-hidden mb-6" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0d1f38 50%, #0a1628 100%)" }}>
+      <div className="relative px-6 pt-8 pb-0">
+        {/* Glow backdrop */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(234,179,8,0.06)_0%,transparent_70%)]" />
+        <div className="relative z-10 text-center mb-6">
+          <p className="font-gaming text-xs tracking-[0.3em] text-yellow-500/60 uppercase mb-1">Tournament Over</p>
+          <h3 className="font-display font-bold text-white text-2xl">Final Standings</h3>
+        </div>
+        {/* Podium */}
+        <div className="relative z-10 flex items-end justify-center gap-4 pb-0">
+          {PODIUM_CONFIG.slice(0, top3.length).map((cfg) => {
+            const player = standings[cfg.rank - 1];
+            if (!player) return null;
+            return (
+              <div key={cfg.rank} className={cn("flex flex-col items-center gap-2", cfg.order)}>
+                {/* Medal + Name */}
+                <div className="text-center">
+                  <div className="text-3xl mb-1">{cfg.medal}</div>
+                  <div className={cn("font-display font-bold text-sm", cfg.text)}>{player.playerName}</div>
+                  <div className="text-zinc-600 text-xs font-gaming">{player.points} pts</div>
+                </div>
+                {/* Podium block */}
+                <div className={cn(
+                  "w-24 rounded-t-xl flex items-start justify-center pt-2 border-t border-x",
+                  cfg.height, cfg.bg, cfg.border
+                )}>
+                  <span className={cn("font-gaming font-bold text-2xl", cfg.text)}>#{cfg.rank}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StandingsTab({ tournamentId, isCompleted }: { tournamentId: number; isCompleted: boolean }) {
   const { data: standings, isLoading } = useGetStandings(tournamentId);
 
   if (isLoading) return <div className="py-12 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
   if (!standings?.length) return <div className="text-zinc-500 py-12 text-center">No standings available.</div>;
 
   return (
-    <div className="glass-card rounded-2xl overflow-hidden overflow-x-auto">
-      <table className="w-full text-sm text-left">
-        <thead className="bg-black/40 text-xs uppercase font-gaming text-zinc-500 border-b border-white/10">
-          <tr>
-            <th className="px-6 py-4 font-bold">#</th>
-            <th className="px-6 py-4 font-bold">Player</th>
-            <th className="px-4 py-4 text-center font-bold">P</th>
-            <th className="px-4 py-4 text-center font-bold">W</th>
-            <th className="px-4 py-4 text-center font-bold">D</th>
-            <th className="px-4 py-4 text-center font-bold">L</th>
-            <th className="px-4 py-4 text-center font-bold hidden sm:table-cell">GF</th>
-            <th className="px-4 py-4 text-center font-bold hidden sm:table-cell">GA</th>
-            <th className="px-4 py-4 text-center font-bold">GD</th>
-            <th className="px-6 py-4 text-center font-bold text-white text-base">Pts</th>
-            <th className="px-6 py-4 text-center font-bold hidden md:table-cell">Form</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-white/5">
-          {standings.map((row, index) => (
-            <tr key={row.playerId} className="hover:bg-white/[0.02] transition-colors group">
-              <td className="px-6 py-4">
-                <span className={cn(
-                  "flex items-center justify-center w-6 h-6 rounded-full font-bold text-xs",
-                  index === 0 ? "bg-yellow-500 text-black" :
-                  index === 1 ? "bg-zinc-300 text-black" :
-                  index === 2 ? "bg-amber-700 text-white" : "text-zinc-500"
-                )}>
-                  {index + 1}
-                </span>
-              </td>
-              <td className="px-6 py-4 font-bold text-white text-base">{row.playerName}</td>
-              <td className="px-4 py-4 text-center text-zinc-400">{row.played}</td>
-              <td className="px-4 py-4 text-center text-zinc-300">{row.won}</td>
-              <td className="px-4 py-4 text-center text-zinc-300">{row.drawn}</td>
-              <td className="px-4 py-4 text-center text-zinc-300">{row.lost}</td>
-              <td className="px-4 py-4 text-center text-zinc-400 hidden sm:table-cell">{row.goalsFor}</td>
-              <td className="px-4 py-4 text-center text-zinc-400 hidden sm:table-cell">{row.goalsAgainst}</td>
-              <td className="px-4 py-4 text-center font-bold text-zinc-300">
-                {row.goalDifference > 0 ? `+${row.goalDifference}` : row.goalDifference}
-              </td>
-              <td className="px-6 py-4 text-center font-gaming text-xl font-bold text-primary">{row.points}</td>
-              <td className="px-6 py-4 hidden md:table-cell">
-                <div className="flex items-center justify-center gap-1">
-                  {row.form.map((f, i) => (
-                    <div key={i} className={cn("w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold", getFormBadgeColor(f as any))}>
-                      {f}
-                    </div>
-                  ))}
-                  {row.form.length === 0 && <span className="text-zinc-600">-</span>}
-                </div>
-              </td>
+    <div className="space-y-0">
+      {isCompleted && <PodiumBanner standings={standings} />}
+      <div className="glass-card rounded-2xl overflow-hidden overflow-x-auto">
+        <table className="w-full text-sm text-left">
+          <thead className="bg-black/40 text-xs uppercase font-gaming text-zinc-500 border-b border-white/10">
+            <tr>
+              <th className="px-6 py-4 font-bold">#</th>
+              <th className="px-6 py-4 font-bold">Player</th>
+              <th className="px-4 py-4 text-center font-bold">P</th>
+              <th className="px-4 py-4 text-center font-bold">W</th>
+              <th className="px-4 py-4 text-center font-bold">D</th>
+              <th className="px-4 py-4 text-center font-bold">L</th>
+              <th className="px-4 py-4 text-center font-bold hidden sm:table-cell">GF</th>
+              <th className="px-4 py-4 text-center font-bold hidden sm:table-cell">GA</th>
+              <th className="px-4 py-4 text-center font-bold">GD</th>
+              <th className="px-6 py-4 text-center font-bold text-white text-base">Pts</th>
+              <th className="px-6 py-4 text-center font-bold hidden md:table-cell">Form</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-white/5">
+            {standings.map((row, index) => (
+              <tr
+                key={row.playerId}
+                className={cn(
+                  "hover:bg-white/[0.02] transition-colors group",
+                  isCompleted && index === 0 && "bg-yellow-500/5",
+                  isCompleted && index === 1 && "bg-zinc-400/5",
+                  isCompleted && index === 2 && "bg-amber-700/5",
+                )}
+              >
+                <td className="px-6 py-4">
+                  {isCompleted && index < 3 ? (
+                    <span className="text-xl">
+                      {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
+                    </span>
+                  ) : (
+                    <span className={cn(
+                      "flex items-center justify-center w-6 h-6 rounded-full font-bold text-xs",
+                      index === 0 ? "bg-yellow-500 text-black" :
+                      index === 1 ? "bg-zinc-300 text-black" :
+                      index === 2 ? "bg-amber-700 text-white" : "text-zinc-500"
+                    )}>
+                      {index + 1}
+                    </span>
+                  )}
+                </td>
+                <td className={cn(
+                  "px-6 py-4 font-bold text-base",
+                  isCompleted && index === 0 ? "text-yellow-400" :
+                  isCompleted && index === 1 ? "text-zinc-200" :
+                  isCompleted && index === 2 ? "text-amber-500" : "text-white"
+                )}>
+                  {row.playerName}
+                  {isCompleted && index === 0 && <span className="ml-2 text-xs font-gaming text-yellow-500/70 tracking-wider">CHAMPION</span>}
+                </td>
+                <td className="px-4 py-4 text-center text-zinc-400">{row.played}</td>
+                <td className="px-4 py-4 text-center text-zinc-300">{row.won}</td>
+                <td className="px-4 py-4 text-center text-zinc-300">{row.drawn}</td>
+                <td className="px-4 py-4 text-center text-zinc-300">{row.lost}</td>
+                <td className="px-4 py-4 text-center text-zinc-400 hidden sm:table-cell">{row.goalsFor}</td>
+                <td className="px-4 py-4 text-center text-zinc-400 hidden sm:table-cell">{row.goalsAgainst}</td>
+                <td className="px-4 py-4 text-center font-bold text-zinc-300">
+                  {row.goalDifference > 0 ? `+${row.goalDifference}` : row.goalDifference}
+                </td>
+                <td className="px-6 py-4 text-center font-gaming text-xl font-bold text-primary">{row.points}</td>
+                <td className="px-6 py-4 hidden md:table-cell">
+                  <div className="flex items-center justify-center gap-1">
+                    {row.form.map((f, i) => (
+                      <div key={i} className={cn("w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold", getFormBadgeColor(f as any))}>
+                        {f}
+                      </div>
+                    ))}
+                    {row.form.length === 0 && <span className="text-zinc-600">-</span>}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
