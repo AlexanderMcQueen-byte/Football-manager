@@ -10,7 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getFormBadgeColor, cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth";
-import { Trophy, CalendarDays, GitMerge, Loader2, Save, UserPlus, Phone, Gamepad2, CheckCircle, XCircle, Clock, ClipboardList, AlertCircle } from "lucide-react";
+import { Trophy, CalendarDays, GitMerge, Loader2, Save, UserPlus, Phone, Gamepad2, CheckCircle, XCircle, Clock, ClipboardList, AlertCircle, Users } from "lucide-react";
 
 export default function TournamentDetail() {
   const [, params] = useRoute("/tournaments/:id");
@@ -114,10 +114,21 @@ export default function TournamentDetail() {
       </div>
 
       <div className="min-h-[400px]">
-        {activeTab === "standings" && <StandingsTab tournamentId={tournamentId} />}
-        {activeTab === "fixtures" && <FixturesTab tournamentId={tournamentId} isAdmin={isAdmin} />}
-        {activeTab === "bracket" && <BracketTab tournamentId={tournamentId} />}
-        {activeTab === "registrations" && isAdmin && <RegistrationsTab tournamentId={tournamentId} />}
+        {/* Show waiting state for fixtures/bracket/standings while tournament is in setup */}
+        {tournament.status === "setup" && activeTab !== "registrations"
+          ? <SetupWaitingTab
+              currentPlayers={tournament.players.length}
+              maxPlayers={tournament.maxPlayers ?? 0}
+              isAdmin={isAdmin}
+              onSwitchToRegistrations={() => setActiveTab("registrations")}
+            />
+          : <>
+              {activeTab === "standings" && <StandingsTab tournamentId={tournamentId} />}
+              {activeTab === "fixtures" && <FixturesTab tournamentId={tournamentId} isAdmin={isAdmin} />}
+              {activeTab === "bracket" && <BracketTab tournamentId={tournamentId} />}
+              {activeTab === "registrations" && isAdmin && <RegistrationsTab tournamentId={tournamentId} />}
+            </>
+        }
       </div>
     </div>
   );
@@ -668,5 +679,87 @@ function StatusBadge({ status }: { status: string }) {
     <span className="badge-draw text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
       <Clock className="w-3 h-3" /> Pending
     </span>
+  );
+}
+
+// ── Setup / Waiting for players ───────────────────────────────────────────────
+
+function SetupWaitingTab({
+  currentPlayers,
+  maxPlayers,
+  isAdmin,
+  onSwitchToRegistrations,
+}: {
+  currentPlayers: number;
+  maxPlayers: number;
+  isAdmin: boolean;
+  onSwitchToRegistrations: () => void;
+}) {
+  const pct = maxPlayers > 0 ? Math.round((currentPlayers / maxPlayers) * 100) : 0;
+  const remaining = Math.max(0, maxPlayers - currentPlayers);
+
+  return (
+    <div className="flex flex-col items-center justify-center py-16 px-4 text-center gap-6">
+      {/* Animated waiting icon */}
+      <div className="relative">
+        <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+          <Clock className="w-10 h-10 text-primary animate-pulse" />
+        </div>
+        <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center">
+          <Users className="w-4 h-4 text-zinc-400" />
+        </div>
+      </div>
+
+      <div className="space-y-1 max-w-sm">
+        <h3 className="font-display font-bold text-white text-xl">Waiting for Players</h3>
+        <p className="text-zinc-400 text-sm">
+          Fixtures will be generated automatically once all <span className="text-primary font-semibold">{maxPlayers} spots</span> are filled.
+        </p>
+      </div>
+
+      {/* Progress */}
+      <div className="w-full max-w-sm space-y-2">
+        <div className="flex justify-between text-xs text-zinc-500 font-semibold">
+          <span>{currentPlayers} approved</span>
+          <span>{remaining} remaining</span>
+        </div>
+        <div className="h-3 bg-white/5 rounded-full overflow-hidden border border-white/5">
+          <div
+            className="h-full progress-fill rounded-full transition-all duration-700"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        <div className="text-center text-xs text-zinc-600 font-gaming">{pct}% filled</div>
+      </div>
+
+      {/* Slots grid */}
+      {maxPlayers <= 16 && (
+        <div className="flex flex-wrap justify-center gap-2 max-w-xs">
+          {Array.from({ length: maxPlayers }).map((_, i) => (
+            <div
+              key={i}
+              className={cn(
+                "w-8 h-8 rounded-lg border flex items-center justify-center text-xs font-gaming font-bold transition-all",
+                i < currentPlayers
+                  ? "bg-primary/20 border-primary/40 text-primary"
+                  : "bg-white/3 border-white/8 text-zinc-700"
+              )}
+            >
+              {i < currentPlayers ? "✓" : i + 1}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {isAdmin && (
+        <button
+          onClick={onSwitchToRegistrations}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary font-semibold text-sm hover:bg-primary/15 transition-all"
+        >
+          <ClipboardList className="w-4 h-4" />
+          Manage Registrations
+        </button>
+      )}
+    </div>
   );
 }

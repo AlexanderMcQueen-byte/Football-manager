@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, pgEnum, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -10,6 +10,7 @@ export const tournamentsTable = pgTable("tournaments", {
   name: text("name").notNull(),
   type: tournamentTypeEnum("type").notNull(),
   status: tournamentStatusEnum("status").notNull().default("active"),
+  maxPlayers: integer("max_players"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

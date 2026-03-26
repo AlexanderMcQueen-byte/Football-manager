@@ -5,10 +5,12 @@ import {
   tournamentsTable,
   playersTable,
   tournamentPlayersTable,
+  fixturesTable,
 } from "@workspace/db/schema";
 import { eq, and } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/requireAdmin";
 import { z } from "zod";
+import { buildFixturesData } from "../lib/generateFixtures";
 
 const router: IRouter = Router();
 
@@ -155,6 +157,42 @@ router.patch("/registrations/:id", requireAdmin, async (req, res) => {
       await db
         .insert(tournamentPlayersTable)
         .values({ tournamentId, playerId: player.id });
+    }
+
+    // Check if the tournament has a player cap and is now full
+    const [tournament] = await db
+      .select()
+      .from(tournamentsTable)
+      .where(eq(tournamentsTable.id, tournamentId))
+      .limit(1);
+
+    if (tournament?.maxPlayers) {
+      const currentPlayers = await db
+        .select({ playerId: tournamentPlayersTable.playerId })
+        .from(tournamentPlayersTable)
+        .where(eq(tournamentPlayersTable.tournamentId, tournamentId));
+
+      if (currentPlayers.length >= tournament.maxPlayers) {
+        // Only generate if fixtures don't already exist
+        const existingFixtures = await db
+          .select({ id: fixturesTable.id })
+          .from(fixturesTable)
+          .where(eq(fixturesTable.tournamentId, tournamentId))
+          .limit(1);
+
+        if (existingFixtures.length === 0) {
+          const playerIds = currentPlayers.map((p) => p.playerId);
+          const fixturesData = buildFixturesData(tournamentId, tournament.type, playerIds);
+          if (fixturesData.length > 0) {
+            await db.insert(fixturesTable).values(fixturesData);
+          }
+          // Promote tournament to active
+          await db
+            .update(tournamentsTable)
+            .set({ status: "active" })
+            .where(eq(tournamentsTable.id, tournamentId));
+        }
+      }
     }
   }
 

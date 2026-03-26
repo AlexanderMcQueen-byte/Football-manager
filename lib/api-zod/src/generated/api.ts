@@ -56,7 +56,8 @@ export const ListTournamentsResponse = zod.array(ListTournamentsResponseItem);
 export const CreateTournamentBody = zod.object({
   name: zod.string(),
   type: zod.enum(["league", "knockout"]),
-  playerIds: zod.array(zod.number()),
+  playerIds: zod.array(zod.number()).optional().default([]),
+  maxPlayers: zod.number().int().min(2).optional().nullable(),
 });
 
 /**
@@ -71,6 +72,7 @@ export const GetTournamentResponse = zod.object({
   name: zod.string(),
   type: zod.enum(["league", "knockout"]),
   status: zod.enum(["setup", "active", "completed"]),
+  maxPlayers: zod.number().nullable().optional(),
   createdAt: zod.date(),
   players: zod.array(
     zod.object({
