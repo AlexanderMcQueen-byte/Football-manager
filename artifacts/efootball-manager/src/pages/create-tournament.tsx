@@ -2,21 +2,22 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { useListPlayers, useCreateTournament } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Trophy, Swords, Users, Info } from "lucide-react";
+import { Trophy, Swords, Users, Info, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/auth";
 
 export default function CreateTournament() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+  const { isAdmin } = useAuth();
   const [name, setName] = useState("");
   const [type, setType] = useState<"league" | "knockout">("league");
   const [selectedPlayers, setSelectedPlayers] = useState<Set<number>>(new Set());
 
   const { data: players, isLoading: playersLoading } = useListPlayers();
-  
+
   const { mutate: create, isPending } = useCreateTournament({
     mutation: {
       onSuccess: (data) => {
@@ -25,14 +26,34 @@ export default function CreateTournament() {
         setLocation(`/tournaments/${data.id}`);
       },
       onError: (err: any) => {
-        toast({ 
-          title: "Failed to create tournament", 
+        toast({
+          title: "Failed to create tournament",
           description: err.message || "Please check your inputs",
-          variant: "destructive" 
+          variant: "destructive"
         });
       }
     }
   });
+
+  if (!isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+        <div className="w-16 h-16 rounded-2xl bg-zinc-800 flex items-center justify-center">
+          <Lock className="w-8 h-8 text-zinc-500" />
+        </div>
+        <div>
+          <h2 className="font-display font-bold text-xl text-white">Admin Access Required</h2>
+          <p className="text-zinc-500 text-sm mt-1">You need to be logged in as admin to create tournaments.</p>
+        </div>
+        <button
+          onClick={() => setLocation("/login")}
+          className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors"
+        >
+          Go to Admin Login
+        </button>
+      </div>
+    );
+  }
 
   const togglePlayer = (id: number) => {
     const newSet = new Set(selectedPlayers);

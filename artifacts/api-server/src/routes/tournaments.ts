@@ -6,6 +6,7 @@ import {
   playersTable,
   fixturesTable,
 } from "@workspace/db/schema";
+import { requireAdmin } from "../middlewares/requireAdmin";
 import { eq, and, inArray, sql } from "drizzle-orm";
 import {
   CreateTournamentBody,
@@ -87,7 +88,7 @@ router.get("/tournaments", async (req, res) => {
   res.json(tournaments);
 });
 
-router.post("/tournaments", async (req, res) => {
+router.post("/tournaments", requireAdmin, async (req, res) => {
   const body = CreateTournamentBody.parse(req.body);
   const { name, type, playerIds } = body;
 
@@ -156,7 +157,7 @@ router.get("/tournaments/:id", async (req, res) => {
   res.json({ ...tournament, players, totalFixtures, completedFixtures });
 });
 
-router.delete("/tournaments/:id", async (req, res) => {
+router.delete("/tournaments/:id", requireAdmin, async (req, res) => {
   const { id } = DeleteTournamentParams.parse({ id: Number(req.params.id) });
   await db.delete(tournamentsTable).where(eq(tournamentsTable.id, id));
   res.status(204).send();

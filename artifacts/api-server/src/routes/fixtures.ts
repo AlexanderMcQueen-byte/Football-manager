@@ -7,6 +7,7 @@ import {
   SubmitResultParams,
   SubmitResultBody,
 } from "@workspace/api-zod";
+import { requireAdmin } from "../middlewares/requireAdmin";
 
 const router: IRouter = Router();
 
@@ -60,7 +61,7 @@ router.get("/fixtures", async (req, res) => {
   res.json(enriched);
 });
 
-router.put("/fixtures/:id/result", async (req, res) => {
+router.put("/fixtures/:id/result", requireAdmin, async (req, res) => {
   const { id } = SubmitResultParams.parse({ id: Number(req.params.id) });
   const body = SubmitResultBody.parse(req.body);
 

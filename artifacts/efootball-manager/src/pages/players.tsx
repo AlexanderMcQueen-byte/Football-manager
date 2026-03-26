@@ -1,12 +1,16 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { useListPlayers, useCreatePlayer, useDeletePlayer } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Users, UserPlus, Trash2, Shield } from "lucide-react";
+import { Users, UserPlus, Trash2, Shield, Lock } from "lucide-react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/auth";
 
 export default function Players() {
+  const { isAdmin } = useAuth();
+  const [, navigate] = useLocation();
   const [newPlayerName, setNewPlayerName] = useState("");
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -33,6 +37,26 @@ export default function Players() {
       }
     }
   });
+
+  if (!isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+        <div className="w-16 h-16 rounded-2xl bg-zinc-800 flex items-center justify-center">
+          <Lock className="w-8 h-8 text-zinc-500" />
+        </div>
+        <div>
+          <h2 className="font-display font-bold text-xl text-white">Admin Access Required</h2>
+          <p className="text-zinc-500 text-sm mt-1">You need to be logged in as admin to manage players.</p>
+        </div>
+        <button
+          onClick={() => navigate("/login")}
+          className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors"
+        >
+          Go to Admin Login
+        </button>
+      </div>
+    );
+  }
 
   const handleAddPlayer = (e: React.FormEvent) => {
     e.preventDefault();

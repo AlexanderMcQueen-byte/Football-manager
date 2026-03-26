@@ -4,9 +4,11 @@ import { format } from "date-fns";
 import { Trophy, Plus, Calendar, Activity, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/auth";
 
 export default function Dashboard() {
   const { data: tournaments, isLoading } = useListTournaments();
+  const { isAdmin } = useAuth();
 
   return (
     <div className="space-y-8 pb-12">
@@ -26,12 +28,14 @@ export default function Dashboard() {
             <h1 className="text-4xl md:text-5xl font-display font-bold text-white drop-shadow-lg">Dashboard</h1>
             <p className="text-zinc-300 mt-1 text-sm">Manage your active tournaments and leagues.</p>
           </div>
-          <Link href="/tournaments/new">
-            <button className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.4)] shrink-0">
-              <Plus className="w-5 h-5" />
-              Create Tournament
-            </button>
-          </Link>
+          {isAdmin && (
+            <Link href="/tournaments/new">
+              <button className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.4)] shrink-0">
+                <Plus className="w-5 h-5" />
+                Create Tournament
+              </button>
+            </Link>
+          )}
         </div>
       </header>
 

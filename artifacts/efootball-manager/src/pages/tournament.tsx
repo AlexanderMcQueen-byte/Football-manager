@@ -9,6 +9,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { getFormBadgeColor, cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/auth";
 import { Trophy, CalendarDays, GitMerge, Loader2, Save } from "lucide-react";
 
 export default function TournamentDetail() {
@@ -16,6 +17,7 @@ export default function TournamentDetail() {
   const tournamentId = parseInt(params?.id || "0", 10);
   
   const [activeTab, setActiveTab] = useState<"standings" | "fixtures" | "bracket">("standings");
+  const { isAdmin } = useAuth();
 
   const { data: tournament, isLoading: isTourneyLoading } = useGetTournament(tournamentId, {
     query: { enabled: !!tournamentId }
@@ -220,7 +222,7 @@ function FixturesTab({ tournamentId }: { tournamentId: number }) {
           </h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {roundFixtures.map(fixture => (
-              <FixtureCard key={fixture.id} fixture={fixture} onSave={(h, a) => saveResult({ id: fixture.id, data: { homeScore: h, awayScore: a } })} />
+              <FixtureCard key={fixture.id} fixture={fixture} isAdmin={isAdmin} onSave={(h, a) => saveResult({ id: fixture.id, data: { homeScore: h, awayScore: a } })} />
             ))}
           </div>
         </div>
@@ -229,7 +231,7 @@ function FixturesTab({ tournamentId }: { tournamentId: number }) {
   );
 }
 
-function FixtureCard({ fixture, onSave }: { fixture: any, onSave: (h: number, a: number) => void }) {
+function FixtureCard({ fixture, isAdmin, onSave }: { fixture: any, isAdmin: boolean, onSave: (h: number, a: number) => void }) {
   const [hScore, setHScore] = useState(fixture.homeScore?.toString() || "");
   const [aScore, setAScore] = useState(fixture.awayScore?.toString() || "");
   const isChanged = hScore !== (fixture.homeScore?.toString() || "") || aScore !== (fixture.awayScore?.toString() || "");
@@ -249,27 +251,41 @@ function FixtureCard({ fixture, onSave }: { fixture: any, onSave: (h: number, a:
           <span className="font-bold text-white sm:text-lg block truncate">{fixture.homePlayerName}</span>
         </div>
 
-        {/* Score Input */}
+        {/* Score — editable for admin, read-only for viewers */}
         <div className="flex items-center gap-2 shrink-0 bg-black/50 p-2 rounded-xl border border-white/5">
-          <input 
-            type="number" 
-            min="0"
-            disabled={tbd}
-            value={hScore}
-            onChange={e => setHScore(e.target.value)}
-            className="w-12 h-12 bg-transparent text-center font-gaming text-2xl font-bold text-white focus:outline-none focus:bg-white/10 rounded-lg hide-arrows"
-            placeholder="-"
-          />
-          <span className="text-zinc-600 font-bold text-sm">VS</span>
-          <input 
-            type="number" 
-            min="0"
-            disabled={tbd}
-            value={aScore}
-            onChange={e => setAScore(e.target.value)}
-            className="w-12 h-12 bg-transparent text-center font-gaming text-2xl font-bold text-white focus:outline-none focus:bg-white/10 rounded-lg hide-arrows"
-            placeholder="-"
-          />
+          {isAdmin ? (
+            <>
+              <input
+                type="number"
+                min="0"
+                disabled={tbd}
+                value={hScore}
+                onChange={e => setHScore(e.target.value)}
+                className="w-12 h-12 bg-transparent text-center font-gaming text-2xl font-bold text-white focus:outline-none focus:bg-white/10 rounded-lg hide-arrows"
+                placeholder="-"
+              />
+              <span className="text-zinc-600 font-bold text-sm">VS</span>
+              <input
+                type="number"
+                min="0"
+                disabled={tbd}
+                value={aScore}
+                onChange={e => setAScore(e.target.value)}
+                className="w-12 h-12 bg-transparent text-center font-gaming text-2xl font-bold text-white focus:outline-none focus:bg-white/10 rounded-lg hide-arrows"
+                placeholder="-"
+              />
+            </>
+          ) : (
+            <>
+              <span className="w-12 h-12 flex items-center justify-center font-gaming text-2xl font-bold text-white">
+                {fixture.played ? fixture.homeScore : <span className="text-zinc-600 text-lg">-</span>}
+              </span>
+              <span className="text-zinc-600 font-bold text-sm">VS</span>
+              <span className="w-12 h-12 flex items-center justify-center font-gaming text-2xl font-bold text-white">
+                {fixture.played ? fixture.awayScore : <span className="text-zinc-600 text-lg">-</span>}
+              </span>
+            </>
+          )}
         </div>
 
         {/* Away */}
@@ -277,23 +293,25 @@ function FixtureCard({ fixture, onSave }: { fixture: any, onSave: (h: number, a:
           <span className="font-bold text-white sm:text-lg block truncate">{fixture.awayPlayerName}</span>
         </div>
 
-        {/* Action */}
-        <div className="w-10 flex justify-end shrink-0">
-          {!tbd && (
-            <button
-              onClick={() => canSave && onSave(parseInt(hScore), parseInt(aScore))}
-              disabled={!canSave || !isChanged}
-              className={cn(
-                "p-2.5 rounded-xl transition-all",
-                canSave && isChanged 
-                  ? "bg-primary text-primary-foreground hover:scale-110 shadow-lg shadow-primary/20" 
-                  : "bg-white/5 text-zinc-500 opacity-50 cursor-not-allowed"
-              )}
-            >
-              <Save className="w-5 h-5" />
-            </button>
-          )}
-        </div>
+        {/* Action — only for admin */}
+        {isAdmin && (
+          <div className="w-10 flex justify-end shrink-0">
+            {!tbd && (
+              <button
+                onClick={() => canSave && onSave(parseInt(hScore), parseInt(aScore))}
+                disabled={!canSave || !isChanged}
+                className={cn(
+                  "p-2.5 rounded-xl transition-all",
+                  canSave && isChanged
+                    ? "bg-primary text-primary-foreground hover:scale-110 shadow-lg shadow-primary/20"
+                    : "bg-white/5 text-zinc-500 opacity-50 cursor-not-allowed"
+                )}
+              >
+                <Save className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        )}
       </div>
       
       <style>{`

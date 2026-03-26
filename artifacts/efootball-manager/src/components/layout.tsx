@@ -1,8 +1,8 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2 } from "lucide-react";
-import { useState } from "react";
+import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2, LogIn, LogOut, ShieldCheck, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/auth";
 
 interface LayoutProps {
   children: ReactNode;
@@ -11,21 +11,27 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isAdmin, isLoading, logout } = useAuth();
 
-  const navItems = [
+  const publicNavItems = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  ];
+
+  const adminNavItems = [
     { href: "/tournaments/new", label: "New Tournament", icon: Trophy },
     { href: "/players", label: "Players", icon: Users },
   ];
+
+  const navItems = isAdmin ? [...publicNavItems, ...adminNavItems] : publicNavItems;
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row relative">
       {/* Background elements */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <img 
-          src={`${import.meta.env.BASE_URL}images/stadium-crowd.png`} 
+        <img
+          src={`${import.meta.env.BASE_URL}images/stadium-crowd.png`}
           className="absolute inset-0 w-full h-full object-cover opacity-10"
-          alt="Background"
+          alt=""
         />
         <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/85 to-background/95" />
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/8 blur-[140px]" />
@@ -38,9 +44,9 @@ export function Layout({ children }: LayoutProps) {
           <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center border border-primary/30">
             <Gamepad2 className="w-5 h-5 text-primary" />
           </div>
-          <span className="font-display font-bold text-xl tracking-tight text-white text-glow">eFOOTBALL</span>
+          <span className="font-display font-bold text-xl tracking-tight text-white">eFOOTBALL</span>
         </div>
-        <button 
+        <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="p-2 text-zinc-400 hover:text-white transition-colors"
         >
@@ -53,11 +59,10 @@ export function Layout({ children }: LayoutProps) {
         "fixed md:sticky top-0 left-0 h-screen w-64 sidebar-bg flex flex-col transition-transform duration-300 z-40 overflow-hidden",
         isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       )}>
-        {/* Pitch stripe texture */}
         <div className="absolute inset-0 pitch-overlay pointer-events-none" />
-        {/* Green glow at top */}
         <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-40 h-40 bg-primary/10 rounded-full blur-[60px] pointer-events-none" />
 
+        {/* Logo */}
         <div className="relative p-6 hidden md:flex items-center gap-3 border-b border-white/5 pb-5">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-emerald-700 flex items-center justify-center shadow-lg shadow-primary/30">
             <Gamepad2 className="w-6 h-6 text-primary-foreground" />
@@ -68,7 +73,25 @@ export function Layout({ children }: LayoutProps) {
           </div>
         </div>
 
-        <nav className="relative flex-1 px-3 py-4 md:py-4 space-y-1">
+        {/* Role badge */}
+        {!isLoading && (
+          <div className="relative px-4 pt-4 pb-2">
+            <div className={cn(
+              "flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium",
+              isAdmin
+                ? "bg-primary/10 border border-primary/20 text-primary"
+                : "bg-white/[0.04] border border-white/8 text-zinc-500"
+            )}>
+              {isAdmin
+                ? <><ShieldCheck className="w-3.5 h-3.5" /><span>Admin Mode</span></>
+                : <><Eye className="w-3.5 h-3.5" /><span>Viewer Mode</span></>
+              }
+            </div>
+          </div>
+        )}
+
+        {/* Nav items */}
+        <nav className="relative flex-1 px-3 py-3 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location === item.href;
@@ -89,9 +112,25 @@ export function Layout({ children }: LayoutProps) {
           })}
         </nav>
 
-        {/* Bottom branding */}
-        <div className="relative p-4 border-t border-white/5">
-          <p className="text-[10px] font-gaming text-zinc-600 tracking-widest uppercase text-center">
+        {/* Login / Logout */}
+        <div className="relative p-3 border-t border-white/5 space-y-1">
+          {isAdmin ? (
+            <button
+              onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent transition-all duration-200 group text-sm font-medium"
+            >
+              <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" />
+              Sign Out
+            </button>
+          ) : (
+            <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+              <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent transition-all duration-200 group cursor-pointer text-sm font-medium">
+                <LogIn className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" />
+                Admin Login
+              </div>
+            </Link>
+          )}
+          <p className="text-[10px] font-gaming text-zinc-700 tracking-widest uppercase text-center pt-1">
             eFootball · Friendly Manager
           </p>
         </div>
@@ -106,7 +145,7 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Mobile overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
