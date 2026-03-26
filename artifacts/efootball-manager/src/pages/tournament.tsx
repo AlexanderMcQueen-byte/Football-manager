@@ -16,7 +16,7 @@ export default function TournamentDetail() {
   const [, params] = useRoute("/tournaments/:id");
   const tournamentId = parseInt(params?.id || "0", 10);
   
-  const [activeTab, setActiveTab] = useState<"standings" | "fixtures" | "bracket" | "registrations">("standings");
+  const [activeTab, setActiveTab] = useState<"standings" | "fixtures" | "bracket" | "registrations" | "players">("standings");
   const { isAdmin } = useAuth();
 
   const { data: tournament, isLoading: isTourneyLoading } = useGetTournament(tournamentId, {
@@ -106,7 +106,7 @@ export default function TournamentDetail() {
       <div className="flex space-x-2 border-b border-white/10 overflow-x-auto">
         {[
           ...(tournament.type === 'league' ? ['standings', 'fixtures'] : ['bracket', 'fixtures']),
-          ...(isAdmin ? ['registrations'] : []),
+          ...(isAdmin ? ['players', 'registrations'] : []),
         ].map((tab) => (
           <button
             key={tab}
@@ -122,6 +122,7 @@ export default function TournamentDetail() {
               {tab === 'standings' && <Trophy className="w-4 h-4" />}
               {tab === 'fixtures' && <CalendarDays className="w-4 h-4" />}
               {tab === 'bracket' && <GitMerge className="w-4 h-4 rotate-90" />}
+              {tab === 'players' && <Users className="w-4 h-4" />}
               {tab === 'registrations' && <ClipboardList className="w-4 h-4" />}
               {tab}
             </div>
@@ -148,6 +149,7 @@ export default function TournamentDetail() {
               {activeTab === "standings" && <StandingsTab tournamentId={tournamentId} isCompleted={tournament.status === "completed"} />}
               {activeTab === "fixtures" && <FixturesTab tournamentId={tournamentId} isAdmin={isAdmin} />}
               {activeTab === "bracket" && <BracketTab tournamentId={tournamentId} />}
+              {activeTab === "players" && isAdmin && <PlayersContactsTab tournamentId={tournamentId} tournamentPlayers={tournament.players} />}
               {activeTab === "registrations" && isAdmin && <RegistrationsTab tournamentId={tournamentId} />}
             </>
         }
@@ -686,6 +688,120 @@ type Registration = {
   status: "pending" | "approved" | "rejected";
   createdAt: string;
 };
+
+// ── Players & Contacts tab (admin-only) ──────────────────────────────────────
+
+function PlayersContactsTab({
+  tournamentId,
+  tournamentPlayers,
+}: {
+  tournamentId: number;
+  tournamentPlayers: Array<{ id: number; name: string }>;
+}) {
+  const { toast } = useToast();
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${BASE}/api/tournaments/${tournamentId}/registrations`, { credentials: "include" });
+        const data = await res.json();
+        setRegistrations(Array.isArray(data) ? data : []);
+      } catch {
+        toast({ title: "Failed to load contact list", variant: "destructive" });
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [tournamentId]);
+
+  if (loading) return <div className="py-12 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
+
+  // Build a map: playerName → approved registration (for WhatsApp lookup)
+  const contactMap: Record<string, string> = {};
+  for (const r of registrations) {
+    if (r.status === "approved") {
+      contactMap[r.efootballUsername.toLowerCase()] = r.whatsappNumber;
+    }
+  }
+
+  // Build per-player rows (tournament players are the source of truth)
+  const rows = tournamentPlayers.map((p) => ({
+    name: p.name,
+    whatsapp: contactMap[p.name.toLowerCase()] ?? null,
+  }));
+
+  // Also include approved registrations not yet linked (edge case)
+  const linkedNames = new Set(tournamentPlayers.map((p) => p.name.toLowerCase()));
+  for (const r of registrations) {
+    if (r.status === "approved" && !linkedNames.has(r.efootballUsername.toLowerCase())) {
+      rows.push({ name: r.efootballUsername, whatsapp: r.whatsappNumber });
+    }
+  }
+
+  if (rows.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+        <Users className="w-10 h-10 text-zinc-700" />
+        <p className="text-zinc-500 text-sm">No confirmed players yet.</p>
+      </div>
+    );
+  }
+
+  function waLink(number: string) {
+    const clean = number.replace(/[\s\-()]/g, "");
+    return `https://wa.me/${clean.startsWith("+") ? clean.slice(1) : clean}`;
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-zinc-500 text-sm">{rows.length} confirmed player{rows.length !== 1 ? "s" : ""}</p>
+        <p className="text-xs text-zinc-700">Tap a number to open WhatsApp</p>
+      </div>
+
+      {rows.map((row, i) => (
+        <div
+          key={row.name}
+          className="glass-card rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Avatar */}
+            <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+              <span className="font-gaming font-bold text-primary text-sm">{i + 1}</span>
+            </div>
+            <div className="min-w-0">
+              <p className="font-bold text-white truncate">{row.name}</p>
+              {row.whatsapp ? (
+                <p className="text-xs text-zinc-500 font-gaming flex items-center gap-1 mt-0.5">
+                  <Phone className="w-3 h-3" />
+                  {row.whatsapp}
+                </p>
+              ) : (
+                <p className="text-xs text-zinc-700 mt-0.5 italic">No contact info (manually added)</p>
+              )}
+            </div>
+          </div>
+
+          {row.whatsapp && (
+            <a
+              href={waLink(row.whatsapp)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#25D366]/10 border border-[#25D366]/20 text-[#25D366] font-semibold text-sm hover:bg-[#25D366]/15 transition-all shrink-0"
+            >
+              <Phone className="w-3.5 h-3.5" />
+              Message
+            </a>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Registrations management tab (admin-only) ─────────────────────────────────
 
 function RegistrationsTab({ tournamentId }: { tournamentId: number }) {
   const { toast } = useToast();
