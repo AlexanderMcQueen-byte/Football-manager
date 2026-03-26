@@ -8,6 +8,7 @@ import {
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getFormBadgeColor, cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import { Trophy, CalendarDays, GitMerge, Loader2, Save } from "lucide-react";
 
 export default function TournamentDetail() {
