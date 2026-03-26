@@ -305,7 +305,7 @@ function FixturesTab({ tournamentId, isAdmin }: { tournamentId: number; isAdmin:
       onSuccess: () => {
         toast({ title: "Result saved" });
         queryClient.invalidateQueries({ queryKey: ["/api/fixtures"] });
-        queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournamentId}`] });
+        queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
         queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournamentId}/standings`] });
       },
       onError: () => toast({ title: "Failed to save result", variant: "destructive" })
