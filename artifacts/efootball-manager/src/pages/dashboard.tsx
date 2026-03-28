@@ -1,25 +1,57 @@
+import { useState, useMemo } from "react";
 import { Link } from "wouter";
 import { useListTournaments } from "@workspace/api-client-react";
 import { format } from "date-fns";
-import { Trophy, Plus, Calendar, Activity, ChevronRight, CheckCircle2, Crown } from "lucide-react";
-import { motion } from "framer-motion";
+import {
+  Trophy, Plus, Calendar, Activity, ChevronRight,
+  CheckCircle2, Crown, Search, X, SlidersHorizontal,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth";
+import { Input } from "@/components/ui/input";
+
+type TypeFilter   = "all" | "league" | "knockout";
+type StatusFilter = "all" | "active" | "setup" | "completed";
 
 export default function Dashboard() {
   const { data: tournaments, isLoading } = useListTournaments();
-  const { isAdmin, isPaid, user, plan } = useAuth();
+  const { isPaid } = useAuth();
 
-  const active = tournaments?.filter((t) => t.status !== "completed") ?? [];
-  const finished = tournaments?.filter((t) => t.status === "completed") ?? [];
+  const [query, setQuery]           = useState("");
+  const [typeF, setTypeF]           = useState<TypeFilter>("all");
+  const [statusF, setStatusF]       = useState<StatusFilter>("all");
+  const [showFilters, setShowFilters] = useState(false);
+
+  const filtered = useMemo(() => {
+    if (!tournaments) return [];
+    const q = query.toLowerCase().trim();
+    return tournaments.filter((t) => {
+      if (q && !t.name.toLowerCase().includes(q)) return false;
+      if (typeF   !== "all" && t.type   !== typeF)   return false;
+      if (statusF !== "all" && t.status !== statusF) return false;
+      return true;
+    });
+  }, [tournaments, query, typeF, statusF]);
+
+  const active   = filtered.filter((t) => t.status !== "completed");
+  const finished = filtered.filter((t) => t.status === "completed");
+
+  const hasFilter = query || typeF !== "all" || statusF !== "all";
+
+  function clearAll() {
+    setQuery("");
+    setTypeF("all");
+    setStatusF("all");
+  }
 
   return (
-    <div className="space-y-10 pb-12">
-      {/* Hero Banner */}
+    <div className="space-y-8 pb-12">
+      {/* ── Hero Banner ──────────────────────────────────────────────────── */}
       <header className="relative rounded-3xl overflow-hidden min-h-[220px] flex items-end">
         <img
           src={`${import.meta.env.BASE_URL}images/stadium-hero.png`}
-          alt="eFootball Stadium"
+          alt="Football Stadium"
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
@@ -49,6 +81,114 @@ export default function Dashboard() {
         </div>
       </header>
 
+      {/* ── Search & Filters ─────────────────────────────────────────────── */}
+      {!isLoading && !!tournaments?.length && (
+        <div className="space-y-3">
+          {/* Search row */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search tournaments…"
+                className="pl-10 pr-10 bg-zinc-900/60 border-white/10 text-white placeholder:text-zinc-600 h-11"
+              />
+              {query && (
+                <button
+                  onClick={() => setQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={cn(
+                "flex items-center gap-2 px-4 h-11 rounded-xl border text-sm font-medium transition-all",
+                showFilters || (typeF !== "all" || statusF !== "all")
+                  ? "bg-primary/10 border-primary/30 text-primary"
+                  : "bg-zinc-900/60 border-white/10 text-zinc-400 hover:text-white hover:border-white/20"
+              )}
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              Filters
+              {(typeF !== "all" || statusF !== "all") && (
+                <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+                  {(typeF !== "all" ? 1 : 0) + (statusF !== "all" ? 1 : 0)}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Filter pills */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="glass-card rounded-xl border border-white/8 p-4 space-y-3">
+                  {/* Type */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-zinc-500 text-xs font-semibold uppercase tracking-wider w-14 shrink-0">Type</span>
+                    <div className="flex gap-2 flex-wrap">
+                      {(["all", "league", "knockout"] as TypeFilter[]).map((f) => (
+                        <button key={f} onClick={() => setTypeF(f)}
+                          className={cn(
+                            "px-3 py-1.5 rounded-lg text-xs border font-medium capitalize transition-all",
+                            typeF === f
+                              ? "bg-primary/10 border-primary/30 text-primary"
+                              : "bg-zinc-900/40 border-white/8 text-zinc-400 hover:text-white hover:border-white/20"
+                          )}>
+                          {f === "all" ? "All Types" : f}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Status */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-zinc-500 text-xs font-semibold uppercase tracking-wider w-14 shrink-0">Status</span>
+                    <div className="flex gap-2 flex-wrap">
+                      {(["all", "active", "setup", "completed"] as StatusFilter[]).map((f) => (
+                        <button key={f} onClick={() => setStatusF(f)}
+                          className={cn(
+                            "px-3 py-1.5 rounded-lg text-xs border font-medium capitalize transition-all",
+                            statusF === f
+                              ? "bg-primary/10 border-primary/30 text-primary"
+                              : "bg-zinc-900/40 border-white/8 text-zinc-400 hover:text-white hover:border-white/20"
+                          )}>
+                          {f === "all" ? "All Statuses" : f}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Active filter summary + clear */}
+          {hasFilter && (
+            <div className="flex items-center justify-between">
+              <p className="text-zinc-500 text-sm">
+                Showing <span className="text-white font-semibold">{filtered.length}</span> of{" "}
+                <span className="text-white font-semibold">{tournaments?.length ?? 0}</span> tournaments
+              </p>
+              <button onClick={clearAll} className="text-xs text-zinc-500 hover:text-primary transition-colors flex items-center gap-1">
+                <X className="w-3 h-3" />
+                Clear all
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Content ──────────────────────────────────────────────────────── */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
@@ -70,36 +210,44 @@ export default function Dashboard() {
             </button>
           </Link>
         </div>
+      ) : filtered.length === 0 ? (
+        /* No search results */
+        <div className="glass-card rounded-2xl p-12 text-center border border-white/8">
+          <Search className="w-10 h-10 text-zinc-600 mx-auto mb-3" />
+          <h3 className="font-display font-bold text-white text-lg mb-1">No tournaments found</h3>
+          <p className="text-zinc-500 text-sm mb-4">Try a different name or adjust your filters.</p>
+          <button onClick={clearAll} className="text-sm text-primary hover:underline">Clear search & filters</button>
+        </div>
       ) : (
         <>
-          {/* ── Active / Setup Tournaments ─────────────────────────────── */}
+          {/* Active / Setup */}
           {active.length > 0 && (
             <section className="space-y-4">
               <div className="flex items-center gap-3">
                 <Activity className="w-5 h-5 text-primary" />
                 <h2 className="font-display font-bold text-white text-lg">Active Tournaments</h2>
-                <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-gaming font-bold border border-primary/20">{active.length}</span>
+                <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-gaming font-bold border border-primary/20">
+                  {active.length}
+                </span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {active.map((tournament, idx) => (
-                  <TournamentCard key={tournament.id} tournament={tournament} idx={idx} />
-                ))}
+                {active.map((t, idx) => <TournamentCard key={t.id} tournament={t} idx={idx} />)}
               </div>
             </section>
           )}
 
-          {/* ── Finished Tournaments ───────────────────────────────────── */}
+          {/* Finished */}
           {finished.length > 0 && (
             <section className="space-y-4">
               <div className="flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-yellow-500" />
                 <h2 className="font-display font-bold text-white text-lg">Finished Tournaments</h2>
-                <span className="px-2 py-0.5 rounded-full bg-yellow-500/10 text-yellow-500 text-xs font-gaming font-bold border border-yellow-500/20">{finished.length}</span>
+                <span className="px-2 py-0.5 rounded-full bg-yellow-500/10 text-yellow-500 text-xs font-gaming font-bold border border-yellow-500/20">
+                  {finished.length}
+                </span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {finished.map((tournament, idx) => (
-                  <TournamentCard key={tournament.id} tournament={tournament} idx={idx} finished />
-                ))}
+                {finished.map((t, idx) => <TournamentCard key={t.id} tournament={t} idx={idx} finished />)}
               </div>
             </section>
           )}
@@ -118,7 +266,7 @@ function TournamentCard({ tournament, idx, finished = false }: {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: idx * 0.08 }}
+      transition={{ delay: idx * 0.06 }}
     >
       <Link href={`/tournaments/${tournament.id}`}>
         <div className={cn(
@@ -132,25 +280,25 @@ function TournamentCard({ tournament, idx, finished = false }: {
             finished ? "bg-yellow-500/5 group-hover:bg-yellow-500/10" : "bg-primary/5 group-hover:bg-primary/10"
           )} />
 
-          {finished && (
-            <div className="absolute top-3 right-3 text-lg">🏆</div>
-          )}
+          {finished && <div className="absolute top-3 right-3 text-lg">🏆</div>}
 
           <div className="flex justify-between items-start mb-4 relative z-10">
             <div className={cn(
               "px-3 py-1 text-xs font-semibold rounded-full uppercase tracking-wider",
-              tournament.type === 'league' ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+              tournament.type === "league"
+                ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                : "bg-purple-500/20 text-purple-400 border border-purple-500/30"
             )}>
               {tournament.type}
             </div>
             <div className={cn(
               "flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md",
-              tournament.status === 'active'    ? "bg-green-500/10 text-green-400" :
-              tournament.status === 'completed' ? "bg-yellow-500/10 text-yellow-400" :
-              "bg-zinc-500/10 text-zinc-400"
+              tournament.status === "active"    ? "bg-green-500/10 text-green-400" :
+              tournament.status === "completed" ? "bg-yellow-500/10 text-yellow-400" :
+                                                  "bg-zinc-500/10 text-zinc-400"
             )}>
               <Activity className="w-3 h-3" />
-              {tournament.status === 'completed' ? 'Finished' : tournament.status.charAt(0).toUpperCase() + tournament.status.slice(1)}
+              {tournament.status === "completed" ? "Finished" : tournament.status.charAt(0).toUpperCase() + tournament.status.slice(1)}
             </div>
           </div>
 
