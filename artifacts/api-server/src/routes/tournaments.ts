@@ -18,7 +18,7 @@ import {
   PatchTournamentParams,
   PatchTournamentBody,
 } from "@workspace/api-zod";
-import { buildFixturesData } from "../lib/generateFixtures";
+import { buildFixturesData, type TournamentFormat } from "../lib/generateFixtures";
 
 const FREE_PLAN_MAX_TOURNAMENTS = 3;
 const FREE_PLAN_MAX_PLAYERS = 8;
@@ -74,7 +74,7 @@ router.post("/tournaments", requireCreator, async (req, res) => {
       playerIds.map((playerId) => ({ tournamentId: tournament.id, playerId }))
     );
 
-    const fixturesData = buildFixturesData(tournament.id, type, playerIds);
+    const fixturesData = buildFixturesData(tournament.id, type as TournamentFormat, playerIds);
     if (fixturesData.length > 0) {
       await db.insert(fixturesTable).values(fixturesData);
     }

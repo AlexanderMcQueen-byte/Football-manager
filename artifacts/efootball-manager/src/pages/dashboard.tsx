@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth";
 import { Input } from "@/components/ui/input";
 
-type TypeFilter   = "all" | "league" | "knockout";
+type TypeFilter   = "all" | "league" | "knockout" | "cup" | "groups_knockout" | "double_elimination" | "swiss";
 type StatusFilter = "all" | "active" | "setup" | "completed";
 
 export default function Dashboard() {
@@ -136,7 +136,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-3">
                     <span className="text-zinc-500 text-xs font-semibold uppercase tracking-wider w-14 shrink-0">Type</span>
                     <div className="flex gap-2 flex-wrap">
-                      {(["all", "league", "knockout"] as TypeFilter[]).map((f) => (
+                      {(["all", "league", "knockout", "cup", "groups_knockout", "double_elimination", "swiss"] as TypeFilter[]).map((f) => (
                         <button key={f} onClick={() => setTypeF(f)}
                           className={cn(
                             "px-3 py-1.5 rounded-lg text-xs border font-medium capitalize transition-all",
@@ -284,12 +284,19 @@ function TournamentCard({ tournament, idx, finished = false }: {
 
           <div className="flex justify-between items-start mb-4 relative z-10">
             <div className={cn(
-              "px-3 py-1 text-xs font-semibold rounded-full uppercase tracking-wider",
-              tournament.type === "league"
-                ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                : "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+              "px-3 py-1 text-xs font-semibold rounded-full uppercase tracking-wider whitespace-nowrap",
+              tournament.type === "league"            ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" :
+              tournament.type === "knockout"          ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" :
+              tournament.type === "cup"               ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" :
+              tournament.type === "groups_knockout"   ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" :
+              tournament.type === "double_elimination"? "bg-rose-500/20 text-rose-400 border border-rose-500/30" :
+              tournament.type === "swiss"             ? "bg-teal-500/20 text-teal-400 border border-teal-500/30" :
+                                                        "bg-zinc-500/20 text-zinc-400 border border-zinc-500/30"
             )}>
-              {tournament.type}
+              {tournament.type === "groups_knockout"    ? "Groups+KO"
+               : tournament.type === "double_elimination" ? "Double Elim"
+               : tournament.type === "swiss"              ? "Swiss"
+               : tournament.type}
             </div>
             <div className={cn(
               "flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md",

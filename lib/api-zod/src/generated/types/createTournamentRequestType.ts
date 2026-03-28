@@ -12,4 +12,8 @@ export type CreateTournamentRequestType =
 export const CreateTournamentRequestType = {
   league: "league",
   knockout: "knockout",
+  cup: "cup",
+  groups_knockout: "groups_knockout",
+  double_elimination: "double_elimination",
+  swiss: "swiss",
 } as const;

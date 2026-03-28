@@ -44,7 +44,7 @@ export const DeletePlayerParams = zod.object({
 export const ListTournamentsResponseItem = zod.object({
   id: zod.number(),
   name: zod.string(),
-  type: zod.enum(["league", "knockout"]),
+  type: zod.enum(["league", "knockout", "cup", "groups_knockout", "double_elimination", "swiss"]),
   status: zod.enum(["setup", "active", "completed"]),
   scheduledAt: zod.coerce.date().nullable().optional(),
   createdAt: zod.date(),
@@ -56,7 +56,7 @@ export const ListTournamentsResponse = zod.array(ListTournamentsResponseItem);
  */
 export const CreateTournamentBody = zod.object({
   name: zod.string(),
-  type: zod.enum(["league", "knockout"]),
+  type: zod.enum(["league", "knockout", "cup", "groups_knockout", "double_elimination", "swiss"]),
   playerIds: zod.array(zod.number()).optional().default([]),
   maxPlayers: zod.number().int().min(2).optional().nullable(),
 });
@@ -80,7 +80,7 @@ export const PatchTournamentBody = zod.object({
 export const GetTournamentResponse = zod.object({
   id: zod.number(),
   name: zod.string(),
-  type: zod.enum(["league", "knockout"]),
+  type: zod.enum(["league", "knockout", "cup", "groups_knockout", "double_elimination", "swiss"]),
   status: zod.enum(["setup", "active", "completed"]),
   maxPlayers: zod.number().nullable().optional(),
   scheduledAt: zod.coerce.date().nullable().optional(),

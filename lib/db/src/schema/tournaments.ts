@@ -2,7 +2,14 @@ import { pgTable, serial, text, timestamp, pgEnum, integer } from "drizzle-orm/p
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-export const tournamentTypeEnum = pgEnum("tournament_type", ["league", "knockout"]);
+export const tournamentTypeEnum = pgEnum("tournament_type", [
+  "league",
+  "knockout",
+  "cup",
+  "groups_knockout",
+  "double_elimination",
+  "swiss",
+]);
 export const tournamentStatusEnum = pgEnum("tournament_status", ["setup", "active", "completed"]);
 
 export const tournamentsTable = pgTable("tournaments", {
