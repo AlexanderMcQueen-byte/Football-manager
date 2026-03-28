@@ -6,6 +6,7 @@ import playersRouter from "./players";
 import tournamentsRouter from "./tournaments";
 import fixturesRouter from "./fixtures";
 import registrationsRouter from "./registrations";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(playersRouter);
 router.use(tournamentsRouter);
 router.use(fixturesRouter);
 router.use(registrationsRouter);
+router.use(adminRouter);
 
 export default router;

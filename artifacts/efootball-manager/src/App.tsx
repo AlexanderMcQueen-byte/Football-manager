@@ -12,6 +12,7 @@ import TournamentDetail from "@/pages/tournament";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Pricing from "@/pages/pricing";
+import AdminUsers from "@/pages/admin-users";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -36,6 +37,7 @@ function Router() {
             <Route path="/players" component={Players} />
             <Route path="/tournaments/new" component={CreateTournament} />
             <Route path="/tournaments/:id" component={TournamentDetail} />
+            <Route path="/admin/users" component={AdminUsers} />
             <Route component={NotFound} />
           </Switch>
         </Layout>

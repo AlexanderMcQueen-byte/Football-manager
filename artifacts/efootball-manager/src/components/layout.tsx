@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2, LogIn, LogOut, ShieldCheck, Eye, Crown, User, Zap } from "lucide-react";
+import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2, LogIn, LogOut, ShieldCheck, Eye, Crown, User, Zap, UserCog } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth";
 
@@ -141,6 +141,22 @@ export function Layout({ children }: LayoutProps) {
                 <Crown className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/pricing" && "text-primary")} />
                 <span className="font-medium text-sm">Pricing</span>
                 {location === "/pricing" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(145_80%_42%)]" />}
+              </div>
+            </Link>
+          )}
+
+          {/* Admin-only: User Management */}
+          {isAdmin && (
+            <Link href="/admin/users" onClick={() => setIsMobileMenuOpen(false)}>
+              <div className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 group",
+                location === "/admin/users"
+                  ? "nav-active"
+                  : "text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent"
+              )}>
+                <UserCog className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/admin/users" && "text-primary")} />
+                <span className="font-medium text-sm">User Management</span>
+                {location === "/admin/users" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(145_80%_42%)]" />}
               </div>
             </Link>
           )}
