@@ -1,9 +1,10 @@
 import { Router, type IRouter } from "express";
 import bcrypt from "bcryptjs";
 import { db } from "@workspace/db";
-import { usersTable } from "@workspace/db/schema";
-import { eq } from "drizzle-orm";
+import { usersTable, emailVerificationsTable } from "@workspace/db/schema";
+import { eq, and, gt } from "drizzle-orm";
 import dns from "dns/promises";
+import { getUncachableResendClient } from "../lib/resend";
 
 const router: IRouter = Router();
 
@@ -27,8 +28,12 @@ async function isEmailDomainLive(email: string): Promise<boolean> {
   }
 }
 
-// ─── Register ────────────────────────────────────────────────────────────────
-router.post("/users/register", async (req, res) => {
+function generateCode(): string {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+// ─── Step 1: Send verification code ──────────────────────────────────────────
+router.post("/users/send-verification", async (req, res) => {
   const { email, password, displayName } = req.body ?? {};
 
   if (!email || !password || !displayName) {
@@ -51,19 +56,112 @@ router.post("/users/register", async (req, res) => {
     return;
   }
 
+  // Check not already registered
   const existing = await db.select().from(usersTable).where(eq(usersTable.email, email.toLowerCase())).limit(1);
   if (existing.length > 0) {
     res.status(409).json({ error: "Email already registered" });
     return;
   }
 
+  // Hash password now so we store it safely during the verification window
   const passwordHash = await bcrypt.hash(password, 10);
-  const [user] = await db.insert(usersTable).values({
+  const code = generateCode();
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+  // Delete any existing pending verifications for this email
+  await db.delete(emailVerificationsTable).where(eq(emailVerificationsTable.email, email.toLowerCase()));
+
+  // Store pending verification
+  await db.insert(emailVerificationsTable).values({
     email: email.toLowerCase(),
-    passwordHash,
+    code,
     displayName,
-    plan: "free",
-  }).returning();
+    passwordHash,
+    expiresAt,
+  });
+
+  // Send code via Resend
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+    await client.emails.send({
+      from: fromEmail || "Football Manager <onboarding@resend.dev>",
+      to: [email.toLowerCase()],
+      subject: "Your Football Manager verification code",
+      html: `
+        <div style="font-family:sans-serif;max-width:480px;margin:auto;background:#0d1117;color:#e6edf3;padding:32px;border-radius:12px">
+          <h1 style="font-size:24px;font-weight:700;margin:0 0 8px">Football Manager</h1>
+          <p style="color:#8b949e;margin:0 0 24px">Your verification code</p>
+          <div style="background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;text-align:center;margin-bottom:24px">
+            <span style="font-size:40px;font-weight:700;letter-spacing:12px;color:#3fb950">${code}</span>
+          </div>
+          <p style="color:#8b949e;font-size:14px">This code expires in <strong style="color:#e6edf3">10 minutes</strong>. If you didn't request this, you can ignore this email.</p>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error("Resend error:", err);
+    res.status(500).json({ error: "Failed to send verification email. Please try again." });
+    return;
+  }
+
+  res.json({ ok: true, message: "Verification code sent" });
+});
+
+// ─── Step 2: Verify code & create account ────────────────────────────────────
+router.post("/users/verify-email", async (req, res) => {
+  const { email, code } = req.body ?? {};
+
+  if (!email || !code) {
+    res.status(400).json({ error: "email and code are required" });
+    return;
+  }
+
+  const now = new Date();
+  const [pending] = await db
+    .select()
+    .from(emailVerificationsTable)
+    .where(
+      and(
+        eq(emailVerificationsTable.email, email.toLowerCase()),
+        eq(emailVerificationsTable.used, false),
+        gt(emailVerificationsTable.expiresAt, now)
+      )
+    )
+    .limit(1);
+
+  if (!pending) {
+    res.status(400).json({ error: "Invalid or expired code. Please request a new one." });
+    return;
+  }
+
+  if (pending.code !== String(code).trim()) {
+    res.status(400).json({ error: "Incorrect code. Please check your email and try again." });
+    return;
+  }
+
+  // Mark as used
+  await db
+    .update(emailVerificationsTable)
+    .set({ used: true })
+    .where(eq(emailVerificationsTable.id, pending.id));
+
+  // Check email not already taken (race condition guard)
+  const existing = await db.select().from(usersTable).where(eq(usersTable.email, email.toLowerCase())).limit(1);
+  if (existing.length > 0) {
+    res.status(409).json({ error: "Email already registered" });
+    return;
+  }
+
+  // Create the account
+  const [user] = await db
+    .insert(usersTable)
+    .values({
+      email: email.toLowerCase(),
+      passwordHash: pending.passwordHash,
+      displayName: pending.displayName,
+      plan: "free",
+    })
+    .returning();
 
   req.session.userId = user.id;
   req.session.save((err) => {
@@ -120,7 +218,7 @@ router.post("/users/logout", (req, res) => {
   req.session.save(() => res.json({ ok: true }));
 });
 
-// ─── Upgrade plan (mock — no real payment yet) ────────────────────────────────
+// ─── Upgrade plan ─────────────────────────────────────────────────────────────
 router.post("/users/upgrade", async (req, res) => {
   if (!req.session.userId) {
     res.status(401).json({ error: "Not authenticated" });
