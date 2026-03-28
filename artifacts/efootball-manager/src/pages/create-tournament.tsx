@@ -141,7 +141,7 @@ export default function CreateTournament() {
     );
   }
 
-  const def = FORMATS.find(f => f.id === format)!;
+  const def = FORMATS.find(f => f.id === format) ?? FORMATS[0];
   const validSizes = def.sizes ?? null;
   const isKnockoutStyle = !!validSizes;
   const isSizeValid = !isKnockoutStyle || validSizes!.includes(maxPlayers);
@@ -347,8 +347,15 @@ export default function CreateTournament() {
                   <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                 </div>
               ) : !players?.length ? (
-                <div className="text-center py-8 text-zinc-500 text-sm">
-                  No players yet. Go to the Players page to add some first.
+                <div className="text-center py-10 space-y-3">
+                  <p className="text-zinc-500 text-sm">No players yet — add some before using Manual mode.</p>
+                  <button
+                    type="button"
+                    onClick={() => setLocation("/players")}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 text-primary text-sm font-medium hover:bg-primary/15 transition-colors"
+                  >
+                    <Users className="w-4 h-4" /> Go to Players page
+                  </button>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">

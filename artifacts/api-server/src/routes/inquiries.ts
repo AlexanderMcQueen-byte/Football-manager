@@ -2,16 +2,9 @@ import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { inquiriesTable } from "@workspace/db/schema";
 import { eq, desc } from "drizzle-orm";
+import { requireAdmin } from "../middlewares/requireAdmin";
 
 const router: IRouter = Router();
-
-function requireAdmin(req: any, res: any, next: any) {
-  if (req.session?.role !== "admin") {
-    res.status(403).json({ error: "Admin access required" });
-    return;
-  }
-  next();
-}
 
 // ─── Submit inquiry (anyone) ──────────────────────────────────────────────────
 router.post("/inquiries", async (req, res) => {

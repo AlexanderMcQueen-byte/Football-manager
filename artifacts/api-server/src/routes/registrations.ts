@@ -10,7 +10,7 @@ import {
 import { eq, and, count } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/requireAdmin";
 import { z } from "zod";
-import { buildFixturesData } from "../lib/generateFixtures";
+import { buildFixturesData, type TournamentFormat } from "../lib/generateFixtures";
 
 const router: IRouter = Router();
 
@@ -217,7 +217,7 @@ router.patch("/registrations/:id", requireAdmin, async (req, res) => {
 
         if (existingFixtures.length === 0) {
           const playerIds = currentPlayers.map((p) => p.playerId);
-          const fixturesData = buildFixturesData(tournamentId, tournament.type, playerIds);
+          const fixturesData = buildFixturesData(tournamentId, tournament.type as TournamentFormat, playerIds);
           if (fixturesData.length > 0) {
             await db.insert(fixturesTable).values(fixturesData);
           }

@@ -1,59 +1,126 @@
-# Workspace
+# Football Manager — Friendly Tournament App
 
 ## Overview
 
-pnpm workspace monorepo using TypeScript. This is an **eFootball Tournament Manager** web app for organizing friendly match tournaments.
+A full-stack **Football Tournament Manager** web app for organizing friendly eFootball/FIFA match tournaments. Built as a pnpm monorepo with a React frontend and an Express API backend.
 
 ## Stack
 
-- **Monorepo tool**: pnpm workspaces
-- **Node.js version**: 24
-- **Package manager**: pnpm
-- **TypeScript version**: 5.9
-- **API framework**: Express 5
-- **Database**: PostgreSQL + Drizzle ORM
-- **Validation**: Zod (`zod/v4`), `drizzle-zod`
-- **API codegen**: Orval (from OpenAPI spec)
-- **Build**: esbuild (CJS bundle)
-- **Frontend**: React + Vite, TailwindCSS, shadcn/ui, React Query, wouter
+| Layer | Technology |
+|---|---|
+| Monorepo | pnpm workspaces |
+| Runtime | Node.js 24 |
+| Language | TypeScript 5.9 |
+| API | Express 5 |
+| Database | PostgreSQL + Drizzle ORM |
+| Validation | Zod (v4), drizzle-zod |
+| API client | Orval codegen (OpenAPI → React Query hooks + Zod schemas) |
+| Frontend | React + Vite, TailwindCSS, shadcn/ui, wouter, framer-motion |
+| Email | Resend (via Replit integration) |
 
-## Application Features
-
-- **League tournaments**: Double round-robin fixture generation, standings table with points/GD/GF/form
-- **Knockout tournaments**: 8-player bracket (QF/SF/F), 4-player (SF/F), or 2-player (F)
-- **Players**: Global player roster management
-- **Match results**: Score entry that auto-updates standings
-- **Standings**: Points (W=3,D=1,L=0), GD, GF, form badges (last 5)
-
-## Structure
+## Project Structure
 
 ```text
-artifacts-monorepo/
 ├── artifacts/
-│   ├── api-server/         # Express API server
-│   └── efootball-manager/  # React + Vite frontend (served at /)
+│   ├── api-server/          # Express REST API (port from $PORT env)
+│   └── efootball-manager/   # React + Vite SPA (served at /)
 ├── lib/
-│   ├── api-spec/           # OpenAPI spec + Orval codegen config
-│   ├── api-client-react/   # Generated React Query hooks
-│   ├── api-zod/            # Generated Zod schemas from OpenAPI
-│   └── db/                 # Drizzle ORM schema + DB connection
-├── scripts/                # Utility scripts
-├── pnpm-workspace.yaml
-├── tsconfig.base.json
-├── tsconfig.json
-└── package.json
+│   ├── api-spec/            # OpenAPI spec + Orval codegen config
+│   ├── api-client-react/    # Generated React Query hooks
+│   ├── api-zod/             # Generated Zod schemas (manually extended for new types)
+│   └── db/                  # Drizzle ORM schema + PostgreSQL connection
+└── scripts/
 ```
 
-## Database Schema
+## Features Implemented
 
-- `players` — global player pool
-- `tournaments` — league or knockout tournaments
-- `tournament_players` — which players are in each tournament
-- `fixtures` — auto-generated match fixtures (includes knockoutPhase for bracket)
+### Tournament Formats (6 total)
+- **League** — Full round-robin (home & away), points table
+- **Knockout** — Single elimination bracket (2 / 4 / 8 / 16 players)
+- **Cup** — Two-legged knockout (home + away each round)
+- **Groups + Knockout** — Group stage then knockout (8 or 16 players, World Cup style)
+- **Double Elimination** — Winners + losers bracket, 2 losses to be out
+- **Swiss System** — No elimination, paired by record each round
+
+### Tournament Management
+- Create via registration (public sign-up link with WhatsApp + game username) or manual player selection
+- Auto bracket/fixture generation on tournament creation
+- Match result entry with live standings (W=3, D=1, L=0, GD, GF, form badges)
+- Knockout bracket visual display
+- Winner podium display on completion
+- Tournament scheduling (date picker)
+- Search and filter on dashboard (by name, type, status)
+
+### User System
+- Account creation with **email verification** (6-digit OTP via Resend)
+- MX record validation before OTP send
+- Sessions with `express-session`
+- Plan tiers: `free`, `monthly` ($2/mo), `yearly` ($7/yr), `lifetime` ($15)
+- **Pricing page** with "Request Upgrade" flow (pre-filled mailto to admin)
+- Post-signup rating modal (5 stars + comment, stored in `ratings` table)
+
+### Admin Panel
+- Login: username `admin`, password from `ADMIN_PASSWORD` env secret
+- **User Management** (`/admin/users`) — view all accounts, change plan instantly
+- **Inquiries** (`/admin/inquiries`) — view/search/filter contact submissions, add notes, mark resolved
+- **Tournament management** — edit name, player cap, scheduled date; delete tournaments
+- **Registration approvals** — approve/reject player registrations; auto-generates fixtures when cap is reached
+
+### Contact / Inquiry System
+- `/contact` page visible to all users (name, email, subject pills, message)
+- Submissions stored in `inquiries` table with status tracking
+
+### UI / Design
+- Dark navy theme (`#080D17`), electric green (`#15C55A`)
+- Fonts: Rajdhani (gaming headings), Outfit (body)
+- Sidebar navigation with role-aware links (admin sees User Management + Inquiries)
+- Responsive layout (mobile + desktop)
+
+## Database Tables
+
+| Table | Purpose |
+|---|---|
+| `players` | Global player pool |
+| `tournaments` | All tournaments (type enum: league/knockout/cup/groups_knockout/double_elimination/swiss) |
+| `tournament_players` | Junction: which players are in each tournament |
+| `fixtures` | Auto-generated match fixtures (round, knockoutPhase) |
+| `tournament_registrations` | Public sign-up submissions (pending/approved/rejected) |
+| `users` | User accounts (username, email, plan, emailVerified) |
+| `email_verifications` | OTP codes for email verification |
+| `ratings` | Post-signup star ratings + comments |
+| `inquiries` | Contact form submissions (open/resolved) |
+
+## Environment Secrets Required
+
+| Secret | Purpose |
+|---|---|
+| `SESSION_SECRET` | Express session signing key |
+| `ADMIN_PASSWORD` | Admin login password |
+
+Resend integration is configured via Replit Connectors for email delivery.
 
 ## Key Commands
 
-- `pnpm --filter @workspace/api-server run dev` — run the API dev server
-- `pnpm --filter @workspace/efootball-manager run dev` — run the frontend
-- `pnpm --filter @workspace/db run push` — push DB schema changes
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API client
+```bash
+# Development
+pnpm --filter @workspace/api-server run dev
+pnpm --filter @workspace/efootball-manager run dev
+
+# Database
+pnpm --filter @workspace/db run push         # sync schema
+pnpm --filter @workspace/db run push-force   # force sync (new enum values etc.)
+
+# API client codegen (run after editing OpenAPI spec)
+pnpm --filter @workspace/api-spec run codegen
+```
+
+## Admin Credentials
+
+- **Username**: `admin`
+- **Password**: value of `ADMIN_PASSWORD` env secret (fallback: `efootball2026` for dev only)
+
+## Notes
+
+- The `lib/api-zod/src/generated/` types are orval-generated but have been manually extended to support the 6 tournament format enum values (orval only knows about the initial 2).
+- All API routes use `credentials: 'include'` on the client side for session cookies.
+- Free users are blocked from creating tournaments by the `requireCreator` middleware which returns `403 UPGRADE_REQUIRED`.
