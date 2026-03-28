@@ -6,3 +6,4 @@ export * from "./tournament_registrations";
 export * from "./users";
 export * from "./email_verifications";
 export * from "./ratings";
+export * from "./inquiries";

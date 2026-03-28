@@ -13,6 +13,8 @@ import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Pricing from "@/pages/pricing";
 import AdminUsers from "@/pages/admin-users";
+import AdminInquiries from "@/pages/admin-inquiries";
+import Contact from "@/pages/contact";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -38,6 +40,8 @@ function Router() {
             <Route path="/tournaments/new" component={CreateTournament} />
             <Route path="/tournaments/:id" component={TournamentDetail} />
             <Route path="/admin/users" component={AdminUsers} />
+            <Route path="/admin/inquiries" component={AdminInquiries} />
+            <Route path="/contact" component={Contact} />
             <Route component={NotFound} />
           </Switch>
         </Layout>
