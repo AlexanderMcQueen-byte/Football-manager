@@ -1,0 +1,6 @@
+name = "football-manager-app"
+compatibility_date = "2025-03-28"
+
+[assets]
+directory = "./artifacts/efootball-manager/dist/public"
+not_found_handling = "single-page-application"
