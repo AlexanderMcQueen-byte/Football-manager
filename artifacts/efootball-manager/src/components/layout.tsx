@@ -30,7 +30,7 @@ export function Layout({ children }: LayoutProps) {
     if (plan === "yearly") return { icon: Crown, label: "Pro Yearly", color: "text-primary bg-primary/10 border-primary/20" };
     if (plan === "monthly") return { icon: Zap, label: "Pro Monthly", color: "text-blue-400 bg-blue-900/10 border-blue-500/20" };
     if (user) return { icon: User, label: "Free Plan", color: "text-zinc-500 bg-white/[0.04] border-white/8" };
-    return { icon: Eye, label: "Viewer", color: "text-zinc-500 bg-white/[0.04] border-white/8" };
+    return { icon: Eye, label: "Live", color: "text-zinc-500 bg-white/[0.04] border-white/8" };
   }
 
   const badge = planBadge();
