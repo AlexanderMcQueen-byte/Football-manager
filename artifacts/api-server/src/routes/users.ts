@@ -3,12 +3,27 @@ import bcrypt from "bcryptjs";
 import { db } from "@workspace/db";
 import { usersTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
+import dns from "dns/promises";
 
 const router: IRouter = Router();
 
 declare module "express-session" {
   interface SessionData {
     userId?: number;
+  }
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+async function isEmailDomainLive(email: string): Promise<boolean> {
+  const domain = email.split("@")[1];
+  if (!domain) return false;
+  try {
+    const records = await dns.resolveMx(domain);
+    return Array.isArray(records) && records.length > 0;
+  } catch {
+    return false;
   }
 }
 
@@ -20,8 +35,19 @@ router.post("/users/register", async (req, res) => {
     res.status(400).json({ error: "email, password and displayName are required" });
     return;
   }
+  if (!EMAIL_RE.test(email)) {
+    res.status(400).json({ error: "Please enter a valid email address" });
+    return;
+  }
   if (password.length < 6) {
     res.status(400).json({ error: "Password must be at least 6 characters" });
+    return;
+  }
+
+  // Check the email domain can actually receive mail
+  const domainLive = await isEmailDomainLive(email.trim());
+  if (!domainLive) {
+    res.status(400).json({ error: "That email address doesn't appear to be valid. Please use a real email." });
     return;
   }
 
