@@ -71,7 +71,7 @@ export default function Login() {
                 )}
               >
                 {m === "user" ? <User className="w-3.5 h-3.5" /> : <Shield className="w-3.5 h-3.5" />}
-                {m === "user" ? "Player" : "Admin"}
+                {m === "user" ? "User" : "Admin"}
               </button>
             ))}
           </div>
