@@ -20,9 +20,7 @@ export default function TournamentDetail() {
   const { isAdmin, isPaid } = useAuth();
   const canManage = isAdmin || isPaid;
 
-  const { data: tournament, isLoading: isTourneyLoading } = useGetTournament(tournamentId, {
-    query: { enabled: !!tournamentId }
-  });
+  const { data: tournament, isLoading: isTourneyLoading } = useGetTournament(tournamentId);
 
   if (isTourneyLoading) {
     return <div className="flex h-[50vh] items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;

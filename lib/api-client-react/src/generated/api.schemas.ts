@@ -25,6 +25,10 @@ export type TournamentType =
 export const TournamentType = {
   league: "league",
   knockout: "knockout",
+  cup: "cup",
+  groups_knockout: "groups_knockout",
+  double_elimination: "double_elimination",
+  swiss: "swiss",
 } as const;
 
 export type TournamentStatus =
@@ -42,6 +46,8 @@ export interface Tournament {
   type: TournamentType;
   status: TournamentStatus;
   createdAt: string;
+  maxPlayers?: number | null;
+  scheduledAt?: string | null;
 }
 
 export type CreateTournamentRequestType =
@@ -50,12 +56,17 @@ export type CreateTournamentRequestType =
 export const CreateTournamentRequestType = {
   league: "league",
   knockout: "knockout",
+  cup: "cup",
+  groups_knockout: "groups_knockout",
+  double_elimination: "double_elimination",
+  swiss: "swiss",
 } as const;
 
 export interface CreateTournamentRequest {
   name: string;
   type: CreateTournamentRequestType;
   playerIds: number[];
+  maxPlayers?: number | null;
 }
 
 export type TournamentDetailsType =
@@ -64,6 +75,10 @@ export type TournamentDetailsType =
 export const TournamentDetailsType = {
   league: "league",
   knockout: "knockout",
+  cup: "cup",
+  groups_knockout: "groups_knockout",
+  double_elimination: "double_elimination",
+  swiss: "swiss",
 } as const;
 
 export type TournamentDetailsStatus =
@@ -81,6 +96,8 @@ export interface TournamentDetails {
   type: TournamentDetailsType;
   status: TournamentDetailsStatus;
   createdAt: string;
+  maxPlayers?: number | null;
+  scheduledAt?: string | null;
   players: Player[];
   totalFixtures: number;
   completedFixtures: number;

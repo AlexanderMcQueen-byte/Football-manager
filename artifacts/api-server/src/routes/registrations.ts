@@ -109,7 +109,7 @@ router.post("/tournaments/:id/register", async (req, res) => {
 });
 
 router.get("/tournaments/:id/registrations", requireAdmin, async (req, res) => {
-  const tournamentId = parseInt(req.params.id, 10);
+  const tournamentId = parseInt(req.params.id as string, 10);
   if (isNaN(tournamentId)) {
     res.status(400).json({ error: "Invalid tournament id" });
     return;
@@ -125,7 +125,7 @@ router.get("/tournaments/:id/registrations", requireAdmin, async (req, res) => {
 });
 
 router.patch("/registrations/:id", requireAdmin, async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(req.params.id as string, 10);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid id" });
     return;

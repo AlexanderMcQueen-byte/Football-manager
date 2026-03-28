@@ -25,7 +25,7 @@ async function getCredentials() {
     }
   )
     .then((res) => res.json())
-    .then((data) => data.items?.[0]);
+    .then((data: any) => data?.items?.[0]);
 
   if (!connectionSettings || !connectionSettings.settings.api_key) {
     throw new Error("Resend not connected");

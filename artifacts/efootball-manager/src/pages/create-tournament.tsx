@@ -163,19 +163,19 @@ export default function CreateTournament() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return toast({ title: "Name is required", variant: "destructive" });
+    if (!name.trim()) { toast({ title: "Name is required", variant: "destructive" }); return; }
 
     if (mode === "registration") {
-      if (maxPlayers < minPlayers) return toast({ title: `This format needs at least ${minPlayers} players`, variant: "destructive" });
+      if (maxPlayers < minPlayers) { toast({ title: `This format needs at least ${minPlayers} players`, variant: "destructive" }); return; }
       if (isKnockoutStyle && !isSizeValid) {
-        return toast({ title: "Invalid player count", description: `${def.label} requires ${validSizes!.join(", ")} players.`, variant: "destructive" });
+        toast({ title: "Invalid player count", description: `${def.label} requires ${validSizes!.join(", ")} players.`, variant: "destructive" }); return;
       }
       create({ data: { name, type: format as any, maxPlayers, playerIds: [] } });
     } else {
       const count = selectedPlayers.size;
-      if (count < minPlayers) return toast({ title: `Select at least ${minPlayers} players`, variant: "destructive" });
+      if (count < minPlayers) { toast({ title: `Select at least ${minPlayers} players`, variant: "destructive" }); return; }
       if (isKnockoutStyle && !validSizes!.includes(count)) {
-        return toast({ title: "Invalid player count", description: `${def.label} requires ${validSizes!.join(", ")} players.`, variant: "destructive" });
+        toast({ title: "Invalid player count", description: `${def.label} requires ${validSizes!.join(", ")} players.`, variant: "destructive" }); return;
       }
       create({ data: { name, type: format as any, playerIds: Array.from(selectedPlayers) } });
     }
