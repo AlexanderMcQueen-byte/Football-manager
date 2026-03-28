@@ -10,15 +10,30 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getFormBadgeColor, cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth";
-import { Trophy, CalendarDays, GitMerge, Loader2, Save, UserPlus, Phone, Gamepad2, CheckCircle, XCircle, Clock, ClipboardList, AlertCircle, Users, Pencil, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Trophy, CalendarDays, GitMerge, Loader2, Save, UserPlus, Phone, Gamepad2, CheckCircle, XCircle, Clock, ClipboardList, AlertCircle, Users, Pencil, X, ChevronDown, ChevronUp, Link2, Check } from "lucide-react";
 
 export default function TournamentDetail() {
   const [, params] = useRoute("/tournaments/:id");
   const tournamentId = parseInt(params?.id || "0", 10);
   
   const [activeTab, setActiveTab] = useState<"standings" | "fixtures" | "bracket" | "registrations" | "players">("standings");
+  const [copied, setCopied] = useState(false);
   const { isAdmin, isPaid } = useAuth();
   const canManage = isAdmin || isPaid;
+
+  const inviteLink = window.location.href;
+
+  function copyLink() {
+    navigator.clipboard.writeText(inviteLink).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  function shareWhatsApp() {
+    const text = `Join my tournament "${tournament?.name}" on eFootball Manager!\n\n${inviteLink}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  }
 
   const { data: tournament, isLoading: isTourneyLoading } = useGetTournament(tournamentId);
 
@@ -89,6 +104,38 @@ export default function TournamentDetail() {
           </div>
         </div>
       </header>
+
+      {/* Invite / Share bar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-[#0d1422] border border-white/10 rounded-2xl px-4 py-3">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <Link2 className="w-4 h-4 text-primary shrink-0" />
+          <span className="text-zinc-400 text-sm truncate">{inviteLink}</span>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={copyLink}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all",
+              copied
+                ? "bg-primary/20 text-primary border border-primary/30"
+                : "bg-white/10 text-white border border-white/10 hover:bg-white/15"
+            )}
+          >
+            {copied ? <Check className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
+            {copied ? "Copied!" : "Copy link"}
+          </button>
+          <button
+            onClick={shareWhatsApp}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20 hover:bg-[#25D366]/20 transition-all"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+              <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.123 1.532 5.855L.057 23.882a.75.75 0 0 0 .918.913l6.115-1.62A11.942 11.942 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.75 9.75 0 0 1-4.94-1.348l-.354-.21-3.634.963.923-3.541-.228-.366A9.75 9.75 0 1 1 12 21.75z"/>
+            </svg>
+            WhatsApp
+          </button>
+        </div>
+      </div>
 
       {/* Register to Play — shown to non-managers */}
       {!canManage && (
