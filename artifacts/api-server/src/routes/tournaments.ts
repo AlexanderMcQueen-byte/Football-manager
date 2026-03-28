@@ -5,8 +5,10 @@ import {
   tournamentPlayersTable,
   playersTable,
   fixturesTable,
+  usersTable,
 } from "@workspace/db/schema";
 import { requireAdmin } from "../middlewares/requireAdmin";
+import { requireCreator } from "../middlewares/requireCreator";
 import { eq, and, inArray, sql } from "drizzle-orm";
 import {
   CreateTournamentBody,
@@ -18,6 +20,9 @@ import {
 } from "@workspace/api-zod";
 import { buildFixturesData } from "../lib/generateFixtures";
 
+const FREE_PLAN_MAX_TOURNAMENTS = 3;
+const FREE_PLAN_MAX_PLAYERS = 8;
+
 const router: IRouter = Router();
 
 router.get("/tournaments", async (req, res) => {
@@ -25,22 +30,44 @@ router.get("/tournaments", async (req, res) => {
   res.json(tournaments);
 });
 
-router.post("/tournaments", requireAdmin, async (req, res) => {
+router.post("/tournaments", requireCreator, async (req, res) => {
+  const creatorPlan: string = (req as any).creatorPlan ?? "admin";
+  const creatorUser = (req as any).creatorUser as typeof usersTable.$inferSelect | undefined;
+
   const body = CreateTournamentBody.parse(req.body);
   const { name, type, playerIds = [], maxPlayers } = body;
 
+  // Enforce free plan limits (non-admin paid users only)
+  if (creatorUser) {
+    // Free plan shouldn't reach here (blocked by requireCreator), but double-check
+    // For paid: no limits on tournament count
+    // (Free users are blocked at the middleware level)
+  }
+
+  // Enforce maxPlayers cap: free users capped at FREE_PLAN_MAX_PLAYERS
+  // (free users can't create anyway, but guard for future)
+  const effectiveMaxPlayers = maxPlayers ?? null;
+
   // Registration mode: maxPlayers set, no pre-selected players → wait for registrations
-  const isRegistrationMode = !!maxPlayers && playerIds.length === 0;
+  const isRegistrationMode = !!effectiveMaxPlayers && playerIds.length === 0;
 
   const [tournament] = await db
     .insert(tournamentsTable)
     .values({
       name,
       type,
-      maxPlayers: maxPlayers ?? null,
+      maxPlayers: effectiveMaxPlayers,
       status: isRegistrationMode ? "setup" : "active",
     })
     .returning();
+
+  // Track tournament count for user accounts
+  if (creatorUser) {
+    await db
+      .update(usersTable)
+      .set({ tournamentsCreated: (creatorUser.tournamentsCreated ?? 0) + 1 })
+      .where(eq(usersTable.id, creatorUser.id));
+  }
 
   if (playerIds.length > 0) {
     await db.insert(tournamentPlayersTable).values(

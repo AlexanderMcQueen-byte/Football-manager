@@ -1,14 +1,14 @@
 import { Link } from "wouter";
 import { useListTournaments } from "@workspace/api-client-react";
 import { format } from "date-fns";
-import { Trophy, Plus, Calendar, Activity, ChevronRight, CheckCircle2 } from "lucide-react";
+import { Trophy, Plus, Calendar, Activity, ChevronRight, CheckCircle2, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth";
 
 export default function Dashboard() {
   const { data: tournaments, isLoading } = useListTournaments();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isPaid, user, plan } = useAuth();
 
   const active = tournaments?.filter((t) => t.status !== "completed") ?? [];
   const finished = tournaments?.filter((t) => t.status === "completed") ?? [];
@@ -31,11 +31,18 @@ export default function Dashboard() {
             <h1 className="text-4xl md:text-5xl font-display font-bold text-white drop-shadow-lg">Dashboard</h1>
             <p className="text-zinc-300 mt-1 text-sm">Manage your active tournaments and leagues.</p>
           </div>
-          {isAdmin && (
+          {isPaid ? (
             <Link href="/tournaments/new">
               <button className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.4)] shrink-0">
                 <Plus className="w-5 h-5" />
                 Create Tournament
+              </button>
+            </Link>
+          ) : (
+            <Link href="/pricing">
+              <button className="flex items-center justify-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold rounded-xl transition-all shrink-0 text-sm">
+                <Crown className="w-4 h-4 text-primary" />
+                Upgrade to Create
               </button>
             </Link>
           )}

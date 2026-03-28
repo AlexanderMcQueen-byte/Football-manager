@@ -11,7 +11,7 @@ export default function CreateTournament() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isPaid } = useAuth();
 
   const [name, setName] = useState("");
   const [type, setType] = useState<"league" | "knockout">("league");
@@ -38,22 +38,30 @@ export default function CreateTournament() {
     },
   });
 
-  if (!isAdmin) {
+  if (!isPaid) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
         <div className="w-16 h-16 rounded-2xl bg-zinc-800 flex items-center justify-center">
           <Lock className="w-8 h-8 text-zinc-500" />
         </div>
         <div>
-          <h2 className="font-display font-bold text-xl text-white">Admin Access Required</h2>
-          <p className="text-zinc-500 text-sm mt-1">You need to be logged in as admin to create tournaments.</p>
+          <h2 className="font-display font-bold text-xl text-white">Paid Plan Required</h2>
+          <p className="text-zinc-500 text-sm mt-1 max-w-xs">You need a paid plan to create and manage tournaments. Upgrade from just $2/month.</p>
         </div>
-        <button
-          onClick={() => setLocation("/login")}
-          className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors"
-        >
-          Go to Admin Login
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setLocation("/pricing")}
+            className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors"
+          >
+            View Pricing
+          </button>
+          <button
+            onClick={() => setLocation("/login")}
+            className="px-5 py-2.5 bg-zinc-800 text-zinc-300 rounded-xl font-semibold text-sm hover:bg-zinc-700 transition-colors"
+          >
+            Sign In
+          </button>
+        </div>
       </div>
     );
   }

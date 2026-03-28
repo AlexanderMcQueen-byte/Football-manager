@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2, LogIn, LogOut, ShieldCheck, Eye } from "lucide-react";
+import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2, LogIn, LogOut, ShieldCheck, Eye, Crown, User, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth";
 
@@ -11,18 +11,30 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAdmin, isLoading, logout } = useAuth();
+  const { isAdmin, isLoggedIn, isLoading, user, plan, isPaid, logout } = useAuth();
 
   const publicNavItems = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
   ];
 
-  const adminNavItems = [
+  const creatorNavItems = [
     { href: "/tournaments/new", label: "New Tournament", icon: Trophy },
     { href: "/players", label: "Players", icon: Users },
   ];
 
-  const navItems = isAdmin ? [...publicNavItems, ...adminNavItems] : publicNavItems;
+  const navItems = (isAdmin || isPaid) ? [...publicNavItems, ...creatorNavItems] : publicNavItems;
+
+  function planBadge() {
+    if (isAdmin) return { icon: ShieldCheck, label: "Admin", color: "text-primary bg-primary/10 border-primary/20" };
+    if (plan === "lifetime") return { icon: Trophy, label: "Lifetime", color: "text-amber-400 bg-amber-900/10 border-amber-500/20" };
+    if (plan === "yearly") return { icon: Crown, label: "Pro Yearly", color: "text-primary bg-primary/10 border-primary/20" };
+    if (plan === "monthly") return { icon: Zap, label: "Pro Monthly", color: "text-blue-400 bg-blue-900/10 border-blue-500/20" };
+    if (user) return { icon: User, label: "Free Plan", color: "text-zinc-500 bg-white/[0.04] border-white/8" };
+    return { icon: Eye, label: "Viewer", color: "text-zinc-500 bg-white/[0.04] border-white/8" };
+  }
+
+  const badge = planBadge();
+  const BadgeIcon = badge.icon;
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row relative">
@@ -73,20 +85,26 @@ export function Layout({ children }: LayoutProps) {
           </div>
         </div>
 
-        {/* Role badge */}
+        {/* Plan/role badge */}
         {!isLoading && (
           <div className="relative px-4 pt-4 pb-2">
             <div className={cn(
-              "flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium",
-              isAdmin
-                ? "bg-primary/10 border border-primary/20 text-primary"
-                : "bg-white/[0.04] border border-white/8 text-zinc-500"
+              "flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium border",
+              badge.color
             )}>
-              {isAdmin
-                ? <><ShieldCheck className="w-3.5 h-3.5" /><span>Admin Mode</span></>
-                : <><Eye className="w-3.5 h-3.5" /><span>Viewer Mode</span></>
-              }
+              <BadgeIcon className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{user ? user.displayName : badge.label}</span>
+              <span className="ml-auto font-gaming shrink-0 opacity-70">{badge.label}</span>
             </div>
+            {/* Upgrade nudge for free logged-in users */}
+            {user && plan === "free" && (
+              <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)}>
+                <div className="mt-2 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-primary text-xs font-semibold hover:bg-primary/15 transition-all cursor-pointer">
+                  <Crown className="w-3 h-3" />
+                  Upgrade to Create Tournaments
+                </div>
+              </Link>
+            )}
           </div>
         )}
 
@@ -110,11 +128,27 @@ export function Layout({ children }: LayoutProps) {
               </Link>
             );
           })}
+
+          {/* Pricing link always visible for non-admin */}
+          {!isAdmin && (
+            <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)}>
+              <div className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 group",
+                location === "/pricing"
+                  ? "nav-active"
+                  : "text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent"
+              )}>
+                <Crown className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/pricing" && "text-primary")} />
+                <span className="font-medium text-sm">Pricing</span>
+                {location === "/pricing" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(145_80%_42%)]" />}
+              </div>
+            </Link>
+          )}
         </nav>
 
-        {/* Login / Logout */}
+        {/* Auth section */}
         <div className="relative p-3 border-t border-white/5 space-y-1">
-          {isAdmin ? (
+          {isLoggedIn ? (
             <button
               onClick={() => { logout(); setIsMobileMenuOpen(false); }}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent transition-all duration-200 group text-sm font-medium"
@@ -123,12 +157,20 @@ export function Layout({ children }: LayoutProps) {
               Sign Out
             </button>
           ) : (
-            <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-              <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent transition-all duration-200 group cursor-pointer text-sm font-medium">
-                <LogIn className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" />
-                Admin Login
-              </div>
-            </Link>
+            <>
+              <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent transition-all duration-200 group cursor-pointer text-sm font-medium">
+                  <LogIn className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" />
+                  Sign In
+                </div>
+              </Link>
+              <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary hover:bg-primary/15 transition-all duration-200 cursor-pointer text-sm font-medium">
+                  <User className="w-4 h-4 shrink-0" />
+                  Create Account
+                </div>
+              </Link>
+            </>
           )}
           <p className="text-[10px] font-gaming text-zinc-700 tracking-widest uppercase text-center pt-1">
             Football · Friendly Manager

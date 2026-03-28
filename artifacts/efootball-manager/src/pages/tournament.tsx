@@ -17,7 +17,8 @@ export default function TournamentDetail() {
   const tournamentId = parseInt(params?.id || "0", 10);
   
   const [activeTab, setActiveTab] = useState<"standings" | "fixtures" | "bracket" | "registrations" | "players">("standings");
-  const { isAdmin } = useAuth();
+  const { isAdmin, isPaid } = useAuth();
+  const canManage = isAdmin || isPaid;
 
   const { data: tournament, isLoading: isTourneyLoading } = useGetTournament(tournamentId, {
     query: { enabled: !!tournamentId }
@@ -91,8 +92,8 @@ export default function TournamentDetail() {
         </div>
       </header>
 
-      {/* Register to Play — shown to viewers */}
-      {!isAdmin && (
+      {/* Register to Play — shown to non-managers */}
+      {!canManage && (
         <RegisterCard
           tournamentId={tournamentId}
           tournamentName={tournament.name}
@@ -106,7 +107,7 @@ export default function TournamentDetail() {
       <div className="flex space-x-2 border-b border-white/10 overflow-x-auto">
         {[
           ...(tournament.type === 'league' ? ['standings', 'fixtures'] : ['bracket', 'fixtures']),
-          ...(isAdmin ? ['players', 'registrations'] : []),
+          ...(canManage ? ['players', 'registrations'] : []),
         ].map((tab) => (
           <button
             key={tab}
@@ -142,15 +143,15 @@ export default function TournamentDetail() {
               currentPlayers={tournament.players.length}
               maxPlayers={tournament.maxPlayers ?? 0}
               scheduledAt={tournament.scheduledAt ? new Date(tournament.scheduledAt) : null}
-              isAdmin={isAdmin}
+              isAdmin={canManage}
               onSwitchToRegistrations={() => setActiveTab("registrations")}
             />
           : <>
               {activeTab === "standings" && <StandingsTab tournamentId={tournamentId} isCompleted={tournament.status === "completed"} />}
-              {activeTab === "fixtures" && <FixturesTab tournamentId={tournamentId} isAdmin={isAdmin} />}
+              {activeTab === "fixtures" && <FixturesTab tournamentId={tournamentId} isAdmin={canManage} />}
               {activeTab === "bracket" && <BracketTab tournamentId={tournamentId} />}
-              {activeTab === "players" && isAdmin && <PlayersContactsTab tournamentId={tournamentId} tournamentPlayers={tournament.players} />}
-              {activeTab === "registrations" && isAdmin && <RegistrationsTab tournamentId={tournamentId} />}
+              {activeTab === "players" && canManage && <PlayersContactsTab tournamentId={tournamentId} tournamentPlayers={tournament.players} />}
+              {activeTab === "registrations" && canManage && <RegistrationsTab tournamentId={tournamentId} />}
             </>
         }
       </div>
