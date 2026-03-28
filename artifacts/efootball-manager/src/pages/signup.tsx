@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RatingModal } from "@/components/rating-modal";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -27,6 +28,7 @@ export default function Signup() {
   const [step, setStep] = useState<1 | 2>(1);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showRating, setShowRating] = useState(false);
 
   // ─── Step 1: send verification code ───────────────────────────────────────
   async function handleSendCode(e: React.FormEvent) {
@@ -74,7 +76,7 @@ export default function Signup() {
       });
       const data = await res.json();
       if (res.ok) {
-        navigate("/");
+        setShowRating(true);
       } else {
         setError(data.error ?? "Verification failed.");
       }
@@ -103,6 +105,10 @@ export default function Signup() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  if (showRating) {
+    return <RatingModal onDone={() => navigate("/")} />;
   }
 
   return (
