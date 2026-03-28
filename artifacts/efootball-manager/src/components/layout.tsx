@@ -44,7 +44,7 @@ export function Layout({ children }: LayoutProps) {
           <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center border border-primary/30">
             <Gamepad2 className="w-5 h-5 text-primary" />
           </div>
-          <span className="font-display font-bold text-xl tracking-tight text-white">eFOOTBALL</span>
+          <span className="font-display font-bold text-xl tracking-tight text-white">FOOTBALL</span>
         </div>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -68,7 +68,7 @@ export function Layout({ children }: LayoutProps) {
             <Gamepad2 className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-display font-bold text-xl leading-none text-white tracking-tight">eFOOTBALL</h1>
+            <h1 className="font-display font-bold text-xl leading-none text-white tracking-tight">FOOTBALL</h1>
             <span className="text-xs text-primary font-gaming font-semibold tracking-widest">MANAGER</span>
           </div>
         </div>
@@ -131,7 +131,7 @@ export function Layout({ children }: LayoutProps) {
             </Link>
           )}
           <p className="text-[10px] font-gaming text-zinc-700 tracking-widest uppercase text-center pt-1">
-            eFootball · Friendly Manager
+            Football · Friendly Manager
           </p>
         </div>
       </aside>

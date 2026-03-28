@@ -48,7 +48,7 @@ export default function Login() {
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-emerald-700 flex items-center justify-center shadow-xl shadow-primary/30 mb-4">
             <Gamepad2 className="w-9 h-9 text-primary-foreground" />
           </div>
-          <h1 className="font-display font-bold text-3xl text-white tracking-tight">eFOOTBALL</h1>
+          <h1 className="font-display font-bold text-3xl text-white tracking-tight">FOOTBALL</h1>
           <span className="font-gaming text-primary font-semibold tracking-widest text-sm mt-0.5">MANAGER</span>
         </div>
 

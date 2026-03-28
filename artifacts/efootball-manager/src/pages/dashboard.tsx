@@ -27,7 +27,7 @@ export default function Dashboard() {
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-4 w-full p-8">
           <div>
-            <p className="text-primary font-gaming font-bold text-xs tracking-[0.3em] uppercase mb-2">⚽ eFootball Manager</p>
+            <p className="text-primary font-gaming font-bold text-xs tracking-[0.3em] uppercase mb-2">⚽ Football Manager</p>
             <h1 className="text-4xl md:text-5xl font-display font-bold text-white drop-shadow-lg">Dashboard</h1>
             <p className="text-zinc-300 mt-1 text-sm">Manage your active tournaments and leagues.</p>
           </div>
