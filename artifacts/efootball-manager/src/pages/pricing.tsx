@@ -1,37 +1,21 @@
 import { useState } from "react";
-import { useLocation, Link } from "wouter";
+import { Link } from "wouter";
 import {
-  CheckCircle2, Zap, Crown, Infinity, ArrowLeft, Loader2,
-  AlertCircle, Lock, ExternalLink, X, ShieldCheck,
+  CheckCircle2, Zap, Crown, Infinity, ArrowLeft,
+  AlertCircle, Lock, X, Send, Mail,
 } from "lucide-react";
 import { useAuth, type Plan } from "@/contexts/auth";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
 
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+const ADMIN_EMAIL = "phinalex66@gmail.com";
 
-// ─── PayPal config ────────────────────────────────────────────────────────────
-const PAYPAL_EMAIL = "alexanderwachira136@gmail.com";
-
-function paypalUrl(amount: string, itemName: string) {
-  const params = new URLSearchParams({
-    cmd: "_xclick",
-    business: PAYPAL_EMAIL,
-    amount,
-    currency_code: "USD",
-    item_name: itemName,
-    no_shipping: "1",
-  });
-  return `https://www.paypal.com/cgi-bin/webscr?${params.toString()}`;
-}
-
-// ─── Plan definitions ─────────────────────────────────────────────────────────
 interface PricingTier {
   id: Plan;
   label: string;
   price: string;
-  amount: string;
   period: string;
   icon: React.ReactNode;
   color: string;
@@ -47,7 +31,6 @@ const tiers: PricingTier[] = [
     id: "free",
     label: "Free",
     price: "$0",
-    amount: "0",
     period: "forever",
     icon: <CheckCircle2 className="w-5 h-5" />,
     color: "text-zinc-400",
@@ -64,7 +47,6 @@ const tiers: PricingTier[] = [
     id: "monthly",
     label: "Monthly",
     price: "$2",
-    amount: "2.00",
     period: "/ month",
     icon: <Zap className="w-5 h-5" />,
     color: "text-blue-400",
@@ -83,7 +65,6 @@ const tiers: PricingTier[] = [
     id: "yearly",
     label: "Yearly",
     price: "$7",
-    amount: "7.00",
     period: "/ year",
     badge: "Best Value",
     icon: <Crown className="w-5 h-5" />,
@@ -101,7 +82,6 @@ const tiers: PricingTier[] = [
     id: "lifetime",
     label: "Lifetime",
     price: "$15",
-    amount: "15.00",
     period: "one-time",
     icon: <Infinity className="w-5 h-5" />,
     color: "text-amber-400",
@@ -116,99 +96,109 @@ const tiers: PricingTier[] = [
   },
 ];
 
-// ─── Payment modal ────────────────────────────────────────────────────────────
-function PaymentModal({
+// ─── Request modal ────────────────────────────────────────────────────────────
+function RequestModal({
   tier,
+  userEmail,
+  userName,
   onClose,
-  onConfirm,
-  confirming,
 }: {
   tier: PricingTier;
+  userEmail: string;
+  userName: string;
   onClose: () => void;
-  onConfirm: () => void;
-  confirming: boolean;
 }) {
-  const [hasPaid, setHasPaid] = useState(false);
-  const ppUrl = paypalUrl(tier.amount, `Football Manager – ${tier.label} Plan`);
+  const [note, setNote] = useState("");
+  const [sent, setSent] = useState(false);
+
+  function handleSend() {
+    const subject = encodeURIComponent(
+      `Upgrade Request – ${tier.label} Plan (${tier.price}${tier.id !== "lifetime" ? tier.period : " one-time"})`
+    );
+    const body = encodeURIComponent(
+      `Hi,\n\nI would like to request an upgrade to the ${tier.label} Plan (${tier.price}${tier.id !== "lifetime" ? tier.period : " one-time"}) on Football Manager.\n\nMy account details:\n- Name: ${userName}\n- Email: ${userEmail}\n\n${note ? `Additional notes:\n${note}\n\n` : ""}Please activate my plan at your earliest convenience.\n\nThank you,\n${userName}`
+    );
+    window.open(`mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`, "_blank");
+    setSent(true);
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Modal */}
       <div className="relative w-full max-w-md glass-card rounded-2xl p-7 border border-white/10 shadow-2xl">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
-        >
+        <button onClick={onClose} className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
           <X className="w-5 h-5" />
         </button>
 
-        {/* Header */}
-        <div className={cn("inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-gaming font-bold tracking-wider uppercase mb-4", tier.bgColor, `border ${tier.borderColor}`, tier.color)}>
-          {tier.icon}
-          {tier.label} Plan — {tier.price}{tier.id !== "lifetime" ? tier.period : " one-time"}
-        </div>
-
-        <h2 className="font-display font-bold text-xl text-white mb-1">Complete Your Upgrade</h2>
-        <p className="text-zinc-400 text-sm mb-6">
-          Follow the two steps below to activate your plan instantly.
-        </p>
-
-        {/* Step 1 */}
-        <div className={cn(
-          "rounded-xl border p-4 mb-3 transition-all",
-          hasPaid ? "border-primary/20 bg-primary/5 opacity-60" : "border-white/10 bg-white/[0.03]"
-        )}>
-          <div className="flex items-center gap-3 mb-3">
-            <div className={cn("w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0", hasPaid ? "bg-primary/20 text-primary" : "bg-zinc-700 text-white")}>
-              {hasPaid ? <CheckCircle2 className="w-4 h-4" /> : "1"}
+        {!sent ? (
+          <>
+            {/* Header */}
+            <div className={cn(
+              "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-gaming font-bold tracking-wider uppercase mb-4 border",
+              tier.bgColor, tier.borderColor, tier.color
+            )}>
+              {tier.icon}
+              {tier.label} — {tier.price} {tier.period}
             </div>
-            <p className="font-semibold text-white text-sm">Pay via PayPal</p>
-          </div>
-          <a
-            href={ppUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => setTimeout(() => setHasPaid(true), 2000)}
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#0070BA] hover:bg-[#005ea6] text-white font-bold text-sm transition-all shadow-lg"
-          >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c1.379 5.007-1.868 8.468-7.25 8.468h-1.9l-1.24 7.868h3.17c.46 0 .85-.331.92-.786l.038-.196 1.45-9.21.093-.508a.93.93 0 0 1 .92-.786h.58c3.74 0 6.67-1.52 7.52-5.913.357-1.83.172-3.355-.694-4.4z"/>
-            </svg>
-            Pay {tier.price} on PayPal
-            <ExternalLink className="w-3.5 h-3.5 opacity-70" />
-          </a>
-          <p className="text-zinc-600 text-xs text-center mt-2">Opens PayPal in a new tab — payment goes to the host</p>
-        </div>
 
-        {/* Step 2 */}
-        <div className={cn(
-          "rounded-xl border p-4 mb-5 transition-all",
-          !hasPaid ? "border-white/5 bg-white/[0.02] opacity-50" : "border-white/10 bg-white/[0.03]"
-        )}>
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-7 h-7 rounded-full bg-zinc-700 text-white flex items-center justify-center text-xs font-bold shrink-0">2</div>
-            <p className="font-semibold text-white text-sm">Confirm your payment</p>
-          </div>
-          <p className="text-zinc-500 text-xs mb-3">After your PayPal payment is complete, click below to activate your plan.</p>
-          <Button
-            onClick={onConfirm}
-            disabled={!hasPaid || confirming}
-            className={cn("w-full font-semibold", tier.btnClass, (!hasPaid || confirming) && "opacity-50 cursor-not-allowed")}
-          >
-            {confirming ? (
-              <><Loader2 className="w-4 h-4 animate-spin mr-2" />Activating…</>
-            ) : (
-              <><ShieldCheck className="w-4 h-4 mr-2" />I've Completed My Payment</>
-            )}
-          </Button>
-        </div>
+            <h2 className="font-display font-bold text-xl text-white mb-1">Request Upgrade</h2>
+            <p className="text-zinc-400 text-sm mb-5">
+              Send a request to the admin. Your plan will be activated once approved.
+            </p>
 
-        <p className="text-zinc-700 text-xs text-center">
-          Having trouble? Contact support with your PayPal receipt.
-        </p>
+            {/* Pre-filled info */}
+            <div className="space-y-3 mb-4">
+              <div className="space-y-1.5">
+                <Label className="text-zinc-400 text-xs">Your Name</Label>
+                <Input value={userName} disabled className="bg-zinc-900/60 border-white/10 text-zinc-400 text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-zinc-400 text-xs">Your Email</Label>
+                <Input value={userEmail} disabled className="bg-zinc-900/60 border-white/10 text-zinc-400 text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-zinc-400 text-xs">Additional note (optional)</Label>
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Any extra info for the admin..."
+                  rows={3}
+                  className="w-full rounded-lg bg-zinc-900/60 border border-white/10 text-white text-sm placeholder:text-zinc-600 px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
+                />
+              </div>
+            </div>
+
+            <Button
+              onClick={handleSend}
+              className={cn("w-full font-semibold", tier.btnClass)}
+            >
+              <Send className="w-4 h-4 mr-2" />
+              Send Request to Admin
+            </Button>
+
+            <p className="text-zinc-700 text-xs text-center mt-3">
+              Opens your email app pre-filled and ready to send
+            </p>
+          </>
+        ) : (
+          /* Sent confirmation */
+          <div className="text-center py-4">
+            <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
+              <Mail className="w-8 h-8 text-primary" />
+            </div>
+            <h2 className="font-display font-bold text-xl text-white mb-2">Request Sent!</h2>
+            <p className="text-zinc-400 text-sm mb-1">
+              Your upgrade request for the <span className={cn("font-semibold", tier.color)}>{tier.label} plan</span> has been sent to the admin.
+            </p>
+            <p className="text-zinc-600 text-xs mb-6">
+              The admin will activate your plan and notify you at <span className="text-zinc-400">{userEmail}</span>.
+            </p>
+            <Button variant="outline" onClick={onClose} className="border-white/10 text-zinc-400 hover:text-white bg-transparent">
+              Close
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -216,54 +206,14 @@ function PaymentModal({
 
 // ─── Pricing page ─────────────────────────────────────────────────────────────
 export default function Pricing() {
-  const { user, plan, isLoggedIn, refreshUser } = useAuth();
-  const [, navigate] = useLocation();
-  const { toast } = useToast();
-
+  const { user, plan, isLoggedIn } = useAuth();
   const [selectedTier, setSelectedTier] = useState<PricingTier | null>(null);
-  const [confirming, setConfirming] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const currentPlan = plan ?? "free";
 
   function handleSelect(tier: PricingTier) {
-    if (!isLoggedIn) { navigate("/login"); return; }
     if (tier.id === "free" || tier.id === currentPlan) return;
     setSelectedTier(tier);
-    setError(null);
-  }
-
-  async function handleConfirm() {
-    if (!selectedTier) return;
-    setConfirming(true);
-    setError(null);
-    try {
-      const res = await fetch(`${BASE}/api/users/upgrade`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: selectedTier.id }),
-      });
-
-      if (res.ok) {
-        await refreshUser();
-        setSelectedTier(null);
-        toast({
-          title: "Plan activated! 🎉",
-          description: `Welcome to the ${selectedTier.label} plan. You can now create tournaments.`,
-        });
-        navigate("/");
-      } else {
-        const data = await res.json().catch(() => ({}));
-        setError(data.error ?? "Activation failed. Please try again.");
-        setSelectedTier(null);
-      }
-    } catch {
-      setError("Could not reach server. Please try again.");
-      setSelectedTier(null);
-    } finally {
-      setConfirming(false);
-    }
   }
 
   return (
@@ -272,13 +222,12 @@ export default function Pricing() {
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/4 rounded-full blur-[140px]" />
       </div>
 
-      {/* Payment modal */}
-      {selectedTier && (
-        <PaymentModal
+      {selectedTier && user && (
+        <RequestModal
           tier={selectedTier}
+          userEmail={user.email}
+          userName={user.displayName}
           onClose={() => setSelectedTier(null)}
-          onConfirm={handleConfirm}
-          confirming={confirming}
         />
       )}
 
@@ -310,17 +259,10 @@ export default function Pricing() {
           )}
           {!isLoggedIn && (
             <p className="mt-3 text-sm text-zinc-500">
-              <Link href="/signup" className="text-primary hover:underline">Create a free account</Link>{" "}to get started.
+              <Link href="/signup" className="text-primary hover:underline">Create a free account</Link>{" "}then request an upgrade.
             </p>
           )}
         </div>
-
-        {error && (
-          <div className="flex items-center gap-2 p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm mb-6 max-w-xl mx-auto">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {tiers.map((tier) => {
@@ -331,8 +273,7 @@ export default function Pricing() {
                 key={tier.id}
                 className={cn(
                   "relative rounded-2xl p-6 border transition-all flex flex-col",
-                  tier.bgColor,
-                  tier.borderColor,
+                  tier.bgColor, tier.borderColor,
                   isCurrent && "ring-1 ring-primary/40 shadow-lg shadow-primary/10",
                   tier.id === "yearly" && "lg:scale-105 z-10"
                 )}
@@ -375,16 +316,19 @@ export default function Pricing() {
                   <Button variant="outline" disabled className="w-full border-primary/30 text-primary/60 bg-transparent">
                     Active Plan ✓
                   </Button>
+                ) : !isLoggedIn ? (
+                  <Link href="/login">
+                    <Button variant="outline" className="w-full border-white/10 text-zinc-400 bg-transparent hover:text-white">
+                      <Lock className="w-4 h-4 mr-2" />Sign In First
+                    </Button>
+                  </Link>
                 ) : (
                   <Button
                     onClick={() => handleSelect(tier)}
                     className={cn("w-full font-semibold", tier.btnClass)}
                   >
-                    {!isLoggedIn ? (
-                      <><Lock className="w-4 h-4 mr-2" />Sign In to Upgrade</>
-                    ) : (
-                      `Get ${tier.label}`
-                    )}
+                    <Send className="w-4 h-4 mr-2" />
+                    Request Upgrade
                   </Button>
                 )}
               </div>
@@ -393,10 +337,10 @@ export default function Pricing() {
         </div>
 
         <div className="mt-8 flex flex-col items-center gap-2">
-          <div className="flex items-center gap-2 text-zinc-600 text-xs">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Payments processed securely via PayPal — paid directly to the tournament host</span>
-          </div>
+          <p className="text-zinc-600 text-xs flex items-center gap-2">
+            <AlertCircle className="w-3.5 h-3.5" />
+            Upgrades are activated manually by the admin after your request is received.
+          </p>
         </div>
       </div>
     </div>
