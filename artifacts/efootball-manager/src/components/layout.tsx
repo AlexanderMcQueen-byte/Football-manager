@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2, LogIn, LogOut, Crown, User, UserCog, MessageSquare, ShoppingCart } from "lucide-react";
+import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2, LogIn, LogOut, Crown, User, UserCog, MessageSquare, ShoppingCart, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth";
 
@@ -11,6 +11,7 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const { isAdmin, isLoggedIn, isPaid, logout } = useAuth();
 
   const publicNavItems = [
@@ -171,34 +172,61 @@ export function Layout({ children }: LayoutProps) {
         </nav>
 
         {/* Auth section */}
-        <div className={cn(
-          "relative p-2 border-t md:border-t-0 md:border-l border-white/5 flex items-center gap-1 shrink-0",
-          !isMobileMenuOpen && "hidden md:flex"
-        )}>
-          {isLoggedIn ? (
-            <button
-              onClick={() => { logout(); setIsMobileMenuOpen(false); }}
-              className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent transition-all duration-200 group text-sm font-medium whitespace-nowrap"
-            >
-              <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" />
-              Sign Out
-            </button>
-          ) : (
-            <>
-              <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent transition-all duration-200 group cursor-pointer text-sm font-medium whitespace-nowrap">
-                  <LogIn className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" />
-                  Sign In
-                </div>
-              </Link>
-              <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary hover:bg-primary/15 transition-all duration-200 cursor-pointer text-sm font-medium whitespace-nowrap">
-                  <User className="w-4 h-4 shrink-0" />
-                  Create Account
-                </div>
-              </Link>
-            </>
-          )}
+         <div className={cn(
+           "relative p-2 border-t md:border-t-0 md:border-l border-white/5 flex items-center gap-1 shrink-0",
+           !isMobileMenuOpen && "hidden md:flex"
+         )}>
+           <div className="relative">
+             <button
+               onClick={() => setIsAccountMenuOpen((open) => !open)}
+               className={cn(
+                 "flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-all duration-200",
+                 isAccountMenuOpen
+                   ? "border-primary/40 bg-primary/15 text-primary"
+                   : "border-primary/20 bg-primary/10 text-primary hover:bg-primary/15"
+               )}
+               aria-expanded={isAccountMenuOpen}
+               aria-haspopup="menu"
+             >
+               <User className="h-4 w-4 shrink-0" />
+               <span className="hidden sm:inline">Account</span>
+               <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isAccountMenuOpen && "rotate-180")} />
+             </button>
+
+             {isAccountMenuOpen && (
+               <div className="absolute right-0 top-full z-50 mt-2 min-w-44 overflow-hidden rounded-xl border border-white/10 bg-[#171920]/95 p-1.5 shadow-2xl backdrop-blur-xl" role="menu">
+                 {isLoggedIn ? (
+                   <button
+                     onClick={() => {
+                       logout();
+                       setIsAccountMenuOpen(false);
+                       setIsMobileMenuOpen(false);
+                     }}
+                     className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-zinc-300 transition-colors hover:bg-white/[0.07] hover:text-white"
+                     role="menuitem"
+                   >
+                     <LogOut className="h-4 w-4" />
+                     Sign Out
+                   </button>
+                 ) : (
+                   <>
+                     <Link href="/login" onClick={() => { setIsAccountMenuOpen(false); setIsMobileMenuOpen(false); }}>
+                       <div className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/[0.07] hover:text-white" role="menuitem">
+                         <LogIn className="h-4 w-4" />
+                         Sign In
+                       </div>
+                     </Link>
+                     <Link href="/signup" onClick={() => { setIsAccountMenuOpen(false); setIsMobileMenuOpen(false); }}>
+                       <div className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-primary transition-colors hover:bg-primary/10" role="menuitem">
+                         <User className="h-4 w-4" />
+                         Create Account
+                       </div>
+                     </Link>
+                   </>
+                 )}
+               </div>
+             )}
+           </div>
           <p className="hidden lg:block text-[10px] font-gaming text-zinc-700 tracking-widest uppercase text-center px-2">
             Football · Friendly Manager
           </p>
