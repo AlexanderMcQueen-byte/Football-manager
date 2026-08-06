@@ -16,3 +16,9 @@ The Home pack-watch feature uses EFHub as the primary public source, with source
 **Why:** Public source behavior was inconsistent during integration; transparent freshness labeling is safer than silently presenting stale pack dates as current.
 
 **How to apply:** Keep the server-side cache and source attribution, refresh the EFHub index periodically, and link Konami's official announcements for confirmation. Training guidance should remain role-based and tell users to verify the in-game progression preview.
+
+The uploaded `bg_1.jpg`, `bg_2.jpg`, and `bg_3.jpg` assets are the shared full-site background layer behind Home, Marketplace, and other routes; use dark overlays to preserve readability.
+
+**Why:** The user requested the uploaded theme background to be used throughout the full website rather than only on one page.
+
+**How to apply:** Add new route content above the shared layout background instead of replacing it with unrelated page-specific imagery.

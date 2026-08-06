@@ -33,12 +33,23 @@ export function Layout({ children }: LayoutProps) {
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <img
           src={`${import.meta.env.BASE_URL}images/soccer-theme/bg_1.jpg`}
-          className="absolute inset-0 w-full h-full object-cover opacity-10"
+          className="absolute inset-0 w-full h-full object-cover object-center opacity-25"
           alt=""
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/85 to-background/95" />
+        <img
+          src={`${import.meta.env.BASE_URL}images/soccer-theme/bg_2.jpg`}
+          className="absolute inset-0 w-full h-full object-cover object-[65%_center] opacity-[0.09] mix-blend-screen"
+          alt=""
+        />
+        <img
+          src={`${import.meta.env.BASE_URL}images/soccer-theme/bg_3.jpg`}
+          className="absolute inset-0 w-full h-full object-cover object-[35%_center] opacity-[0.08] mix-blend-screen"
+          alt=""
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/70 to-background/84" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(218_17%_14%_/_0.28)_72%,hsl(218_17%_14%_/_0.58)_100%)]" />
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/8 blur-[140px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-red-900/20 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px]" />
       </div>
 
       {/* Top navigation */}
