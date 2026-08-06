@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2, LogIn, LogOut, ShieldCheck, Eye, Crown, User, Zap, UserCog, MessageSquare, ShoppingCart } from "lucide-react";
+import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2, LogIn, LogOut, Crown, User, UserCog, MessageSquare, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth";
 
@@ -11,10 +11,10 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAdmin, isLoggedIn, isLoading, user, plan, isPaid, logout } = useAuth();
+  const { isAdmin, isLoggedIn, isPaid, logout } = useAuth();
 
   const publicNavItems = [
-    { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/", label: "Home", icon: LayoutDashboard },
     { href: "/marketplace", label: "Marketplace", icon: ShoppingCart },
   ];
 
@@ -25,17 +25,6 @@ export function Layout({ children }: LayoutProps) {
 
   const navItems = (isAdmin || isPaid) ? [...publicNavItems, ...creatorNavItems] : publicNavItems;
 
-  function planBadge() {
-    if (isAdmin) return { icon: ShieldCheck, label: "Admin", color: "text-primary bg-primary/10 border-primary/20" };
-    if (plan === "lifetime") return { icon: Trophy, label: "Lifetime", color: "text-amber-400 bg-amber-900/10 border-amber-500/20" };
-    if (plan === "yearly") return { icon: Crown, label: "Pro Yearly", color: "text-primary bg-primary/10 border-primary/20" };
-    if (plan === "monthly") return { icon: Zap, label: "Pro Monthly", color: "text-blue-400 bg-blue-900/10 border-blue-500/20" };
-    if (user) return { icon: User, label: "Free Plan", color: "text-zinc-500 bg-white/[0.04] border-white/8" };
-    return { icon: Eye, label: "Live", color: "text-zinc-500 bg-white/[0.04] border-white/8" };
-  }
-
-  const badge = planBadge();
-  const BadgeIcon = badge.icon;
   const isHome = location === "/";
 
   return (
@@ -82,32 +71,6 @@ export function Layout({ children }: LayoutProps) {
             {isMobileMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
-
-        {/* Plan/role badge */}
-        {!isLoading && (
-          <div className={cn(
-            "relative px-3 py-3 md:w-52 shrink-0",
-            !isMobileMenuOpen && "hidden md:block"
-          )}>
-            <div className={cn(
-              "flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium border",
-              badge.color
-            )}>
-              <BadgeIcon className="w-3.5 h-3.5 shrink-0" />
-              <span className="truncate">{user ? user.displayName : badge.label}</span>
-              <span className="ml-auto font-gaming shrink-0 opacity-70">{badge.label}</span>
-            </div>
-            {/* Upgrade nudge for free logged-in users */}
-            {user && plan === "free" && (
-              <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)}>
-                <div className="mt-2 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-primary text-xs font-semibold hover:bg-primary/15 transition-all cursor-pointer">
-                  <Crown className="w-3 h-3" />
-                  Upgrade to Create Tournaments
-                </div>
-              </Link>
-            )}
-          </div>
-        )}
 
         {/* Nav items */}
         <nav className={cn(
