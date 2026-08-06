@@ -15,6 +15,7 @@ router.get("/admin/users", requireAdmin, async (_req, res) => {
       displayName: usersTable.displayName,
       plan: usersTable.plan,
       planActivatedAt: usersTable.planActivatedAt,
+      planExpiresAt: usersTable.planExpiresAt,
       createdAt: usersTable.createdAt,
     })
     .from(usersTable)
@@ -43,6 +44,11 @@ router.patch("/admin/users/:id/plan", requireAdmin, async (req, res) => {
     .set({
       plan,
       planActivatedAt: plan === "free" ? null : new Date(),
+      planExpiresAt: plan === "monthly"
+        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        : plan === "yearly"
+          ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+          : null,
     })
     .where(eq(usersTable.id, userId))
     .returning({
@@ -51,6 +57,7 @@ router.patch("/admin/users/:id/plan", requireAdmin, async (req, res) => {
       displayName: usersTable.displayName,
       plan: usersTable.plan,
       planActivatedAt: usersTable.planActivatedAt,
+      planExpiresAt: usersTable.planExpiresAt,
       createdAt: usersTable.createdAt,
     });
 

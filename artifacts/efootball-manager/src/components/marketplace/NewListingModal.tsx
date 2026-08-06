@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AccountListing, PlayerCard } from '@/types/marketplace';
+import { AccountListing, PlayerCard, SellerAccount } from '@/types/marketplace';
 import { calculateAccountRating } from '@/utils/ratingCalculator';
 import { X, ShoppingCart, ShieldCheck, Image, Upload, Trash2, Star, Sparkles } from 'lucide-react';
 
@@ -7,12 +7,14 @@ interface NewListingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateListing: (newListing: AccountListing) => void;
+  sellerAccount: SellerAccount;
 }
 
 export const NewListingModal: React.FC<NewListingModalProps> = ({
   isOpen,
   onClose,
   onCreateListing,
+  sellerAccount,
 }) => {
   if (!isOpen) return null;
 
@@ -70,13 +72,14 @@ export const NewListingModal: React.FC<NewListingModalProps> = ({
     const listing: AccountListing = {
       id: `ef-${Date.now().toString().slice(-4)}`,
       title: title || 'eFootball Account | Verified Epics & Coins',
-      sellerName: 'You (Verified Seller)',
+      sellerUserId: sellerAccount.id,
+      sellerName: sellerAccount.username,
       sellerBadge: {
-        phoneVerified: true,
-        tradesCount: 15,
+        phoneVerified: sellerAccount.phoneVerified,
+        tradesCount: sellerAccount.tradesCount,
         idVerified: true,
         disputeFreeRecord: true,
-        trustScore: 98,
+        trustScore: sellerAccount.trustScore,
       },
       price: price || 150,
       platform,
@@ -94,7 +97,7 @@ export const NewListingModal: React.FC<NewListingModalProps> = ({
       featuredPlayers,
       snapshotVerified: true,
       snapshotHash: `KONAMI-SNAPSHOT-VERIFIED-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
-      konamiIdMasked: konamiEmail ? `${konamiEmail.substring(0, 3)}****@gmail.com` : 'user****99@gmail.com',
+      konamiIdMasked: konamiEmail ? `${konamiEmail.substring(0, 3)}****@gmail.com` : `${sellerAccount.email.substring(0, 3)}****@gmail.com`,
       vaultPrivacyStatus: 'PROTECTED_IN_VAULT',
       squadImages: [],
       accountRatingScore: liveRating.score,

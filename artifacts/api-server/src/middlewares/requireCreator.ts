@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { db } from "@workspace/db";
-import { usersTable } from "@workspace/db/schema";
-import { eq } from "drizzle-orm";
 import { adminSession, hasCookie, userSession } from "../lib/sessions";
+import { getFreshUserById } from "../lib/userPlans";
 
 /**
  * Allows tournament creation if:
@@ -29,7 +27,7 @@ export async function requireCreator(req: Request, res: Response, next: NextFunc
     }
 
     if (req.session?.userId) {
-      const [user] = await db.select().from(usersTable).where(eq(usersTable.id, req.session.userId)).limit(1);
+      const user = await getFreshUserById(req.session.userId);
       if (user && user.plan !== "free") {
         (req as any).creatorPlan = user.plan;
         (req as any).creatorUser = user;

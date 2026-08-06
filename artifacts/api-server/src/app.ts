@@ -39,7 +39,11 @@ app.use(
   }),
 );
 
-app.use(express.json());
+app.use(express.json({
+  verify: (req, _res, body) => {
+    (req as Request & { rawBody?: Buffer }).rawBody = Buffer.from(body);
+  },
+}));
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);

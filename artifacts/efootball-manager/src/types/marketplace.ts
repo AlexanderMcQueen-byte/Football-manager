@@ -47,6 +47,7 @@ export interface SellerAccount {
 
 export interface AccountListing {
   id: string;
+  sellerUserId?: string;
   title: string;
   sellerName: string;
   sellerAvatar?: string;

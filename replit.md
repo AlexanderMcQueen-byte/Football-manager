@@ -55,8 +55,8 @@ A full-stack **Football Tournament Manager** web app for organizing friendly eFo
 - Account creation with **email verification** (6-digit OTP via Resend)
 - MX record validation before OTP send
 - Sessions with `express-session`
-- Plan tiers: `free`, `monthly` ($2/mo), `yearly` ($7/yr), `lifetime` ($15)
-- **Pricing page** with "Request Upgrade" flow (pre-filled mailto to admin)
+- Plan tiers: `free`, `monthly`, `yearly`, `lifetime`
+- **Pricing page** with Paystack checkout, server-side verification, webhook signature validation, and automatic monthly/yearly expiry
 - Post-signup rating modal (5 stars + comment, stored in `ratings` table)
 
 ### Admin Panel
@@ -73,8 +73,8 @@ A full-stack **Football Tournament Manager** web app for organizing friendly eFo
 ### eFootball Account Marketplace
 - `/marketplace` hub with verified account listings, filters, account inspection, and escrow start flow
 - Escrow workflow with vault protection, credential handoff, verification, disputes, and cooldown tracking
-- Account scanner, anti-scam reports, seller authentication/portal, negotiation chat, seller reviews, and VPN safety guide
-- Marketplace state currently uses seeded listings and client-side Zustand state; API persistence routes are reserved for a future backend expansion
+- Account scanner, anti-scam reports, account-based seller portal, negotiation chat, seller reviews, and VPN safety guide
+- Marketplace state currently uses seeded listings and client-side Zustand state; new listings are tied to the authenticated Football Manager user rather than a separate seller account
 
 ### UI / Design
 - Soccer-master-inspired charcoal theme (`#222831`) with pink-magenta accents matching the uploaded sidebar reference

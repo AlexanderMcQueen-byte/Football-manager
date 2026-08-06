@@ -11,6 +11,7 @@ export interface UserAccount {
   plan: Plan;
   tournamentsCreated: number;
   planActivatedAt: string | null;
+  planExpiresAt: string | null;
   createdAt: string;
 }
 

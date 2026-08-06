@@ -3,7 +3,6 @@ import {
   AccountListing, 
   EscrowTrade, 
   ScammerRecord, 
-  SellerAccount, 
   SellerReview 
 } from '@/types/marketplace';
 
@@ -26,9 +25,6 @@ interface AppState {
   setBlacklist: (updater: ScammerRecord[] | ((prev: ScammerRecord[]) => ScammerRecord[])) => void;
   addBlacklistReport: (record: ScammerRecord) => void;
 
-  // Seller Auth
-  sellerAccount: SellerAccount | null;
-  setSellerAccount: (account: SellerAccount | null) => void;
   sellerReviews: SellerReview[];
   setSellerReviews: (updater: SellerReview[] | ((prev: SellerReview[]) => SellerReview[])) => void;
   addSellerReview: (review: SellerReview) => void;
@@ -63,9 +59,6 @@ export const useStore = create<AppState>((set) => ({
   })),
   addBlacklistReport: (record) => set((state) => ({ blacklist: [record, ...state.blacklist] })),
 
-  // Seller Auth
-  sellerAccount: null,
-  setSellerAccount: (account) => set({ sellerAccount: account }),
   sellerReviews: [],
   setSellerReviews: (updater) => set((state) => ({ 
     sellerReviews: typeof updater === 'function' ? updater(state.sellerReviews) : updater 

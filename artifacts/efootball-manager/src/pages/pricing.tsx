@@ -1,16 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import {
   CheckCircle2, Zap, Crown, Infinity, ArrowLeft,
-  AlertCircle, Lock, X, Send, Mail,
+  AlertCircle, Lock, Send,
 } from "lucide-react";
 import { useAuth, type Plan } from "@/contexts/auth";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-const ADMIN_EMAIL = "phinalex66@gmail.com";
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 interface PricingTier {
   id: Plan;
@@ -46,7 +44,7 @@ const tiers: PricingTier[] = [
   {
     id: "monthly",
     label: "Monthly",
-    price: "$2",
+    price: "₦2,000",
     period: "/ month",
     icon: <Zap className="w-5 h-5" />,
     color: "text-blue-400",
@@ -64,7 +62,7 @@ const tiers: PricingTier[] = [
   {
     id: "yearly",
     label: "Yearly",
-    price: "$7",
+    price: "₦7,000",
     period: "/ year",
     badge: "Best Value",
     icon: <Crown className="w-5 h-5" />,
@@ -81,7 +79,7 @@ const tiers: PricingTier[] = [
   {
     id: "lifetime",
     label: "Lifetime",
-    price: "$15",
+    price: "₦15,000",
     period: "one-time",
     icon: <Infinity className="w-5 h-5" />,
     color: "text-amber-400",
@@ -96,124 +94,66 @@ const tiers: PricingTier[] = [
   },
 ];
 
-// ─── Request modal ────────────────────────────────────────────────────────────
-function RequestModal({
-  tier,
-  userEmail,
-  userName,
-  onClose,
-}: {
-  tier: PricingTier;
-  userEmail: string;
-  userName: string;
-  onClose: () => void;
-}) {
-  const [note, setNote] = useState("");
-  const [sent, setSent] = useState(false);
-
-  function handleSend() {
-    const subject = encodeURIComponent(
-      `Upgrade Request – ${tier.label} Plan (${tier.price}${tier.id !== "lifetime" ? tier.period : " one-time"})`
-    );
-    const body = encodeURIComponent(
-      `Hi,\n\nI would like to request an upgrade to the ${tier.label} Plan (${tier.price}${tier.id !== "lifetime" ? tier.period : " one-time"}) on Football Manager.\n\nMy account details:\n- Name: ${userName}\n- Email: ${userEmail}\n\n${note ? `Additional notes:\n${note}\n\n` : ""}Please activate my plan at your earliest convenience.\n\nThank you,\n${userName}`
-    );
-    window.open(`mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`, "_blank");
-    setSent(true);
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-
-      <div className="relative w-full max-w-md glass-card rounded-2xl p-7 border border-white/10 shadow-2xl">
-        <button onClick={onClose} className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
-          <X className="w-5 h-5" />
-        </button>
-
-        {!sent ? (
-          <>
-            {/* Header */}
-            <div className={cn(
-              "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-gaming font-bold tracking-wider uppercase mb-4 border",
-              tier.bgColor, tier.borderColor, tier.color
-            )}>
-              {tier.icon}
-              {tier.label} — {tier.price} {tier.period}
-            </div>
-
-            <h2 className="font-display font-bold text-xl text-white mb-1">Request Upgrade</h2>
-            <p className="text-zinc-400 text-sm mb-5">
-              Send a request to the admin. Your plan will be activated once approved.
-            </p>
-
-            {/* Pre-filled info */}
-            <div className="space-y-3 mb-4">
-              <div className="space-y-1.5">
-                <Label className="text-zinc-400 text-xs">Your Name</Label>
-                <Input value={userName} disabled className="bg-zinc-900/60 border-white/10 text-zinc-400 text-sm" />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-zinc-400 text-xs">Your Email</Label>
-                <Input value={userEmail} disabled className="bg-zinc-900/60 border-white/10 text-zinc-400 text-sm" />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-zinc-400 text-xs">Additional note (optional)</Label>
-                <textarea
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder="Any extra info for the admin..."
-                  rows={3}
-                  className="w-full rounded-lg bg-zinc-900/60 border border-white/10 text-white text-sm placeholder:text-zinc-600 px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
-                />
-              </div>
-            </div>
-
-            <Button
-              onClick={handleSend}
-              className={cn("w-full font-semibold", tier.btnClass)}
-            >
-              <Send className="w-4 h-4 mr-2" />
-              Send Request to Admin
-            </Button>
-
-            <p className="text-zinc-700 text-xs text-center mt-3">
-              Opens your email app pre-filled and ready to send
-            </p>
-          </>
-        ) : (
-          /* Sent confirmation */
-          <div className="text-center py-4">
-            <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
-              <Mail className="w-8 h-8 text-primary" />
-            </div>
-            <h2 className="font-display font-bold text-xl text-white mb-2">Request Sent!</h2>
-            <p className="text-zinc-400 text-sm mb-1">
-              Your upgrade request for the <span className={cn("font-semibold", tier.color)}>{tier.label} plan</span> has been sent to the admin.
-            </p>
-            <p className="text-zinc-600 text-xs mb-6">
-              The admin will activate your plan and notify you at <span className="text-zinc-400">{userEmail}</span>.
-            </p>
-            <Button variant="outline" onClick={onClose} className="border-white/10 text-zinc-400 hover:text-white bg-transparent">
-              Close
-            </Button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // ─── Pricing page ─────────────────────────────────────────────────────────────
 export default function Pricing() {
-  const { user, plan, isLoggedIn } = useAuth();
-  const [selectedTier, setSelectedTier] = useState<PricingTier | null>(null);
+  const { user, plan, isLoggedIn, refreshUser } = useAuth();
+  const [isPaying, setIsPaying] = useState<Plan | null>(null);
+  const [paymentMessage, setPaymentMessage] = useState("");
 
   const currentPlan = plan ?? "free";
 
-  function handleSelect(tier: PricingTier) {
-    if (tier.id === "free" || tier.id === currentPlan) return;
-    setSelectedTier(tier);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const reference = params.get("reference") || params.get("trxref");
+    if (!reference) return;
+
+    let cancelled = false;
+    setPaymentMessage("Verifying your Paystack payment…");
+    void fetch(`${BASE}/api/users/paystack/verify`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reference }),
+    })
+      .then(async (response) => {
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.error || "Payment verification failed.");
+        if (!cancelled) {
+          await refreshUser();
+          setPaymentMessage("Payment confirmed. Your plan is now active.");
+          window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`);
+        }
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) setPaymentMessage(error instanceof Error ? error.message : "Payment verification failed.");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function handleSelect(tier: PricingTier) {
+    if (tier.id === "free" || !isLoggedIn || isPaying) return;
+    setIsPaying(tier.id);
+    setPaymentMessage("");
+    try {
+      const callbackUrl = `${window.location.origin}${BASE}/pricing`;
+      const response = await fetch(`${BASE}/api/users/paystack/initialize`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: tier.id, callbackUrl }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.authorizationUrl) {
+        throw new Error(payload.error || "Could not start Paystack checkout.");
+      }
+      window.location.assign(payload.authorizationUrl);
+    } catch (error: unknown) {
+      setPaymentMessage(error instanceof Error ? error.message : "Could not start Paystack checkout.");
+      setIsPaying(null);
+    }
   }
 
   return (
@@ -221,15 +161,6 @@ export default function Pricing() {
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/4 rounded-full blur-[140px]" />
       </div>
-
-      {selectedTier && user && (
-        <RequestModal
-          tier={selectedTier}
-          userEmail={user.email}
-          userName={user.displayName}
-          onClose={() => setSelectedTier(null)}
-        />
-      )}
 
       <div className="relative max-w-5xl mx-auto">
         <Link href="/" className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-300 transition-colors mb-8 text-sm">
@@ -259,8 +190,11 @@ export default function Pricing() {
           )}
           {!isLoggedIn && (
             <p className="mt-3 text-sm text-zinc-500">
-              <Link href="/signup" className="text-primary hover:underline">Create a free account</Link>{" "}then request an upgrade.
+              <Link href="/signup" className="text-primary hover:underline">Create a free account</Link>{" "}then pay securely with Paystack.
             </p>
+          )}
+          {paymentMessage && (
+            <p className="mt-3 text-sm text-primary">{paymentMessage}</p>
           )}
         </div>
 
@@ -333,10 +267,11 @@ export default function Pricing() {
                 ) : (
                   <Button
                     onClick={() => handleSelect(tier)}
+                    disabled={Boolean(isPaying)}
                     className={cn("w-full font-semibold", tier.btnClass)}
                   >
                     <Send className="w-4 h-4 mr-2" />
-                    Request Upgrade
+                    {isPaying === tier.id ? "Opening Paystack…" : "Pay with Paystack"}
                   </Button>
                 )}
               </div>
@@ -344,11 +279,16 @@ export default function Pricing() {
           })}
         </div>
 
-        <div className="mt-8 flex flex-col items-center gap-2">
-          <p className="text-zinc-600 text-xs flex items-center gap-2">
-            <AlertCircle className="w-3.5 h-3.5" />
-            Upgrades are activated manually by the admin after your request is received.
-          </p>
+         <div className="mt-8 flex flex-col items-center gap-2">
+           <p className="text-zinc-600 text-xs flex items-center gap-2">
+             <AlertCircle className="w-3.5 h-3.5" />
+             Paystack verifies each payment before the plan is activated. Monthly and yearly plans expire automatically.
+           </p>
+           {user?.planExpiresAt && currentPlan !== "lifetime" && (
+             <p className="text-zinc-500 text-xs">
+               Current plan expires {new Date(user.planExpiresAt).toLocaleDateString()}.
+             </p>
+           )}
         </div>
       </div>
     </div>

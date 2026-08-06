@@ -7,3 +7,4 @@ export * from "./users";
 export * from "./email_verifications";
 export * from "./ratings";
 export * from "./inquiries";
+export * from "./payment_transactions";

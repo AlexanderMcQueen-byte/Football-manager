@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useStore } from "@/store/marketStore";
-import { AccountListing, EscrowTrade } from "@/types/marketplace";
+import { AccountListing, EscrowTrade, SellerAccount } from "@/types/marketplace";
+import { useAuth } from "@/contexts/auth";
 
 // Import copied components
 import { Marketplace } from "@/components/marketplace/Marketplace";
@@ -28,7 +29,6 @@ import { AccountInspectModal } from "@/components/marketplace/AccountInspectModa
 import { NegotiationChatModal } from "@/components/marketplace/NegotiationChatModal";
 import { NewListingModal } from "@/components/marketplace/NewListingModal";
 import { RateSellerModal } from "@/components/marketplace/RateSellerModal";
-import { SellerAuthModal } from "@/components/marketplace/SellerAuthModal";
 import { SellerPortalModal } from "@/components/marketplace/SellerPortalModal";
 
 // Seed Data
@@ -116,6 +116,19 @@ const MOCK_LISTINGS: AccountListing[] = [
 export default function MarketplacePage() {
   const [location, setLocation] = useLocation();
   const store = useStore();
+  const { user, isLoggedIn } = useAuth();
+  const sellerAccount: SellerAccount | null = user ? {
+    id: String(user.id),
+    email: user.email,
+    username: user.displayName,
+    phoneVerified: false,
+    emailVerified: true,
+    trustScore: 90,
+    tradesCount: 0,
+    averageRating: 0,
+    totalReviews: 0,
+    createdAt: user.createdAt,
+  } : null;
 
   // Initialize data
   useEffect(() => {
@@ -129,7 +142,6 @@ export default function MarketplacePage() {
   const [chatListing, setChatListing] = useState<AccountListing | null>(null);
   const [rateSellerName, setRateSellerName] = useState<string | null>(null);
   const [isNewListingModalOpen, setIsNewListingModalOpen] = useState(false);
-  const [isSellerAuthModalOpen, setIsSellerAuthModalOpen] = useState(false);
   const [isSellerPortalOpen, setIsSellerPortalOpen] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   
@@ -205,7 +217,7 @@ export default function MarketplacePage() {
         </div>
 
         <div className="flex items-center gap-2">
-          {store.sellerAccount ? (
+          {sellerAccount ? (
             <button
               onClick={() => setIsSellerPortalOpen(true)}
               className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-indigo-950 text-xs font-bold transition-colors border border-slate-200"
@@ -214,7 +226,7 @@ export default function MarketplacePage() {
             </button>
           ) : (
             <button
-              onClick={() => setIsSellerAuthModalOpen(true)}
+              onClick={() => setLocation("/login")}
               className="px-4 py-2 rounded-xl bg-indigo-900/50 hover:bg-indigo-800/50 text-indigo-100 text-xs font-bold transition-colors border border-indigo-700/50"
             >
               Become a Seller
@@ -222,7 +234,13 @@ export default function MarketplacePage() {
           )}
 
           <button
-            onClick={() => setIsNewListingModalOpen(true)}
+            onClick={() => {
+              if (!isLoggedIn) {
+                setLocation("/login");
+                return;
+              }
+              setIsNewListingModalOpen(true);
+            }}
             className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold transition-colors shadow-md flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" /> Sell Account
@@ -378,6 +396,7 @@ export default function MarketplacePage() {
         <NewListingModal
           isOpen={isNewListingModalOpen}
           onClose={() => setIsNewListingModalOpen(false)}
+          sellerAccount={sellerAccount!}
           onCreateListing={(newListing) => {
             handlePublishListing(newListing);
             setIsNewListingModalOpen(false);
@@ -398,22 +417,10 @@ export default function MarketplacePage() {
         />
       )}
 
-      {isSellerAuthModalOpen && (
-        <SellerAuthModal
-          isOpen={isSellerAuthModalOpen}
-          onClose={() => setIsSellerAuthModalOpen(false)}
-          onSellerAuthenticated={(acc) => {
-            store.setSellerAccount(acc);
-            setIsSellerAuthModalOpen(false);
-            setIsSellerPortalOpen(true);
-          }}
-        />
-      )}
-
-      {isSellerPortalOpen && store.sellerAccount && (
+      {isSellerPortalOpen && sellerAccount && (
         <SellerPortalModal
           isOpen={isSellerPortalOpen}
-          sellerAccount={store.sellerAccount}
+          sellerAccount={sellerAccount}
           listings={store.listings}
           reviews={store.sellerReviews}
           onClose={() => setIsSellerPortalOpen(false)}

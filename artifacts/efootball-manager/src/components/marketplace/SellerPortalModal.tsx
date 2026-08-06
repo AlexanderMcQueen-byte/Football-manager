@@ -78,7 +78,8 @@ export const SellerPortalModal: React.FC<SellerPortalModalProps> = ({
 
   // Filter listings belonging to this seller
   const displayListings = explicitSellerListings || listings.filter(
-    l => l?.sellerName?.toLowerCase() === sellerAccount.username?.toLowerCase() || l?.sellerName?.includes('Chebukati')
+    l => l?.sellerUserId === sellerAccount.id
+      || (!l?.sellerUserId && l?.sellerName?.toLowerCase() === sellerAccount.username?.toLowerCase())
   );
 
   const [threads, setThreads] = useState<SellerChatThread[]>([]);

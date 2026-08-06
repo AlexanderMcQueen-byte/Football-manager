@@ -10,6 +10,7 @@ export const usersTable = pgTable("users", {
   plan: planEnum("plan").notNull().default("free"),
   tournamentsCreated: integer("tournaments_created").notNull().default(0),
   planActivatedAt: timestamp("plan_activated_at"),
+  planExpiresAt: timestamp("plan_expires_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
