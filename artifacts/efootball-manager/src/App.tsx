@@ -1,9 +1,10 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { useEffect, type ReactNode } from "react";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-import { AuthProvider } from "@/contexts/auth";
+import { AuthProvider, useAuth } from "@/contexts/auth";
 import { Layout } from "@/components/layout";
 import Dashboard from "@/pages/dashboard";
 import Players from "@/pages/players";
@@ -27,6 +28,21 @@ const queryClient = new QueryClient({
   }
 });
 
+function AdminOnly({ children }: { children: ReactNode }) {
+  const { isAdmin, isLoading } = useAuth();
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    if (!isLoading && !isAdmin) navigate("/");
+  }, [isLoading, isAdmin, navigate]);
+
+  if (isLoading) {
+    return <div className="min-h-[40vh]" />;
+  }
+
+  return isAdmin ? <>{children}</> : null;
+}
+
 function Router() {
   return (
     <Switch>
@@ -40,8 +56,16 @@ function Router() {
             <Route path="/players" component={Players} />
             <Route path="/tournaments/new" component={CreateTournament} />
             <Route path="/tournaments/:id" component={TournamentDetail} />
-            <Route path="/admin/users" component={AdminUsers} />
-            <Route path="/admin/inquiries" component={AdminInquiries} />
+            <Route path="/admin/users">
+              <AdminOnly>
+                <AdminUsers />
+              </AdminOnly>
+            </Route>
+            <Route path="/admin/inquiries">
+              <AdminOnly>
+                <AdminInquiries />
+              </AdminOnly>
+            </Route>
             <Route path="/contact" component={Contact} />
             <Route path="/marketplace/:rest*" component={MarketplacePage} />
             <Route path="/marketplace" component={MarketplacePage} />
