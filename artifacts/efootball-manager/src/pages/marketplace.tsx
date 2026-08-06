@@ -187,7 +187,7 @@ export default function MarketplacePage() {
   ];
 
   return (
-    <div className="w-full space-y-4">
+    <div className="marketplace-theme w-full space-y-4">
       {/* Mini Top Bar */}
       <div className="bg-indigo-950 border border-orange-500/30 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg">
         <div className="flex items-center gap-3 text-white">

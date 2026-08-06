@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&family=Rajdhani:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&family=Rajdhani:wght@500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: 'Inter', sans-serif;
-  --font-display: 'Outfit', sans-serif;
+  --font-sans: 'Montserrat', sans-serif;
+  --font-display: 'Montserrat', sans-serif;
   --font-gaming: 'Rajdhani', sans-serif;
 
   --color-background: hsl(var(--background));
@@ -28,37 +28,37 @@
 }
 
 :root {
-  /* ── eFootball Official Dark Theme ─────────────────────────────────────────
-     Inspired by Konami eFootball's interface: deep navy, electric green,
-     glass surfaces, cinematic contrast.
+   /* ── Soccer Master Theme ────────────────────────────────────────────────────
+      Adapted from the uploaded soccer-master theme: charcoal surfaces,
+      football-red accents, bright match-day photography, and bold typography.
   ─────────────────────────────────────────────────────────────────────────── */
 
   /* Base surfaces */
-  --background:    230 45% 5%;    /* indigo-950 deep navy */
-  --foreground:    210 30% 96%;   /* #F0F4FA — near-white */
+  --background:    218 17% 14%;   /* #222831 charcoal */
+  --foreground:    0 0% 96%;      /* #F5F5F5 */
 
   /* Cards */
-  --card:          230 40% 8%;    /* dark indigo */
-  --card-foreground: 210 30% 96%;
+  --card:          218 17% 18%;
+  --card-foreground: 0 0% 96%;
 
   /* Popover */
-  --popover:       230 40% 10%;
-  --popover-foreground: 210 30% 96%;
+  --popover:       218 17% 20%;
+  --popover-foreground: 0 0% 96%;
 
-  /* Primary — Orange */
-  --primary:       25 95% 53%;   /* #f97316 */
+  /* Primary — football red */
+  --primary:       348 86% 53%;  /* #ee1e46 */
   --primary-foreground: 0 0% 100%;
 
   /* Secondary */
-  --secondary:     220 30% 14%;   /* #182030 */
-  --secondary-foreground: 210 30% 85%;
+  --secondary:     218 17% 23%;
+  --secondary-foreground: 0 0% 88%;
 
   /* Muted */
-  --muted:         220 30% 12%;
-  --muted-foreground: 215 20% 50%;
+  --muted:         218 17% 20%;
+  --muted-foreground: 218 10% 62%;
 
-  /* Accent — electric blue highlight */
-  --accent:        210 80% 50%;   /* #1A6FE8 */
+  /* Accent — warm match-day highlight */
+  --accent:        348 86% 53%;
   --accent-foreground: 0 0% 100%;
 
   /* Destructive */
@@ -66,9 +66,9 @@
   --destructive-foreground: 0 0% 100%;
 
   /* Structural */
-  --border:        220 25% 16%;   /* subtle blue-grey border */
-  --input:         220 30% 12%;
-  --ring:          25 95% 53%;
+  --border:        218 12% 28%;
+  --input:         218 17% 21%;
+  --ring:          348 86% 53%;
 
   --radius: 0.75rem;
 }
@@ -86,14 +86,14 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     background-image:
-      radial-gradient(ellipse 80% 50% at 20% -10%, hsl(25 95% 53% / 0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 110%, hsl(210 80% 50% / 0.05) 0%, transparent 60%);
+      radial-gradient(ellipse 80% 50% at 20% -10%, hsl(348 86% 53% / 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, hsl(0 0% 100% / 0.04) 0%, transparent 60%);
     background-attachment: fixed;
-    selection-color: hsl(25 95% 53% / 0.3);
+    selection-color: hsl(348 86% 53% / 0.3);
   }
 
   ::selection {
-    background: hsl(25 95% 53% / 0.3);
+    background: hsl(348 86% 53% / 0.3);
     color: hsl(var(--primary));
   }
 
@@ -151,7 +151,7 @@
     box-shadow: 0 0 12px hsl(var(--primary) / 0.3), inset 0 0 12px hsl(var(--primary) / 0.05);
   }
 
-  /* Pitch green gradient button glow */
+  /* Match-red button glow */
   .btn-primary-glow {
     box-shadow:
       0 0 20px hsl(var(--primary) / 0.4),
@@ -176,9 +176,9 @@
   .sidebar-bg {
     background:
       linear-gradient(180deg,
-        hsl(220 40% 6% / 0.97) 0%,
-        hsl(220 35% 7% / 0.97) 60%,
-        hsl(220 40% 5% / 0.99) 100%
+        hsl(218 17% 11% / 0.98) 0%,
+        hsl(218 17% 14% / 0.98) 60%,
+        hsl(218 17% 9% / 0.99) 100%
       );
     border-right: 1px solid hsl(var(--border));
   }
@@ -198,7 +198,7 @@
 
   /* Progress bar fill */
   .progress-fill {
-    background: linear-gradient(90deg, hsl(var(--primary)), hsl(25 90% 60%));
+    background: linear-gradient(90deg, hsl(var(--primary)), hsl(348 86% 66%));
     box-shadow: 0 0 8px hsl(var(--primary) / 0.5);
   }
 
@@ -215,8 +215,42 @@
       0deg,
       transparent,
       transparent 40px,
-      hsl(25 50% 30% / 0.03) 40px,
-      hsl(25 50% 30% / 0.03) 80px
+      hsl(348 86% 53% / 0.035) 40px,
+      hsl(348 86% 53% / 0.035) 80px
     );
   }
+}
+
+/* Uploaded soccer-master theme details */
+.soccer-theme-heading {
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+}
+
+.soccer-theme-panel {
+  background: hsl(218 17% 12% / 0.92);
+  border: 1px solid hsl(0 0% 100% / 0.1);
+  box-shadow: 0 14px 36px hsl(0 0% 0% / 0.22);
+}
+
+/* Keep the marketplace's imported components inside the uploaded theme. */
+.marketplace-theme [class*="bg-indigo-"] {
+  background-color: hsl(218 17% 12% / 0.96) !important;
+}
+
+.marketplace-theme [class*="border-indigo-"] {
+  border-color: hsl(348 86% 53% / 0.38) !important;
+}
+
+.marketplace-theme [class*="bg-orange-"] {
+  background-color: hsl(348 86% 53% / 0.14) !important;
+}
+
+.marketplace-theme [class*="border-orange-"] {
+  border-color: hsl(348 86% 53% / 0.48) !important;
+}
+
+.marketplace-theme [class*="text-orange-"] {
+  color: hsl(348 86% 60%) !important;
 }

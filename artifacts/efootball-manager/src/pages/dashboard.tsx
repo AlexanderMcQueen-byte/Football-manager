@@ -50,8 +50,8 @@ export default function Dashboard() {
       {/* ── Hero Banner ──────────────────────────────────────────────────── */}
       <header className="relative rounded-3xl overflow-hidden min-h-[220px] flex items-end">
         <img
-          src={`${import.meta.env.BASE_URL}images/stadium-hero.png`}
-          alt="Football Stadium"
+          src={`${import.meta.env.BASE_URL}images/soccer-theme/bg_3.jpg`}
+          alt="Football match ball in the net"
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
@@ -59,13 +59,13 @@ export default function Dashboard() {
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-4 w-full p-8">
           <div>
-            <p className="text-primary font-gaming font-bold text-xs tracking-[0.3em] uppercase mb-2">⚽ Football Manager</p>
-            <h1 className="text-4xl md:text-5xl font-display font-bold text-white drop-shadow-lg">Dashboard</h1>
+            <p className="text-primary font-gaming font-bold text-xs tracking-[0.3em] uppercase mb-2">⚽ Match day control room</p>
+            <h1 className="text-4xl md:text-5xl font-display font-black text-white drop-shadow-lg soccer-theme-heading">Dashboard</h1>
             <p className="text-zinc-300 mt-1 text-sm">Manage your active tournaments and leagues.</p>
           </div>
           {isPaid ? (
             <Link href="/tournaments/new">
-              <button className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.4)] shrink-0">
+              <button className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(238,30,70,0.4)] shrink-0">
                 <Plus className="w-5 h-5" />
                 Create Tournament
               </button>
@@ -273,7 +273,7 @@ function TournamentCard({ tournament, idx, finished = false }: {
           "glass-card rounded-2xl p-6 group cursor-pointer transition-all duration-300 hover:-translate-y-1 relative overflow-hidden",
           finished
             ? "hover:border-yellow-500/30 hover:shadow-[0_8px_30px_rgba(234,179,8,0.08)] opacity-80 hover:opacity-100"
-            : "hover:border-primary/50 hover:shadow-[0_8px_30px_rgba(16,185,129,0.1)]"
+            : "hover:border-primary/50 hover:shadow-[0_8px_30px_rgba(238,30,70,0.16)]"
         )}>
           <div className={cn(
             "absolute -right-12 -top-12 w-32 h-32 rounded-full blur-2xl transition-colors",

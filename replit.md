@@ -77,7 +77,7 @@ A full-stack **Football Tournament Manager** web app for organizing friendly eFo
 - Marketplace state currently uses seeded listings and client-side Zustand state; API persistence routes are reserved for a future backend expansion
 
 ### UI / Design
-- Indigo-navy theme with orange primary accents (`#f97316`)
+- Soccer-master-inspired charcoal theme (`#222831`) with football-red accents (`#ee1e46`)
 - Fonts: Rajdhani (gaming headings), Outfit (body)
 - Sidebar navigation with role-aware links (admin sees User Management + Inquiries)
 - Responsive layout (mobile + desktop)

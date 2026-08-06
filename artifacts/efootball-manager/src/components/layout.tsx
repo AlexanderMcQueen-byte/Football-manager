@@ -42,13 +42,13 @@ export function Layout({ children }: LayoutProps) {
       {/* Background elements */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <img
-          src={`${import.meta.env.BASE_URL}images/stadium-crowd.png`}
+          src={`${import.meta.env.BASE_URL}images/soccer-theme/bg_1.jpg`}
           className="absolute inset-0 w-full h-full object-cover opacity-10"
           alt=""
         />
         <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/85 to-background/95" />
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/8 blur-[140px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-900/20 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-red-900/20 blur-[120px]" />
       </div>
 
       {/* Mobile Header */}
@@ -57,7 +57,7 @@ export function Layout({ children }: LayoutProps) {
           <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center border border-primary/30">
             <Gamepad2 className="w-5 h-5 text-primary" />
           </div>
-          <span className="font-display font-bold text-xl tracking-tight text-white">FOOTBALL</span>
+          <span className="font-display font-black text-xl tracking-tight text-white soccer-theme-heading">FOOTBALL</span>
         </div>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -77,11 +77,11 @@ export function Layout({ children }: LayoutProps) {
 
         {/* Logo */}
         <div className="relative p-6 hidden md:flex items-center gap-3 border-b border-white/5 pb-5">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-600 to-orange-800 flex items-center justify-center shadow-lg shadow-primary/30">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-800 flex items-center justify-center shadow-lg shadow-primary/30">
             <Gamepad2 className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-display font-bold text-xl leading-none text-white tracking-tight">FOOTBALL</h1>
+            <h1 className="font-display font-black text-xl leading-none text-white tracking-tight soccer-theme-heading">FOOTBALL</h1>
             <span className="text-xs text-primary font-gaming font-semibold tracking-widest">MANAGER</span>
           </div>
         </div>
