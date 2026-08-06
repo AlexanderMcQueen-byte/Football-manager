@@ -234,6 +234,100 @@
   box-shadow: 0 14px 36px hsl(0 0% 0% / 0.22);
 }
 
+.soccer-matchup {
+  display: flex;
+  min-height: 112px;
+  box-shadow: 0 18px 45px hsl(0 0% 0% / 0.35);
+}
+
+.soccer-matchup-team {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+}
+
+.soccer-matchup-team img {
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+}
+
+.soccer-matchup-team strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.soccer-matchup-dark {
+  background: hsl(218 17% 9%);
+  color: white;
+}
+
+.soccer-matchup-pink {
+  background: hsl(337 60% 61%);
+  color: hsl(218 17% 9%);
+}
+
+.soccer-matchup-vs {
+  width: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: hsl(0 0% 100% / 0.92);
+  color: hsl(218 17% 12%);
+}
+
+.soccer-matchup-vs span {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.soccer-matchup-vs small {
+  font-size: 0.48rem;
+  letter-spacing: 0.12em;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 640px) {
+  .soccer-matchup {
+    min-height: 82px;
+  }
+
+  .soccer-matchup-team {
+    gap: 0.35rem;
+    padding: 0.5rem;
+  }
+
+  .soccer-matchup-team img {
+    width: 42px;
+    height: 42px;
+  }
+
+  .soccer-matchup-team strong {
+    font-size: 0.62rem;
+  }
+
+  .soccer-matchup-vs {
+    width: 46px;
+  }
+
+  .soccer-matchup-vs span {
+    font-size: 0.9rem;
+  }
+
+  .soccer-matchup-vs small {
+    display: none;
+  }
+}
+
 /* Keep the marketplace's imported components inside the uploaded theme. */
 .marketplace-theme [class*="bg-indigo-"] {
   background-color: hsl(218 17% 12% / 0.96) !important;

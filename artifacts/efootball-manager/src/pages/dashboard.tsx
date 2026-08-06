@@ -48,40 +48,88 @@ export default function Dashboard() {
   return (
     <div className="space-y-8 pb-12">
       {/* ── Hero Banner ──────────────────────────────────────────────────── */}
-      <header className="relative rounded-3xl overflow-hidden min-h-[220px] flex items-end">
+      <header className="relative -mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8 rounded-none overflow-visible min-h-[510px] flex items-center">
         <img
           src={`${import.meta.env.BASE_URL}images/soccer-theme/bg_3.jpg`}
           alt="Football match ball in the net"
-          className="absolute inset-0 w-full h-full object-cover object-center"
+          className="absolute inset-0 w-full h-full object-cover object-[35%_center]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-black/35" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/15 to-black/35" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-black/20" />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-4 w-full p-8">
-          <div>
-            <p className="text-primary font-gaming font-bold text-xs tracking-[0.3em] uppercase mb-2">⚽ Match day control room</p>
-            <h1 className="text-4xl md:text-5xl font-display font-black text-white drop-shadow-lg soccer-theme-heading">Dashboard</h1>
-            <p className="text-zinc-300 mt-1 text-sm">Manage your active tournaments and leagues.</p>
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 pt-24 md:pt-32">
+          <div className="max-w-xl ml-auto text-left">
+            <p className="text-primary font-gaming font-bold text-xs tracking-[0.35em] uppercase mb-4">⚽ Football Manager · Live Event</p>
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-black text-white leading-[0.95] drop-shadow-lg soccer-theme-heading">
+              Match Day<br />Control Room
+            </h1>
+            <p className="text-white/75 mt-5 text-sm sm:text-base max-w-md leading-relaxed">
+              Organize your next tournament, follow every fixture, and keep your league moving from kickoff to final whistle.
+            </p>
+
+            <div className="flex items-start gap-5 sm:gap-8 mt-7 mb-7">
+              <div>
+                <span className="block text-3xl sm:text-4xl font-display font-bold text-white">06</span>
+                <span className="text-[10px] text-white/60 uppercase tracking-widest">Active</span>
+              </div>
+              <div>
+                <span className="block text-3xl sm:text-4xl font-display font-bold text-white">03</span>
+                <span className="text-[10px] text-white/60 uppercase tracking-widest">Finished</span>
+              </div>
+              <div>
+                <span className="block text-3xl sm:text-4xl font-display font-bold text-white">LIVE</span>
+                <span className="text-[10px] text-white/60 uppercase tracking-widest">Season</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              {isPaid ? (
+                <Link href="/tournaments/new">
+                  <button className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-none transition-all hover:translate-y-[-2px] shadow-[0_0_20px_hsl(var(--primary)/0.35)]">
+                    <Plus className="w-5 h-5" />
+                    Create Tournament
+                  </button>
+                </Link>
+              ) : (
+                <Link href="/pricing">
+                  <button className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-none transition-all hover:translate-y-[-2px] shadow-[0_0_20px_hsl(var(--primary)/0.35)]">
+                    <Crown className="w-4 h-4" />
+                    Upgrade to Create
+                  </button>
+                </Link>
+              )}
+              <span className="text-xs font-bold uppercase tracking-wider text-white border border-white/60 px-4 py-2.5">
+                Explore fixtures
+              </span>
+            </div>
           </div>
-          {isPaid ? (
-            <Link href="/tournaments/new">
-              <button className="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(238,30,70,0.4)] shrink-0">
-                <Plus className="w-5 h-5" />
-                Create Tournament
-              </button>
-            </Link>
-          ) : (
-            <Link href="/pricing">
-              <button className="flex items-center justify-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold rounded-xl transition-all shrink-0 text-sm">
-                <Crown className="w-4 h-4 text-primary" />
-                Upgrade to Create
-              </button>
-            </Link>
-          )}
+        </div>
+
+        <div className="soccer-matchup absolute z-20 -bottom-14 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-6rem)] max-w-4xl">
+          <div className="soccer-matchup-team soccer-matchup-dark">
+            <img src={`${import.meta.env.BASE_URL}images/soccer-theme/logo_1.png`} alt="" />
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.25em] text-white/50">Next tournament</span>
+              <strong>Football League</strong>
+            </div>
+          </div>
+          <div className="soccer-matchup-vs">
+            <span>VS</span>
+            <small>WORLD CUP EVENT</small>
+          </div>
+          <div className="soccer-matchup-team soccer-matchup-pink">
+            <div className="text-right">
+              <span className="text-[10px] uppercase tracking-[0.25em] text-black/50">Match day</span>
+              <strong>Soccer Manager</strong>
+            </div>
+            <img src={`${import.meta.env.BASE_URL}images/soccer-theme/logo_2.png`} alt="" />
+          </div>
         </div>
       </header>
 
       {/* ── Search & Filters ─────────────────────────────────────────────── */}
+      <div className="pt-16">
       {!isLoading && !!tournaments?.length && (
         <div className="space-y-3">
           {/* Search row */}
@@ -187,6 +235,7 @@ export default function Dashboard() {
           )}
         </div>
       )}
+      </div>
 
       {/* ── Content ──────────────────────────────────────────────────────── */}
       {isLoading ? (

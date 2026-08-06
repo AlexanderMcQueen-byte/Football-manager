@@ -36,6 +36,7 @@ export function Layout({ children }: LayoutProps) {
 
   const badge = planBadge();
   const BadgeIcon = badge.icon;
+  const isHome = location === "/";
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
@@ -53,7 +54,10 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Top navigation */}
       <aside className={cn(
-        "sticky top-0 w-full sidebar-bg flex flex-col md:flex-row transition-all duration-300 z-40 overflow-hidden",
+        "w-full flex flex-col md:flex-row transition-all duration-300 z-40 overflow-hidden",
+        isHome
+          ? "absolute top-0 left-0 bg-transparent border-transparent"
+          : "sticky top-0 sidebar-bg",
         isMobileMenuOpen ? "max-h-[700px]" : "max-h-20 md:max-h-24"
       )}>
         <div className="absolute inset-0 pitch-overlay pointer-events-none" />
@@ -228,7 +232,7 @@ export function Layout({ children }: LayoutProps) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 relative z-10 w-full">
+      <main className={cn("flex-1 relative z-10 w-full", isHome && "pt-0")}>
         <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto min-h-full">
           {children}
         </div>
