@@ -20,9 +20,13 @@ router.post("/auth/login", (req, res) => {
     username === ADMIN_USERNAME &&
     password === ADMIN_PASSWORD
   ) {
+    // Replace any account identity on the existing session before saving the
+    // admin role. The managed session store does not support regeneration
+    // reliably, so wait for this explicit save before responding.
+    req.session.userId = undefined;
     req.session.role = "admin";
-    req.session.save((err) => {
-      if (err) {
+    req.session.save((saveError) => {
+      if (saveError) {
         res.status(500).json({ error: "Session save failed" });
         return;
       }

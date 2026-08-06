@@ -191,9 +191,12 @@ router.post("/users/login", async (req, res) => {
     return;
   }
 
+  // Replace any admin identity on the existing session before saving the
+  // authenticated user. This keeps the two login modes mutually exclusive.
+  req.session.role = "viewer";
   req.session.userId = user.id;
-  req.session.save((err) => {
-    if (err) { res.status(500).json({ error: "Session error" }); return; }
+  req.session.save((saveError) => {
+    if (saveError) { res.status(500).json({ error: "Session error" }); return; }
     res.json(safeUser(user));
   });
 });

@@ -1,1 +1,2 @@
 - [Soccer-master theme](soccer-master-theme.md) — use the uploaded charcoal/red soccer visual system across the app while preserving marketplace features.
+- [Authentication sessions](authentication-sessions.md) — admin and user login share one session; always clear the other identity and explicitly save the new role.
