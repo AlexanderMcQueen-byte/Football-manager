@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth";
 import { Input } from "@/components/ui/input";
+import { EFootballUpdates } from "@/components/efootball-updates";
 
 type TypeFilter   = "all" | "league" | "knockout" | "cup" | "groups_knockout" | "double_elimination" | "swiss";
 type StatusFilter = "all" | "active" | "setup" | "completed";
@@ -127,6 +128,8 @@ export default function Dashboard() {
           </div>
         </div>
       </header>
+
+      <EFootballUpdates />
 
       {/* ── Search & Filters ─────────────────────────────────────────────── */}
       <div className="pt-16">

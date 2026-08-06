@@ -9,6 +9,7 @@ import registrationsRouter from "./registrations";
 import adminRouter from "./admin";
 import ratingsRouter from "./ratings";
 import inquiriesRouter from "./inquiries";
+import efootballUpdatesRouter from "./efootball-updates";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use(registrationsRouter);
 router.use(adminRouter);
 router.use(ratingsRouter);
 router.use(inquiriesRouter);
+router.use(efootballUpdatesRouter);
 
 export default router;
