@@ -15,6 +15,9 @@ type PackPlayer = {
 
 type PackUpdate = {
   name: string;
+  shortName: string;
+  edition: string;
+  category: "Featured selection";
   date: string;
   playerCount: number;
   packUrl: string;
@@ -32,6 +35,9 @@ const EFHUB_SOURCE_URL = "https://efhub.com/packs";
 const VERIFIED_PACKS: PackUpdate[] = [
   {
     name: "Victory Drivers 2026",
+    shortName: "Victory Drivers",
+    edition: "2026",
+    category: "Featured selection",
     date: "30 July 2026",
     playerCount: 10,
     packUrl: "https://efhub.com/packs/victory-drivers-2026",
@@ -101,6 +107,9 @@ const VERIFIED_PACKS: PackUpdate[] = [
   },
   {
     name: "International Cup vol.6",
+    shortName: "International Cup",
+    edition: "Vol. 6",
+    category: "Featured selection",
     date: "16 July 2026",
     playerCount: 2,
     packUrl: "https://efhub.com/packs/international-cup-vol-6",

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUpRight,
   BrainCircuit,
+  CalendarDays,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
@@ -9,6 +10,7 @@ import {
   ShieldCheck,
   Sparkles,
   Target,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +29,9 @@ type PackPlayer = {
 
 type PackUpdate = {
   name: string;
+  shortName: string;
+  edition: string;
+  category: "Featured selection";
   date: string;
   playerCount: number;
   packUrl: string;
@@ -145,10 +150,10 @@ export function EFootballUpdates() {
             <span className="font-gaming text-xs font-bold uppercase tracking-[0.25em]">Pack intelligence</span>
           </div>
           <h2 className="font-display text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
-            Upcoming eFootball Packs
+            Featured eFootball Packs
           </h2>
           <p className="mt-1 max-w-2xl text-sm text-zinc-400">
-            Browse the latest EFHub pack watch and rotate through the featured players to see the strongest role-based training focus.
+            Scan the latest EFHub player packs, compare their featured squads, and open a player to see the strongest role-based training focus.
           </p>
         </div>
         <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-500">
@@ -159,22 +164,76 @@ export function EFootballUpdates() {
         </div>
       </div>
 
-      <div className="relative mt-5 flex gap-2 overflow-x-auto pb-1">
+      <div className="relative mt-6">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div>
+            <p className="font-gaming text-[10px] font-bold uppercase tracking-[0.24em] text-zinc-500">
+              Pack directory
+            </p>
+            <p className="mt-1 text-xs text-zinc-400">Select a campaign to inspect its featured players.</p>
+          </div>
+          <span className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 font-gaming text-[10px] uppercase tracking-wider text-zinc-500 sm:inline-flex">
+            {data.packs.length} active listings
+          </span>
+        </div>
+        <div className="grid gap-3 lg:grid-cols-2">
         {data.packs.map((item, index) => (
           <button
             key={item.packUrl}
             onClick={() => setSelectedPack(index)}
             className={cn(
-              "shrink-0 border px-3 py-2 text-left transition-all",
+              "group relative overflow-hidden rounded-xl border p-4 text-left transition-all",
               selectedPack === index
-                 ? "border-primary/70 bg-primary/15 text-primary shadow-[0_0_18px_rgba(219,92,145,0.12)]"
-                 : "border-white/10 bg-[#252a31]/90 text-zinc-400 hover:border-primary/50 hover:bg-primary/10 hover:text-primary",
+                 ? "border-primary/70 bg-primary/15 shadow-[0_0_22px_rgba(219,92,145,0.12)]"
+                 : "border-white/10 bg-[#252a31]/90 hover:border-primary/50 hover:bg-primary/[0.08]",
             )}
           >
-            <span className="block max-w-[170px] truncate text-xs font-bold uppercase tracking-wide">{item.name}</span>
-            <span className="mt-1 block text-[10px] text-current/60">{item.date} · {item.playerCount} players</span>
+            <span className="absolute right-4 top-4 font-gaming text-[10px] font-bold text-zinc-600">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span className="flex items-center gap-2 font-gaming text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              {item.category}
+            </span>
+            <span className="mt-2 block pr-8 font-display text-lg font-black uppercase tracking-tight text-white">
+              {item.shortName}
+            </span>
+            <span className="mt-0.5 block font-gaming text-xs uppercase tracking-[0.12em] text-zinc-400">
+              {item.edition}
+            </span>
+            <span className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] uppercase tracking-wider text-zinc-500">
+              <span className="inline-flex items-center gap-1.5">
+                <CalendarDays className="h-3.5 w-3.5 text-zinc-600" />
+                {item.date}
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Users className="h-3.5 w-3.5 text-zinc-600" />
+                {item.playerCount} featured players
+              </span>
+            </span>
+            <span className="mt-4 flex flex-wrap gap-1.5">
+              {item.players.slice(0, 3).map((featuredPlayer) => (
+                <span
+                  key={featuredPlayer.playerUrl}
+                  className={cn(
+                    "rounded-full border px-2 py-1 text-[10px] font-semibold",
+                    selectedPack === index
+                      ? "border-primary/30 bg-primary/10 text-pink-100"
+                      : "border-white/10 bg-black/10 text-zinc-400",
+                  )}
+                >
+                  {featuredPlayer.name}
+                </span>
+              ))}
+              {item.playerCount > 3 && (
+                <span className="rounded-full border border-white/10 bg-black/10 px-2 py-1 text-[10px] font-semibold text-zinc-600">
+                  +{item.playerCount - 3} more
+                </span>
+              )}
+            </span>
           </button>
         ))}
+        </div>
       </div>
 
        <div className="relative mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)]">
@@ -186,7 +245,9 @@ export function EFootballUpdates() {
                    <span className="border border-primary/40 bg-primary/10 px-2 py-1 font-gaming text-xs font-bold text-primary">
                   {player.position}
                 </span>
-                 <span className="text-xs uppercase tracking-widest text-zinc-400">{pack.name}</span>
+                  <span className="text-xs uppercase tracking-widest text-zinc-400">
+                    {pack.shortName} · {pack.edition}
+                  </span>
               </div>
                <h3 className="mt-4 font-display text-2xl font-black text-white sm:text-3xl">{player.name}</h3>
                <p className="mt-1 text-sm text-zinc-400">EFHub rating <strong className="text-white">{player.rating}</strong></p>

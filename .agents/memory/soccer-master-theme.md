@@ -40,3 +40,9 @@ The Upcoming eFootball Packs module now follows an EFHub-inspired dark presentat
 **Why:** The user requested the pack content to be displayed in the dark EFHub style while preserving the rest of the site’s existing visual boundaries.
 
 **How to apply:** Keep the module dark when updating pack content or controls; do not extend this treatment to the rest of the app unless explicitly requested.
+
+Pack browsing uses a directory-first layout: source-safe campaign names are paired with a pack family label, edition, date, featured-player count, and player preview chips before the detailed player/training panel.
+
+**Why:** EFHub and official eFootball references make campaign title, card family, date, and squad size the fastest signals for comparing packs; narrow tabs hid that information.
+
+**How to apply:** Preserve the official/source name, add descriptive UI metadata instead of inventing unsupported card tiers, and keep the selected pack’s detailed player view below the directory.
