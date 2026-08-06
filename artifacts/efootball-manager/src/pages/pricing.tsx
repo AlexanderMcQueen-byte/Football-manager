@@ -309,9 +309,17 @@ export default function Pricing() {
                 </ul>
 
                 {tier.id === "free" ? (
-                  <Button variant="outline" disabled className="w-full border-zinc-700 text-zinc-500 bg-transparent">
-                    {isCurrent ? "Your Current Plan" : "Free Plan"}
-                  </Button>
+                  !isLoggedIn ? (
+                    <Link href="/login">
+                      <Button variant="outline" className="w-full border-white/10 text-zinc-400 bg-transparent hover:text-white">
+                        Sign In
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Button variant="outline" disabled className="w-full border-zinc-700 text-zinc-500 bg-transparent">
+                      {isCurrent ? "Your Current Plan" : "Free Plan"}
+                    </Button>
+                  )
                 ) : isCurrent ? (
                   <Button variant="outline" disabled className="w-full border-primary/30 text-primary/60 bg-transparent">
                     Active Plan ✓
