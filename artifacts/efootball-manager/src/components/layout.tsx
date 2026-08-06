@@ -281,14 +281,13 @@ export function Layout({ children }: LayoutProps) {
        <footer className="relative z-10 border-t border-white/[0.04] bg-[#1f232b]/95 backdrop-blur-xl">
          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-8 gap-y-10 px-6 py-12 sm:grid-cols-4 sm:px-8 lg:py-14">
            <div>
-             <h2 className="font-sans text-sm font-medium text-zinc-200">News</h2>
+             <h2 className="font-sans text-sm font-medium text-zinc-200">Navigate</h2>
              <div className="mt-4 space-y-2.5">
                {[
-                 ["/", "All"],
-                 ["/marketplace/meta", "Club News"],
-                 ["/marketplace", "Media Center"],
-                 ["/marketplace", "Video"],
-                 ["/contact", "RSS"],
+                 ["/", "Home"],
+                 ["/marketplace", "Marketplace"],
+                 ["/pricing", "Pricing"],
+                 ["/contact", "Contact"],
                ].map(([href, label]) => (
                  <Link key={`${href}-${label}`} href={href}>
                    <div className="block cursor-pointer text-xs leading-5 text-zinc-500 transition-colors hover:text-zinc-200">{label}</div>
@@ -298,14 +297,13 @@ export function Layout({ children }: LayoutProps) {
            </div>
 
            <div>
-             <h2 className="font-sans text-sm font-medium text-zinc-200">Tickets</h2>
+             <h2 className="font-sans text-sm font-medium text-zinc-200">Tournament</h2>
              <div className="mt-4 space-y-2.5">
                {[
-                 ["/marketplace", "Online Ticket"],
-                 ["/pricing", "Payment and Prices"],
-                 ["/contact", "Contact & Booking"],
-                 ["/marketplace", "Tickets"],
-                 ["/pricing", "Coupon"],
+                 ["/players", "Players"],
+                 [isPaid ? "/tournaments/new" : "/pricing", "New Tournament"],
+                 ["/", "Active Tournaments"],
+                 ["/", "Finished Tournaments"],
                ].map(([href, label]) => (
                  <Link key={`${href}-${label}`} href={href}>
                    <div className="block cursor-pointer text-xs leading-5 text-zinc-500 transition-colors hover:text-zinc-200">{label}</div>
@@ -315,14 +313,14 @@ export function Layout({ children }: LayoutProps) {
            </div>
 
            <div>
-             <h2 className="font-sans text-sm font-medium text-zinc-200">Matches</h2>
+             <h2 className="font-sans text-sm font-medium text-zinc-200">Marketplace</h2>
              <div className="mt-4 space-y-2.5">
                {[
-                 ["/", "Standings"],
-                 ["/marketplace/meta", "World Cup"],
-                 ["/marketplace/meta", "La Liga"],
-                 ["/marketplace/meta", "Hyper Cup"],
-                 ["/marketplace/meta", "World League"],
+                 ["/marketplace", "Listings"],
+                 ["/marketplace/escrow", "Escrow"],
+                 ["/marketplace/scanner", "Scanner"],
+                 ["/marketplace/meta", "Meta"],
+                 ["/marketplace/safety", "Safety Guide"],
                ].map(([href, label]) => (
                  <Link key={`${href}-${label}`} href={href}>
                    <div className="block cursor-pointer text-xs leading-5 text-zinc-500 transition-colors hover:text-zinc-200">{label}</div>
@@ -332,18 +330,30 @@ export function Layout({ children }: LayoutProps) {
            </div>
 
            <div>
-             <h2 className="font-sans text-sm font-medium text-zinc-200">Social</h2>
+             <h2 className="font-sans text-sm font-medium text-zinc-200">Account</h2>
              <div className="mt-4 space-y-2.5">
-               {[
-                 ["/contact", "Twitter"],
-                 ["/contact", "Facebook"],
-                 ["/contact", "Instagram"],
-                 ["/contact", "Youtube"],
-               ].map(([href, label]) => (
-                 <Link key={`${href}-${label}`} href={href}>
-                   <div className="block cursor-pointer text-xs leading-5 text-zinc-500 transition-colors hover:text-zinc-200">{label}</div>
-                 </Link>
-               ))}
+               {isLoggedIn ? (
+                 <button
+                   onClick={() => void logout()}
+                   className="block text-left text-xs leading-5 text-zinc-500 transition-colors hover:text-zinc-200"
+                 >
+                   Sign Out
+                 </button>
+               ) : (
+                 <>
+                   <Link href="/login">
+                     <div className="block cursor-pointer text-xs leading-5 text-zinc-500 transition-colors hover:text-zinc-200">Sign In</div>
+                   </Link>
+                   <Link href="/signup">
+                     <div className="block cursor-pointer text-xs leading-5 text-zinc-500 transition-colors hover:text-zinc-200">Create Account</div>
+                   </Link>
+                 </>
+               )}
+               <Link href="/pricing">
+                 <div className="block cursor-pointer text-xs leading-5 text-zinc-500 transition-colors hover:text-zinc-200">
+                   {isPaid ? "Pro Plan" : "Get Pro"}
+                 </div>
+               </Link>
              </div>
            </div>
          </div>
