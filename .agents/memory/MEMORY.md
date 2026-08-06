@@ -1,2 +1,3 @@
 - [Soccer-master theme](soccer-master-theme.md) — use the uploaded charcoal/red soccer visual system across the app while preserving marketplace features.
 - [Authentication sessions](authentication-sessions.md) — admin and user authentication use separate API paths, cookies, and session middleware.
+- [Image sourcing](image-sourcing.md) — prefer attached/local assets for visual matching when public image search is unavailable.
