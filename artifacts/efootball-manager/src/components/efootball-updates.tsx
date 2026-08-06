@@ -8,7 +8,6 @@ import {
   ExternalLink,
   RefreshCw,
   ShieldCheck,
-  Sparkles,
   Target,
   Users,
 } from "lucide-react";
@@ -145,10 +144,6 @@ export function EFootballUpdates() {
 
       <div className="relative flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-primary">
-            <Sparkles className="h-4 w-4" />
-            <span className="font-gaming text-xs font-bold uppercase tracking-[0.25em]">Pack intelligence</span>
-          </div>
           <h2 className="font-display text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
             Featured eFootball Packs
           </h2>
