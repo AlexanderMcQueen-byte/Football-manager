@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { adminSession } from "../lib/sessions";
 
 const router: IRouter = Router();
 
@@ -11,7 +12,9 @@ declare module "express-session" {
   }
 }
 
-router.post("/auth/login", (req, res) => {
+router.use("/admin/auth", adminSession);
+
+router.post("/admin/auth/login", (req, res) => {
   const { username, password } = req.body ?? {};
 
   if (
@@ -20,10 +23,6 @@ router.post("/auth/login", (req, res) => {
     username === ADMIN_USERNAME &&
     password === ADMIN_PASSWORD
   ) {
-    // Replace any account identity on the existing session before saving the
-    // admin role. The managed session store does not support regeneration
-    // reliably, so wait for this explicit save before responding.
-    req.session.userId = undefined;
     req.session.role = "admin";
     req.session.save((saveError) => {
       if (saveError) {
@@ -38,14 +37,14 @@ router.post("/auth/login", (req, res) => {
   res.status(401).json({ error: "Invalid credentials" });
 });
 
-router.post("/auth/logout", (req, res) => {
+router.post("/admin/auth/logout", (req, res) => {
   req.session.destroy(() => {
-    res.clearCookie("efm.sid");
+    res.clearCookie("efm.admin.sid");
     res.json({ ok: true });
   });
 });
 
-router.get("/auth/me", (req, res) => {
+router.get("/admin/auth/me", (req, res) => {
   const role = req.session?.role ?? "viewer";
   res.json({ role });
 });

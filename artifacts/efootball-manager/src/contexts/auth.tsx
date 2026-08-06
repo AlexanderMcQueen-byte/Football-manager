@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function fetchMe() {
     try {
       // Check admin session first
-      const adminRes = await fetch(`${BASE}/api/auth/me`, { credentials: "include" });
+      const adminRes = await fetch(`${BASE}/api/admin/auth/me`, { credentials: "include" });
       const adminData = await adminRes.json();
       if (adminData.role === "admin") {
         setRole("admin");
@@ -75,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   async function loginAdmin(username: string, password: string): Promise<boolean> {
-    const res = await fetch(`${BASE}/api/auth/login`, {
+    const res = await fetch(`${BASE}/api/admin/auth/login`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -125,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function logout(): Promise<void> {
     if (role === "admin") {
-      await fetch(`${BASE}/api/auth/logout`, { method: "POST", credentials: "include" });
+      await fetch(`${BASE}/api/admin/auth/logout`, { method: "POST", credentials: "include" });
     } else {
       await fetch(`${BASE}/api/users/logout`, { method: "POST", credentials: "include" });
     }

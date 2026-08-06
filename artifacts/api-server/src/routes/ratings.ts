@@ -1,8 +1,11 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { ratingsTable } from "@workspace/db/schema";
+import { userSession } from "../lib/sessions";
 
 const router: IRouter = Router();
+
+router.use("/ratings", userSession);
 
 router.post("/ratings", async (req, res) => {
   if (!req.session?.userId) {

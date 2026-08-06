@@ -5,8 +5,11 @@ import { usersTable, emailVerificationsTable } from "@workspace/db/schema";
 import { eq, and, gt } from "drizzle-orm";
 import dns from "dns/promises";
 import { getUncachableResendClient } from "../lib/resend";
+import { userSession } from "../lib/sessions";
 
 const router: IRouter = Router();
+
+router.use("/users", userSession);
 
 declare module "express-session" {
   interface SessionData {
@@ -193,7 +196,6 @@ router.post("/users/login", async (req, res) => {
 
   // Replace any admin identity on the existing session before saving the
   // authenticated user. This keeps the two login modes mutually exclusive.
-  req.session.role = "viewer";
   req.session.userId = user.id;
   req.session.save((saveError) => {
     if (saveError) { res.status(500).json({ error: "Session error" }); return; }
