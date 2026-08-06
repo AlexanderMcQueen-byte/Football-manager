@@ -22,3 +22,9 @@ The uploaded `bg_1.jpg`, `bg_2.jpg`, and `bg_3.jpg` assets are the shared full-s
 **Why:** The user requested the uploaded theme background to be used throughout the full website rather than only on one page.
 
 **How to apply:** Add new route content above the shared layout background instead of replacing it with unrelated page-specific imagery.
+
+The eFHUB reference is applied only to the shared top header: compact dark navigation, mint accent controls, and an eFootball Mobile/search strip. Page content, footer, and the rest of the soccer-master theme remain unchanged.
+
+**Why:** The user specifically requested the uploaded eFHUB treatment on the top bar only.
+
+**How to apply:** Keep future eFHUB-inspired adjustments scoped to the header unless the user explicitly asks to extend that visual treatment elsewhere.

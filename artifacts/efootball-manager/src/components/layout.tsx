@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2, LogIn, LogOut, Crown, User, UserCog, MessageSquare, ShoppingCart, ChevronDown } from "lucide-react";
+import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2, LogIn, LogOut, Crown, User, UserCog, MessageSquare, ShoppingCart, ChevronDown, Search, Globe2, Download, Smartphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth";
 
@@ -55,54 +55,52 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Top navigation */}
       <aside className={cn(
-        "w-full flex flex-col md:flex-row transition-all duration-300 z-40 overflow-hidden",
-        isHome
-          ? "absolute top-0 left-0 bg-transparent border-transparent"
-          : "sticky top-0 sidebar-bg",
-        isMobileMenuOpen ? "max-h-[700px]" : "max-h-20 md:max-h-24"
+        "sticky top-0 z-40 w-full overflow-hidden border-b border-white/10 bg-[#151a20]/95 shadow-[0_8px_30px_rgba(0,0,0,0.22)] backdrop-blur-xl transition-all duration-300",
+        isMobileMenuOpen ? "max-h-[700px]" : "max-h-[124px] md:max-h-none"
       )}>
         <div className="absolute inset-0 pitch-overlay pointer-events-none" />
         <div className="absolute -top-16 left-1/4 w-40 h-40 bg-primary/10 rounded-full blur-[60px] pointer-events-none" />
 
-        {/* Logo */}
-        <div className="relative p-4 flex items-center justify-between gap-3 border-b md:border-b-0 md:border-r border-white/5 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#e3669a] via-[#c14d7f] to-[#713450] flex items-center justify-center shadow-lg shadow-primary/30">
-              <Gamepad2 className="w-6 h-6 text-primary-foreground" />
+        <div className="relative mx-auto flex w-full max-w-[1440px] flex-col md:flex-row">
+          {/* Logo */}
+          <div className="relative flex shrink-0 items-center justify-between gap-3 border-b border-white/5 px-4 py-2.5 sm:px-6 md:border-b-0 md:border-r md:px-5">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#c4f6d3]/30 bg-[#c4f6d3]/10">
+                <Gamepad2 className="h-4 w-4 text-[#c4f6d3]" />
+              </div>
+              <div>
+                <h1 className="soccer-theme-heading font-display text-[16px] font-black leading-none tracking-tight text-white">FOOTBALL</h1>
+                <span className="font-gaming text-[9px] font-semibold tracking-[0.2em] text-[#c4f6d3]">MANAGER</span>
+              </div>
             </div>
-            <div>
-              <h1 className="font-display font-black text-[19px] leading-none text-white tracking-tight soccer-theme-heading">FOOTBALL</h1>
-              <span className="text-xs text-primary font-gaming font-semibold tracking-widest">MANAGER</span>
-            </div>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 text-zinc-400 transition-colors hover:text-[#c4f6d3] md:hidden"
+              aria-label={isMobileMenuOpen ? "Close navigation" : "Open navigation"}
+            >
+              {isMobileMenuOpen ? <X /> : <Menu />}
+            </button>
           </div>
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-zinc-400 hover:text-white transition-colors"
-            aria-label={isMobileMenuOpen ? "Close navigation" : "Open navigation"}
-          >
-            {isMobileMenuOpen ? <X /> : <Menu />}
-          </button>
-        </div>
 
-        {/* Nav items */}
-        <nav className={cn(
-          "relative flex-1 px-1.5 py-3 flex flex-col md:flex-row md:items-center gap-1 overflow-y-auto md:overflow-x-auto",
-          !isMobileMenuOpen && "hidden md:flex"
-        )}>
+          {/* Nav items */}
+          <nav className={cn(
+            "relative flex-1 flex-col gap-0 overflow-y-auto px-3 py-2 md:flex md:flex-row md:items-center md:overflow-x-auto",
+            !isMobileMenuOpen && "hidden"
+          )}>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location === item.href;
             return (
               <Link key={item.href} href={item.href} onClick={() => setIsMobileMenuOpen(false)}>
                 <div className={cn(
-                   "flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer transition-all duration-200 group whitespace-nowrap",
+                    "flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm font-medium transition-all duration-200 group whitespace-nowrap",
                   isActive
-                    ? "nav-active"
-                    : "text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent"
+                    ? "bg-white/[0.05] text-[#c4f6d3] md:border-b-[#c4f6d3]"
+                    : "text-zinc-400 hover:bg-white/[0.05] hover:text-white"
                 )}>
-                  <Icon className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", isActive && "text-primary")} />
+                  <Icon className={cn("h-4 w-4 transition-transform duration-300 group-hover:scale-110 shrink-0", isActive && "text-[#c4f6d3]")} />
                   <span className="font-medium text-sm">{item.label}</span>
-                  {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />}
+                  {isActive && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-[#c4f6d3] shadow-[0_0_8px_rgba(196,246,211,0.8)]" />}
                 </div>
               </Link>
             );
@@ -112,14 +110,14 @@ export function Layout({ children }: LayoutProps) {
           {!isAdmin && (
             <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)}>
               <div className={cn(
-                "flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer transition-all duration-200 group whitespace-nowrap",
+                "flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm font-medium transition-all duration-200 group whitespace-nowrap",
                 location === "/pricing"
-                  ? "nav-active"
-                  : "text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent"
+                  ? "bg-white/[0.05] text-[#c4f6d3] md:border-b-[#c4f6d3]"
+                  : "text-zinc-400 hover:bg-white/[0.05] hover:text-white"
               )}>
-                <Crown className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/pricing" && "text-primary")} />
+                <Crown className={cn("h-4 w-4 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/pricing" && "text-[#c4f6d3]")} />
                 <span className="font-medium text-sm">Pricing</span>
-                {location === "/pricing" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />}
+                {location === "/pricing" && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-[#c4f6d3]" />}
               </div>
             </Link>
           )}
@@ -127,14 +125,14 @@ export function Layout({ children }: LayoutProps) {
           {/* Contact / Inquiries — visible to everyone */}
           <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)}>
             <div className={cn(
-              "flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer transition-all duration-200 group whitespace-nowrap",
+              "flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm font-medium transition-all duration-200 group whitespace-nowrap",
               location === "/contact"
-                ? "nav-active"
-                : "text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent"
+                ? "bg-white/[0.05] text-[#c4f6d3] md:border-b-[#c4f6d3]"
+                : "text-zinc-400 hover:bg-white/[0.05] hover:text-white"
             )}>
-              <MessageSquare className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/contact" && "text-primary")} />
+              <MessageSquare className={cn("h-4 w-4 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/contact" && "text-[#c4f6d3]")} />
               <span className="font-medium text-sm">Contact</span>
-              {location === "/contact" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />}
+              {location === "/contact" && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-[#c4f6d3]" />}
             </div>
           </Link>
 
@@ -142,14 +140,14 @@ export function Layout({ children }: LayoutProps) {
           {isAdmin && (
             <Link href="/admin/users" onClick={() => setIsMobileMenuOpen(false)}>
               <div className={cn(
-                "flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer transition-all duration-200 group whitespace-nowrap",
+                  "flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm font-medium transition-all duration-200 group whitespace-nowrap",
                 location === "/admin/users"
-                  ? "nav-active"
-                  : "text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent"
+                    ? "bg-white/[0.05] text-[#c4f6d3] md:border-b-[#c4f6d3]"
+                    : "text-zinc-400 hover:bg-white/[0.05] hover:text-white"
               )}>
-                <UserCog className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/admin/users" && "text-primary")} />
+                  <UserCog className={cn("h-4 w-4 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/admin/users" && "text-[#c4f6d3]")} />
                 <span className="font-medium text-sm">User Management</span>
-                {location === "/admin/users" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />}
+                  {location === "/admin/users" && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-[#c4f6d3]" />}
               </div>
             </Link>
           )}
@@ -158,38 +156,44 @@ export function Layout({ children }: LayoutProps) {
           {isAdmin && (
             <Link href="/admin/inquiries" onClick={() => setIsMobileMenuOpen(false)}>
               <div className={cn(
-                "flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer transition-all duration-200 group whitespace-nowrap",
+                  "flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm font-medium transition-all duration-200 group whitespace-nowrap",
                 location === "/admin/inquiries"
-                  ? "nav-active"
-                  : "text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent"
+                    ? "bg-white/[0.05] text-[#c4f6d3] md:border-b-[#c4f6d3]"
+                    : "text-zinc-400 hover:bg-white/[0.05] hover:text-white"
               )}>
-                <MessageSquare className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/admin/inquiries" && "text-primary")} />
+                  <MessageSquare className={cn("h-4 w-4 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/admin/inquiries" && "text-[#c4f6d3]")} />
                 <span className="font-medium text-sm">Inquiries</span>
-                {location === "/admin/inquiries" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />}
+                  {location === "/admin/inquiries" && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-[#c4f6d3]" />}
               </div>
             </Link>
           )}
-        </nav>
+          </nav>
 
-        {/* Auth section */}
-         <div className={cn(
-           "relative p-2 border-t md:border-t-0 md:border-l border-white/5 flex items-center gap-1 shrink-0",
-           !isMobileMenuOpen && "hidden md:flex"
-         )}>
+          {/* Auth section */}
+          <div className={cn(
+            "relative flex shrink-0 items-center gap-2 border-t border-white/5 p-2 md:border-l md:border-t-0",
+            !isMobileMenuOpen && "hidden md:flex"
+          )}>
+            <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)}>
+              <div className="flex cursor-pointer items-center gap-1.5 rounded-md bg-[#c4f6d3] px-3 py-2 text-xs font-bold text-[#18211d] transition-colors hover:bg-[#d9fbe2]">
+                <Crown className="h-3.5 w-3.5" />
+                <span>{isPaid ? "Pro Plan" : "Get Pro"}</span>
+              </div>
+            </Link>
            <div className="relative">
              <button
                onClick={() => setIsAccountMenuOpen((open) => !open)}
                className={cn(
-                 "flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-all duration-200",
+                  "flex items-center gap-2 rounded-md border px-3 py-2 text-xs font-medium whitespace-nowrap transition-all duration-200",
                  isAccountMenuOpen
-                   ? "border-primary/40 bg-primary/15 text-primary"
-                   : "border-primary/20 bg-primary/10 text-primary hover:bg-primary/15"
+                    ? "border-[#c4f6d3]/50 bg-[#c4f6d3]/15 text-[#c4f6d3]"
+                    : "border-white/10 bg-white/[0.03] text-zinc-300 hover:border-[#c4f6d3]/40 hover:text-[#c4f6d3]"
                )}
                aria-expanded={isAccountMenuOpen}
                aria-haspopup="menu"
              >
                <User className="h-4 w-4 shrink-0" />
-               <span className="hidden sm:inline">Account</span>
+                <span className="hidden sm:inline">Sign in</span>
                <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isAccountMenuOpen && "rotate-180")} />
              </button>
 
@@ -226,10 +230,44 @@ export function Layout({ children }: LayoutProps) {
                  )}
                </div>
              )}
-           </div>
-          <p className="hidden lg:block text-[10px] font-gaming text-zinc-700 tracking-widest uppercase text-center px-2">
-            Football · Friendly Manager
-          </p>
+            </div>
+            <p className="hidden px-2 text-center font-gaming text-[9px] uppercase tracking-widest text-zinc-600 lg:block">
+              Football · Friendly Manager
+            </p>
+          </div>
+        </div>
+
+        {/* eFHUB-inspired secondary strip */}
+        <div className="relative hidden h-14 overflow-hidden border-t border-white/5 md:block">
+          <img
+            src={`${import.meta.env.BASE_URL}images/marketplace/pitch1.jpg`}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-center opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#151a20] via-[#151a20]/90 to-[#bff3cf]/45" />
+          <div className="absolute -left-8 top-0 h-full w-52 -skew-x-12 bg-[#c4f6d3]/20" />
+          <div className="absolute right-[18%] top-0 h-full w-20 skew-x-12 bg-[#c4f6d3]/15" />
+          <div className="relative mx-auto flex h-full max-w-[1440px] items-center gap-5 px-6 lg:px-8">
+            <div className="flex shrink-0 items-center gap-2 text-white">
+              <Smartphone className="h-5 w-5 text-[#c4f6d3]" />
+              <span className="font-display text-sm font-black tracking-tight">eFOOTBALL</span>
+              <span className="font-gaming text-xs font-bold tracking-[0.2em] text-[#c4f6d3]">MOBILE</span>
+            </div>
+            <Link href="/marketplace" className="min-w-0 max-w-xl flex-1">
+              <div className="flex h-9 items-center gap-2 rounded-full border border-white/5 bg-[#20262d]/90 px-4 text-xs text-zinc-500 transition-colors hover:border-[#c4f6d3]/30 hover:text-zinc-300">
+                <Search className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">Search players &amp; managers...</span>
+              </div>
+            </Link>
+            <div className="ml-auto flex items-center gap-3 text-zinc-400">
+              <Globe2 className="h-3.5 w-3.5" />
+              <Download className="h-3.5 w-3.5" />
+              <Link href="/marketplace" className="hidden text-[10px] font-bold uppercase tracking-wider text-[#c4f6d3] lg:block">
+                Browse accounts
+              </Link>
+            </div>
+          </div>
         </div>
       </aside>
 
