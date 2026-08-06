@@ -45,8 +45,8 @@
   --popover:       218 17% 20%;
   --popover-foreground: 0 0% 96%;
 
-  /* Primary — football red */
-  --primary:       348 86% 53%;  /* #ee1e46 */
+  /* Primary — reference pink */
+  --primary:       337 60% 61%;  /* #d3638e */
   --primary-foreground: 0 0% 100%;
 
   /* Secondary */
@@ -58,7 +58,7 @@
   --muted-foreground: 218 10% 62%;
 
   /* Accent — warm match-day highlight */
-  --accent:        348 86% 53%;
+  --accent:        337 60% 61%;
   --accent-foreground: 0 0% 100%;
 
   /* Destructive */
@@ -68,7 +68,7 @@
   /* Structural */
   --border:        218 12% 28%;
   --input:         218 17% 21%;
-  --ring:          348 86% 53%;
+  --ring:          337 60% 61%;
 
   --radius: 0.75rem;
 }
@@ -86,14 +86,14 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     background-image:
-      radial-gradient(ellipse 80% 50% at 20% -10%, hsl(348 86% 53% / 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 50% at 20% -10%, hsl(337 60% 61% / 0.08) 0%, transparent 60%),
       radial-gradient(ellipse 60% 40% at 80% 110%, hsl(0 0% 100% / 0.04) 0%, transparent 60%);
     background-attachment: fixed;
-    selection-color: hsl(348 86% 53% / 0.3);
+    selection-color: hsl(337 60% 61% / 0.3);
   }
 
   ::selection {
-    background: hsl(348 86% 53% / 0.3);
+    background: hsl(337 60% 61% / 0.3);
     color: hsl(var(--primary));
   }
 
@@ -215,8 +215,8 @@
       0deg,
       transparent,
       transparent 40px,
-      hsl(348 86% 53% / 0.035) 40px,
-      hsl(348 86% 53% / 0.035) 80px
+      hsl(337 60% 61% / 0.035) 40px,
+      hsl(337 60% 61% / 0.035) 80px
     );
   }
 }
@@ -240,17 +240,17 @@
 }
 
 .marketplace-theme [class*="border-indigo-"] {
-  border-color: hsl(348 86% 53% / 0.38) !important;
+  border-color: hsl(337 60% 61% / 0.38) !important;
 }
 
 .marketplace-theme [class*="bg-orange-"] {
-  background-color: hsl(348 86% 53% / 0.14) !important;
+  background-color: hsl(337 60% 61% / 0.14) !important;
 }
 
 .marketplace-theme [class*="border-orange-"] {
-  border-color: hsl(348 86% 53% / 0.48) !important;
+  border-color: hsl(337 60% 61% / 0.48) !important;
 }
 
 .marketplace-theme [class*="text-orange-"] {
-  color: hsl(348 86% 60%) !important;
+  color: hsl(337 60% 66%) !important;
 }

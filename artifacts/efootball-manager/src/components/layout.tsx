@@ -69,19 +69,19 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed md:sticky top-0 left-0 h-screen w-64 sidebar-bg flex flex-col transition-transform duration-300 z-40 overflow-hidden",
+        "fixed md:sticky top-0 left-0 h-screen w-60 sidebar-bg flex flex-col transition-transform duration-300 z-40 overflow-hidden",
         isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       )}>
         <div className="absolute inset-0 pitch-overlay pointer-events-none" />
         <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-40 h-40 bg-primary/10 rounded-full blur-[60px] pointer-events-none" />
 
         {/* Logo */}
-        <div className="relative p-6 hidden md:flex items-center gap-3 border-b border-white/5 pb-5">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-800 flex items-center justify-center shadow-lg shadow-primary/30">
+        <div className="relative p-4 hidden md:flex items-center gap-3 border-b border-white/5 pb-5">
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#e3669a] via-[#c14d7f] to-[#713450] flex items-center justify-center shadow-lg shadow-primary/30">
             <Gamepad2 className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-display font-black text-xl leading-none text-white tracking-tight soccer-theme-heading">FOOTBALL</h1>
+            <h1 className="font-display font-black text-[19px] leading-none text-white tracking-tight soccer-theme-heading">FOOTBALL</h1>
             <span className="text-xs text-primary font-gaming font-semibold tracking-widest">MANAGER</span>
           </div>
         </div>
@@ -110,14 +110,14 @@ export function Layout({ children }: LayoutProps) {
         )}
 
         {/* Nav items */}
-        <nav className="relative flex-1 px-3 py-3 space-y-1">
+        <nav className="relative flex-1 px-1.5 py-3 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location === item.href;
             return (
               <Link key={item.href} href={item.href} onClick={() => setIsMobileMenuOpen(false)}>
                 <div className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 group",
+                   "flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 group",
                   isActive
                     ? "nav-active"
                     : "text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-transparent"
@@ -226,7 +226,7 @@ export function Layout({ children }: LayoutProps) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 relative z-10 w-full md:max-w-[calc(100vw-16rem)]">
+      <main className="flex-1 relative z-10 w-full md:max-w-[calc(100vw-15rem)]">
         <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto min-h-full">
           {children}
         </div>
