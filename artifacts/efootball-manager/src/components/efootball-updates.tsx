@@ -99,26 +99,26 @@ export function EFootballUpdates() {
 
   if (isLoading) {
     return (
-      <section className="animate-pulse rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.12)] sm:p-6">
-        <div className="h-4 w-48 rounded bg-slate-200" />
-        <div className="mt-5 h-48 rounded-xl bg-slate-100" />
+      <section className="animate-pulse rounded-2xl border border-white/10 bg-[#191d23] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.28)] sm:p-6">
+        <div className="h-4 w-48 rounded bg-white/10" />
+        <div className="mt-5 h-48 rounded-xl bg-white/[0.06]" />
       </section>
     );
   }
 
   if (error || !data || !pack || !player) {
     return (
-      <section className="rounded-2xl border border-pink-200 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.12)] sm:p-6">
+      <section className="rounded-2xl border border-white/10 bg-[#191d23] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.28)] sm:p-6">
         <div className="flex items-center gap-3">
           <BrainCircuit className="h-5 w-5 text-primary" />
           <div>
-            <h2 className="font-display text-lg font-bold text-slate-900">eFootball Pack Watch</h2>
-            <p className="text-sm text-slate-500">{error || "No pack updates are available right now."}</p>
+            <h2 className="font-display text-lg font-bold text-white">eFootball Pack Watch</h2>
+            <p className="text-sm text-zinc-400">{error || "No pack updates are available right now."}</p>
           </div>
         </div>
         <button
           onClick={() => void loadUpdates()}
-          className="mt-4 inline-flex items-center gap-2 rounded-lg border border-pink-200 bg-pink-50 px-3 py-2 text-xs font-bold uppercase tracking-wider text-primary hover:bg-pink-100"
+          className="mt-4 inline-flex items-center gap-2 rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/20"
         >
           <RefreshCw className="h-3.5 w-3.5" />
           Try again
@@ -128,15 +128,15 @@ export function EFootballUpdates() {
   }
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.14)] sm:p-6">
+    <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#191d23] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.32)] sm:p-6">
       <img
         src={`${BASE}/images/stadium-hero.png`}
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center opacity-[0.18]"
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center opacity-[0.24]"
       />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/95 via-white/88 to-pink-50/80" />
-      <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-pink-100 blur-3xl" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#191d23]/96 via-[#191d23]/90 to-[#3b202f]/88" />
+      <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-primary/15 blur-3xl" />
 
       <div className="relative flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
@@ -144,15 +144,15 @@ export function EFootballUpdates() {
             <Sparkles className="h-4 w-4" />
             <span className="font-gaming text-xs font-bold uppercase tracking-[0.25em]">Pack intelligence</span>
           </div>
-          <h2 className="font-display text-2xl font-black uppercase tracking-tight text-slate-950 sm:text-3xl">
+          <h2 className="font-display text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
             Upcoming eFootball Packs
           </h2>
-          <p className="mt-1 max-w-2xl text-sm text-slate-600">
+          <p className="mt-1 max-w-2xl text-sm text-zinc-400">
             Browse the latest EFHub pack watch and rotate through the featured players to see the strongest role-based training focus.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-slate-500">
-          <span className={cn("h-2 w-2 rounded-full", data.sourceStatus === "live-index" ? "bg-emerald-400" : "bg-amber-400")} />
+        <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-500">
+          <span className={cn("h-2 w-2 rounded-full", data.sourceStatus === "live-index" ? "bg-emerald-400" : "bg-primary")} />
           {data.sourceStatus === "live-index" ? "Index checked live" : "Verified snapshot"}
           <span>·</span>
           {new Date(data.checkedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -167,8 +167,8 @@ export function EFootballUpdates() {
             className={cn(
               "shrink-0 border px-3 py-2 text-left transition-all",
               selectedPack === index
-                 ? "border-primary/60 bg-pink-50 text-primary shadow-sm"
-                 : "border-slate-200 bg-slate-50 text-slate-500 hover:border-pink-200 hover:bg-pink-50 hover:text-primary",
+                 ? "border-primary/70 bg-primary/15 text-primary shadow-[0_0_18px_rgba(219,92,145,0.12)]"
+                 : "border-white/10 bg-[#252a31]/90 text-zinc-400 hover:border-primary/50 hover:bg-primary/10 hover:text-primary",
             )}
           >
             <span className="block max-w-[170px] truncate text-xs font-bold uppercase tracking-wide">{item.name}</span>
@@ -177,24 +177,24 @@ export function EFootballUpdates() {
         ))}
       </div>
 
-      <div className="relative mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)]">
-        <div className="relative flex min-h-[245px] overflow-hidden border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-pink-50/60">
-          <div className="absolute inset-0 bg-gradient-to-r from-pink-100/60 via-transparent to-transparent" />
+       <div className="relative mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)]">
+         <div className="relative flex min-h-[245px] overflow-hidden border border-white/10 bg-gradient-to-br from-[#232831] via-[#1d2229] to-[#3b202f]/80">
+           <div className="absolute inset-0 bg-gradient-to-r from-primary/15 via-transparent to-transparent" />
           <div className="relative flex w-full items-center justify-between gap-4 p-5 sm:p-7">
             <div className="max-w-[58%] sm:max-w-[52%]">
               <div className="flex items-center gap-2">
-                <span className="border border-pink-200 bg-pink-50 px-2 py-1 font-gaming text-xs font-bold text-primary">
+                   <span className="border border-primary/40 bg-primary/10 px-2 py-1 font-gaming text-xs font-bold text-primary">
                   {player.position}
                 </span>
-                <span className="text-xs uppercase tracking-widest text-slate-500">{pack.name}</span>
+                 <span className="text-xs uppercase tracking-widest text-zinc-400">{pack.name}</span>
               </div>
-              <h3 className="mt-4 font-display text-2xl font-black text-slate-950 sm:text-3xl">{player.name}</h3>
-              <p className="mt-1 text-sm text-slate-500">EFHub rating <strong className="text-slate-950">{player.rating}</strong></p>
+               <h3 className="mt-4 font-display text-2xl font-black text-white sm:text-3xl">{player.name}</h3>
+               <p className="mt-1 text-sm text-zinc-400">EFHub rating <strong className="text-white">{player.rating}</strong></p>
               <a
                 href={player.playerUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-5 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary hover:text-pink-700"
+                 className="mt-5 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary hover:text-pink-300"
               >
                 View player data <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
@@ -207,17 +207,17 @@ export function EFootballUpdates() {
           </div>
         </div>
 
-        <div className="border border-pink-200 bg-pink-50/70 p-5 sm:p-6">
+         <div className="border border-primary/30 bg-[#2a2029]/85 p-5 sm:p-6">
           <div className="flex items-center gap-2 text-primary">
             <Target className="h-4 w-4" />
             <span className="font-gaming text-xs font-bold uppercase tracking-[0.2em]">Recommended training</span>
           </div>
-          <h3 className="mt-3 font-display text-xl font-black uppercase text-slate-950">{player.training.focus}</h3>
-          <p className="mt-3 text-sm leading-relaxed text-slate-700">{player.training.details}</p>
-          <div className="mt-4 border-l-2 border-primary/50 pl-3 text-xs leading-relaxed text-slate-600">
-            <strong className="text-slate-900">Why this build:</strong> {player.training.reason}
+           <h3 className="mt-3 font-display text-xl font-black uppercase text-white">{player.training.focus}</h3>
+           <p className="mt-3 text-sm leading-relaxed text-zinc-300">{player.training.details}</p>
+           <div className="mt-4 border-l-2 border-primary/70 pl-3 text-xs leading-relaxed text-zinc-400">
+             <strong className="text-white">Why this build:</strong> {player.training.reason}
           </div>
-          <div className="mt-5 flex items-center gap-2 text-[10px] uppercase tracking-wider text-slate-500">
+           <div className="mt-5 flex items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-500">
             <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
             Role-based priority · verify in-game progression preview
           </div>
@@ -228,18 +228,18 @@ export function EFootballUpdates() {
         <div className="relative mt-4 flex items-center gap-3">
           <button
             onClick={() => setPlayerIndex((current) => (current - 1 + playerCount) % playerCount)}
-            className="border border-slate-200 bg-white p-2 text-slate-500 hover:border-pink-300 hover:text-primary"
+             className="border border-white/10 bg-[#252a31] p-2 text-zinc-400 hover:border-primary/50 hover:text-primary"
             aria-label="Previous player"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <div className="h-1 flex-1 bg-slate-200">
+           <div className="h-1 flex-1 bg-white/10">
             <div className="h-full bg-primary transition-all duration-500" style={{ width: `${progress}%` }} />
           </div>
-          <span className="min-w-12 text-center font-gaming text-xs text-slate-500">{playerIndex + 1}/{playerCount}</span>
+           <span className="min-w-12 text-center font-gaming text-xs text-zinc-500">{playerIndex + 1}/{playerCount}</span>
           <button
             onClick={() => setPlayerIndex((current) => (current + 1) % playerCount)}
-            className="border border-slate-200 bg-white p-2 text-slate-500 hover:border-pink-300 hover:text-primary"
+             className="border border-white/10 bg-[#252a31] p-2 text-zinc-400 hover:border-primary/50 hover:text-primary"
             aria-label="Next player"
           >
             <ChevronRight className="h-4 w-4" />
@@ -247,13 +247,13 @@ export function EFootballUpdates() {
         </div>
       )}
 
-      <div className="relative mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 pt-4 text-[10px] text-slate-500">
+       <div className="relative mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-4 text-[10px] text-zinc-500">
         <span>{data.source.note}</span>
         <span className="flex items-center gap-3">
-          <a href={pack.packUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-primary hover:text-pink-700">
+           <a href={pack.packUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-primary hover:text-pink-300">
             EFHub pack <ExternalLink className="h-3 w-3" />
           </a>
-          <a href={data.source.officialUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-slate-500 hover:text-slate-900">
+           <a href={data.source.officialUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-zinc-500 hover:text-white">
             Konami official <ExternalLink className="h-3 w-3" />
           </a>
         </span>

@@ -34,3 +34,9 @@ The footer follows the uploaded reference with four quiet link columns (News, Ti
 **Why:** The user requested the reference footer structure while retaining real app navigation destinations.
 
 **How to apply:** Preserve the restrained charcoal surface, muted gray links, generous spacing, and small pink-accented attribution when updating footer content.
+
+The Upcoming eFootball Packs module now follows an EFHub-inspired dark presentation: charcoal surfaces, white headings, muted gray metadata, and pink/magenta accents. This dark treatment is scoped to the pack module only.
+
+**Why:** The user requested the pack content to be displayed in the dark EFHub style while preserving the rest of the site’s existing visual boundaries.
+
+**How to apply:** Keep the module dark when updating pack content or controls; do not extend this treatment to the rest of the app unless explicitly requested.
