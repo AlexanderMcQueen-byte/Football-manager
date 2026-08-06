@@ -28,3 +28,9 @@ The eFHUB reference is applied only to the shared top header: compact dark navig
 **Why:** The user specifically requested the uploaded eFHUB treatment on the top bar only.
 
 **How to apply:** Keep future eFHUB-inspired adjustments scoped to the header unless the user explicitly asks to extend that visual treatment elsewhere.
+
+The footer follows the uploaded reference with four quiet link columns (News, Tickets, Matches, Social) and a centered copyright line instead of a large branded CTA layout.
+
+**Why:** The user requested the reference footer structure while retaining real app navigation destinations.
+
+**How to apply:** Preserve the restrained charcoal surface, muted gray links, generous spacing, and small pink-accented attribution when updating footer content.

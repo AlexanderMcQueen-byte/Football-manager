@@ -278,107 +278,82 @@ export function Layout({ children }: LayoutProps) {
         </div>
       </main>
 
-       <footer className="relative z-10 border-t border-white/10 bg-[#11141b]/85 backdrop-blur-xl">
-         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:px-8">
+       <footer className="relative z-10 border-t border-white/[0.04] bg-[#1f232b]/95 backdrop-blur-xl">
+         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-8 gap-y-10 px-6 py-12 sm:grid-cols-4 sm:px-8 lg:py-14">
            <div>
-             <Link href="/" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-               <div className="flex cursor-pointer items-center gap-3">
-                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#e3669a] via-[#c14d7f] to-[#713450] shadow-lg shadow-primary/20">
-                   <Gamepad2 className="h-5 w-5 text-white" />
-                 </div>
-                 <div>
-                   <div className="soccer-theme-heading font-display text-lg font-black leading-none text-white">Football</div>
-                   <div className="font-gaming text-[10px] font-semibold tracking-[0.28em] text-primary">Manager</div>
-                 </div>
-               </div>
-             </Link>
-             <p className="mt-4 max-w-xs text-sm leading-relaxed text-zinc-500">
-               Organize tournaments, manage your players, and build your eFootball community in one place.
-             </p>
-             <div className="mt-5 flex flex-wrap gap-2">
-               <Link href={isPaid ? "/tournaments/new" : "/pricing"}>
-                 <div className="cursor-pointer rounded-lg bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-all hover:bg-primary/90 hover:shadow-[0_0_18px_hsl(var(--primary)/0.3)]">
-                   {isPaid ? "Create Tournament" : "Start Creating"}
-                 </div>
-               </Link>
-               <Link href="/marketplace">
-                 <div className="cursor-pointer rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary transition-all hover:bg-primary/10">
-                   Browse Marketplace
-                 </div>
-               </Link>
-             </div>
-           </div>
-
-           <div>
-             <h2 className="font-gaming text-xs font-bold uppercase tracking-[0.22em] text-primary">Navigate</h2>
+             <h2 className="font-sans text-sm font-medium text-zinc-200">News</h2>
              <div className="mt-4 space-y-2.5">
                {[
-                 ["/", "Home"],
-                 ["/marketplace", "Marketplace"],
-                 ["/pricing", "Pricing"],
-                 ["/contact", "Contact"],
+                 ["/", "All"],
+                 ["/marketplace/meta", "Club News"],
+                 ["/marketplace", "Media Center"],
+                 ["/marketplace", "Video"],
+                 ["/contact", "RSS"],
                ].map(([href, label]) => (
-                 <Link key={href} href={href}>
-                   <div className="block cursor-pointer text-sm text-zinc-400 transition-colors hover:text-white">{label}</div>
+                 <Link key={`${href}-${label}`} href={href}>
+                   <div className="block cursor-pointer text-xs leading-5 text-zinc-500 transition-colors hover:text-zinc-200">{label}</div>
                  </Link>
                ))}
              </div>
            </div>
 
            <div>
-             <h2 className="font-gaming text-xs font-bold uppercase tracking-[0.22em] text-primary">Manager Tools</h2>
+             <h2 className="font-sans text-sm font-medium text-zinc-200">Tickets</h2>
              <div className="mt-4 space-y-2.5">
-               <Link href="/players">
-                 <div className="block cursor-pointer text-sm text-zinc-400 transition-colors hover:text-white">Players</div>
-               </Link>
-               <Link href={isPaid ? "/tournaments/new" : "/pricing"}>
-                 <div className="block cursor-pointer text-sm text-zinc-400 transition-colors hover:text-white">New Tournament</div>
-               </Link>
-               <Link href="/marketplace/scanner">
-                 <div className="block cursor-pointer text-sm text-zinc-400 transition-colors hover:text-white">Account Scanner</div>
-               </Link>
-               <Link href="/marketplace/safety">
-                 <div className="block cursor-pointer text-sm text-zinc-400 transition-colors hover:text-white">Safety Guide</div>
-               </Link>
+               {[
+                 ["/marketplace", "Online Ticket"],
+                 ["/pricing", "Payment and Prices"],
+                 ["/contact", "Contact & Booking"],
+                 ["/marketplace", "Tickets"],
+                 ["/pricing", "Coupon"],
+               ].map(([href, label]) => (
+                 <Link key={`${href}-${label}`} href={href}>
+                   <div className="block cursor-pointer text-xs leading-5 text-zinc-500 transition-colors hover:text-zinc-200">{label}</div>
+                 </Link>
+               ))}
              </div>
            </div>
 
            <div>
-             <h2 className="font-gaming text-xs font-bold uppercase tracking-[0.22em] text-primary">Account</h2>
-             <p className="mt-4 text-sm leading-relaxed text-zinc-500">
-               Join the community or sign in to manage your tournaments and account.
-             </p>
-             <div className="mt-4 flex flex-wrap gap-2">
-               {isLoggedIn ? (
-                 <button
-                   onClick={() => void logout()}
-                   className="rounded-lg border border-white/10 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-zinc-300 transition-colors hover:border-primary/30 hover:text-white"
-                 >
-                   Sign Out
-                 </button>
-               ) : (
-                 <>
-                   <Link href="/login">
-                     <div className="cursor-pointer rounded-lg border border-white/10 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-zinc-300 transition-colors hover:border-primary/30 hover:text-white">
-                       Sign In
-                     </div>
-                   </Link>
-                   <Link href="/signup">
-                     <div className="cursor-pointer rounded-lg bg-primary/15 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary transition-colors hover:bg-primary/25">
-                       Create Account
-                     </div>
-                   </Link>
-                 </>
-               )}
+             <h2 className="font-sans text-sm font-medium text-zinc-200">Matches</h2>
+             <div className="mt-4 space-y-2.5">
+               {[
+                 ["/", "Standings"],
+                 ["/marketplace/meta", "World Cup"],
+                 ["/marketplace/meta", "La Liga"],
+                 ["/marketplace/meta", "Hyper Cup"],
+                 ["/marketplace/meta", "World League"],
+               ].map(([href, label]) => (
+                 <Link key={`${href}-${label}`} href={href}>
+                   <div className="block cursor-pointer text-xs leading-5 text-zinc-500 transition-colors hover:text-zinc-200">{label}</div>
+                 </Link>
+               ))}
+             </div>
+           </div>
+
+           <div>
+             <h2 className="font-sans text-sm font-medium text-zinc-200">Social</h2>
+             <div className="mt-4 space-y-2.5">
+               {[
+                 ["/contact", "Twitter"],
+                 ["/contact", "Facebook"],
+                 ["/contact", "Instagram"],
+                 ["/contact", "Youtube"],
+               ].map(([href, label]) => (
+                 <Link key={`${href}-${label}`} href={href}>
+                   <div className="block cursor-pointer text-xs leading-5 text-zinc-500 transition-colors hover:text-zinc-200">{label}</div>
+                 </Link>
+               ))}
              </div>
            </div>
          </div>
 
-         <div className="border-t border-white/8">
-           <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-4 text-[10px] uppercase tracking-[0.16em] text-zinc-600 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
-             <span>© {new Date().getFullYear()} Football Manager</span>
-             <span>Built for every match, every manager, every tournament</span>
-           </div>
+         <div className="pb-14 pt-1 text-center text-xs text-zinc-500">
+           Copyright © {new Date().getFullYear()} All rights reserved | This template is made with{" "}
+           <span className="text-zinc-400">♥</span> by{" "}
+           <Link href="/" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+             <span className="cursor-pointer text-primary transition-colors hover:text-pink-300">Football Manager</span>
+           </Link>
          </div>
        </footer>
 
