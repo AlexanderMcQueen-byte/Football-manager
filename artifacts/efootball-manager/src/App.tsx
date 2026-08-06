@@ -16,6 +16,7 @@ import AdminUsers from "@/pages/admin-users";
 import AdminInquiries from "@/pages/admin-inquiries";
 import Contact from "@/pages/contact";
 import NotFound from "@/pages/not-found";
+import MarketplacePage from "@/pages/marketplace";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,6 +43,8 @@ function Router() {
             <Route path="/admin/users" component={AdminUsers} />
             <Route path="/admin/inquiries" component={AdminInquiries} />
             <Route path="/contact" component={Contact} />
+            <Route path="/marketplace/:rest*" component={MarketplacePage} />
+            <Route path="/marketplace" component={MarketplacePage} />
             <Route component={NotFound} />
           </Switch>
         </Layout>

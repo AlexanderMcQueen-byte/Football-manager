@@ -70,8 +70,14 @@ A full-stack **Football Tournament Manager** web app for organizing friendly eFo
 - `/contact` page visible to all users (name, email, subject pills, message)
 - Submissions stored in `inquiries` table with status tracking
 
+### eFootball Account Marketplace
+- `/marketplace` hub with verified account listings, filters, account inspection, and escrow start flow
+- Escrow workflow with vault protection, credential handoff, verification, disputes, and cooldown tracking
+- Account scanner, anti-scam reports, seller authentication/portal, negotiation chat, seller reviews, and VPN safety guide
+- Marketplace state currently uses seeded listings and client-side Zustand state; API persistence routes are reserved for a future backend expansion
+
 ### UI / Design
-- Dark navy theme (`#080D17`), electric green (`#15C55A`)
+- Indigo-navy theme with orange primary accents (`#f97316`)
 - Fonts: Rajdhani (gaming headings), Outfit (body)
 - Sidebar navigation with role-aware links (admin sees User Management + Inquiries)
 - Responsive layout (mobile + desktop)

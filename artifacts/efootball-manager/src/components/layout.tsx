@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2, LogIn, LogOut, ShieldCheck, Eye, Crown, User, Zap, UserCog, MessageSquare } from "lucide-react";
+import { Trophy, Users, LayoutDashboard, Menu, X, Gamepad2, LogIn, LogOut, ShieldCheck, Eye, Crown, User, Zap, UserCog, MessageSquare, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth";
 
@@ -15,6 +15,7 @@ export function Layout({ children }: LayoutProps) {
 
   const publicNavItems = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/marketplace", label: "Marketplace", icon: ShoppingCart },
   ];
 
   const creatorNavItems = [
@@ -47,7 +48,7 @@ export function Layout({ children }: LayoutProps) {
         />
         <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/85 to-background/95" />
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/8 blur-[140px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-900/20 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-900/20 blur-[120px]" />
       </div>
 
       {/* Mobile Header */}
@@ -76,7 +77,7 @@ export function Layout({ children }: LayoutProps) {
 
         {/* Logo */}
         <div className="relative p-6 hidden md:flex items-center gap-3 border-b border-white/5 pb-5">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-emerald-700 flex items-center justify-center shadow-lg shadow-primary/30">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-600 to-orange-800 flex items-center justify-center shadow-lg shadow-primary/30">
             <Gamepad2 className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
@@ -123,7 +124,7 @@ export function Layout({ children }: LayoutProps) {
                 )}>
                   <Icon className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", isActive && "text-primary")} />
                   <span className="font-medium text-sm">{item.label}</span>
-                  {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(145_80%_42%)]" />}
+                  {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />}
                 </div>
               </Link>
             );
@@ -140,7 +141,7 @@ export function Layout({ children }: LayoutProps) {
               )}>
                 <Crown className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/pricing" && "text-primary")} />
                 <span className="font-medium text-sm">Pricing</span>
-                {location === "/pricing" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(145_80%_42%)]" />}
+                {location === "/pricing" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />}
               </div>
             </Link>
           )}
@@ -155,7 +156,7 @@ export function Layout({ children }: LayoutProps) {
             )}>
               <MessageSquare className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/contact" && "text-primary")} />
               <span className="font-medium text-sm">Contact</span>
-              {location === "/contact" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(145_80%_42%)]" />}
+              {location === "/contact" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />}
             </div>
           </Link>
 
@@ -170,7 +171,7 @@ export function Layout({ children }: LayoutProps) {
               )}>
                 <UserCog className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/admin/users" && "text-primary")} />
                 <span className="font-medium text-sm">User Management</span>
-                {location === "/admin/users" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(145_80%_42%)]" />}
+                {location === "/admin/users" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />}
               </div>
             </Link>
           )}
@@ -186,7 +187,7 @@ export function Layout({ children }: LayoutProps) {
               )}>
                 <MessageSquare className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0", location === "/admin/inquiries" && "text-primary")} />
                 <span className="font-medium text-sm">Inquiries</span>
-                {location === "/admin/inquiries" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(145_80%_42%)]" />}
+                {location === "/admin/inquiries" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_hsl(var(--primary))]" />}
               </div>
             </Link>
           )}

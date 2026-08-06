@@ -1,0 +1,898 @@
+{
+  "listings": [
+    {
+      "id": "ef-3324",
+      "title": "Division 1 Top Squad | 30 Epics & 2,200 Coins",
+      "sellerName": "You (Verified Seller)",
+      "sellerBadge": {
+        "phoneVerified": true,
+        "tradesCount": 15,
+        "idVerified": true,
+        "disputeFreeRecord": true,
+        "trustScore": 98
+      },
+      "price": 150,
+      "platform": "Mobile (Android/iOS)",
+      "region": "Europe",
+      "ownerUsername": "MyGameHandle_eFB",
+      "ownerId": "892-410-032",
+      "epicCount": 18,
+      "showtimeCount": 5,
+      "gpBalance": 1500000,
+      "coinBalance": 2200,
+      "eFootballPoints": 12000,
+      "maxDivision": "Division 1 (Rank #180)",
+      "squadRating": 3160,
+      "squadFormation": "4-2-1-3 Quick Counter",
+      "mainManager": "L. Roman (88 Quick Counter)",
+      "featuredPlayers": [
+        {
+          "id": "p-1785156362687-1",
+          "name": "R. Gullit",
+          "rating": 104,
+          "position": "AMF",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 106
+        },
+        {
+          "id": "p-1785156362687-2",
+          "name": "P. Vieira",
+          "rating": 102,
+          "position": "DMF",
+          "cardType": "Epic",
+          "club": "Arsenal",
+          "boostedRating": 104
+        }
+      ],
+      "startingXI": [],
+      "snapshotVerified": true,
+      "snapshotHash": "KONAMI-HASH-BV4RL52",
+      "konamiIdMasked": "sel****@gmail.com",
+      "vaultPrivacyStatus": "PROTECTED_IN_VAULT",
+      "squadImages": [
+        "/src/assets/images/efootball_squad_pitch_1_1785155635891.jpg"
+      ],
+      "createdDate": "2026-07-27",
+      "description": "Verified eFootball account with intact Booster Epics and Coins. Ready for immediate escrow transfer."
+    },
+    {
+      "id": "ef-chebukati-01",
+      "title": "🏆 Chebukati Official Squad | Division 1 Rank #18 | 48 Booster Epics (108 Big Time Messi, Gullit, Rummenigge)",
+      "sellerName": "Chebukati_eFootball",
+      "sellerBadge": {
+        "phoneVerified": true,
+        "tradesCount": 52,
+        "idVerified": true,
+        "disputeFreeRecord": true,
+        "trustScore": 100
+      },
+      "price": 450,
+      "platform": "Mobile (Android/iOS)",
+      "region": "Europe",
+      "ownerUsername": "Chebukati",
+      "ownerId": "742-880-109",
+      "epicCount": 48,
+      "showtimeCount": 18,
+      "gpBalance": 3200000,
+      "coinBalance": 8500,
+      "eFootballPoints": 34000,
+      "maxDivision": "Division 1 (Global Rank #18)",
+      "squadRating": 3210,
+      "squadFormation": "4-2-1-3 Quick Counter",
+      "mainManager": "L. Roman (88 Quick Counter +3 Booster)",
+      "featuredPlayers": [
+        {
+          "id": "ch1",
+          "name": "L. Messi (Big Time)",
+          "rating": 105,
+          "position": "RWF",
+          "cardType": "Big Time",
+          "club": "Argentina",
+          "boostedRating": 108
+        },
+        {
+          "id": "ch2",
+          "name": "K. Rummenigge (Booster Epic)",
+          "rating": 104,
+          "position": "CF",
+          "cardType": "Epic",
+          "club": "FC Bayern",
+          "boostedRating": 106
+        },
+        {
+          "id": "ch3",
+          "name": "R. Gullit (Booster Epic)",
+          "rating": 104,
+          "position": "AMF",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 107
+        },
+        {
+          "id": "ch4",
+          "name": "P. Vieira (Destroyer Epic)",
+          "rating": 103,
+          "position": "DMF",
+          "cardType": "Epic",
+          "club": "Arsenal",
+          "boostedRating": 105
+        },
+        {
+          "id": "ch5",
+          "name": "P. Maldini (Booster Epic)",
+          "rating": 104,
+          "position": "CB",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 106
+        },
+        {
+          "id": "ch6",
+          "name": "K. Mbappé (Showtime)",
+          "rating": 103,
+          "position": "LWF",
+          "cardType": "Showtime",
+          "club": "Real Madrid",
+          "boostedRating": 105
+        }
+      ],
+      "startingXI": [
+        {
+          "id": "ch1",
+          "name": "L. Messi (Big Time)",
+          "rating": 105,
+          "position": "RWF",
+          "cardType": "Big Time",
+          "club": "Argentina",
+          "boostedRating": 108
+        },
+        {
+          "id": "ch2",
+          "name": "K. Rummenigge (Booster Epic)",
+          "rating": 104,
+          "position": "CF",
+          "cardType": "Epic",
+          "club": "FC Bayern",
+          "boostedRating": 106
+        },
+        {
+          "id": "ch6",
+          "name": "K. Mbappé (Showtime)",
+          "rating": 103,
+          "position": "LWF",
+          "cardType": "Showtime",
+          "club": "Real Madrid",
+          "boostedRating": 105
+        },
+        {
+          "id": "ch3",
+          "name": "R. Gullit (Booster Epic)",
+          "rating": 104,
+          "position": "AMF",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 107
+        },
+        {
+          "id": "ch4",
+          "name": "P. Vieira (Destroyer Epic)",
+          "rating": 103,
+          "position": "DMF",
+          "cardType": "Epic",
+          "club": "Arsenal",
+          "boostedRating": 105
+        },
+        {
+          "id": "ch7",
+          "name": "F. Rijkaard (Booster Epic)",
+          "rating": 102,
+          "position": "DMF",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 104
+        },
+        {
+          "id": "ch8",
+          "name": "R. Carlos (Epic)",
+          "rating": 101,
+          "position": "LB",
+          "cardType": "Epic",
+          "club": "Real Madrid",
+          "boostedRating": 103
+        },
+        {
+          "id": "ch5",
+          "name": "P. Maldini (Booster Epic)",
+          "rating": 104,
+          "position": "CB",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 106
+        },
+        {
+          "id": "ch9",
+          "name": "A. Nesta (Booster Epic)",
+          "rating": 103,
+          "position": "CB",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 105
+        },
+        {
+          "id": "ch10",
+          "name": "L. Thuram (Epic)",
+          "rating": 102,
+          "position": "RB",
+          "cardType": "Epic",
+          "club": "France",
+          "boostedRating": 104
+        },
+        {
+          "id": "ch11",
+          "name": "P. Schmeichel (Booster Epic)",
+          "rating": 103,
+          "position": "GK",
+          "cardType": "Epic",
+          "club": "Manchester Utd",
+          "boostedRating": 105
+        }
+      ],
+      "snapshotVerified": true,
+      "snapshotHash": "KONAMI-SNAPSHOT-VERIFIED-CHEBUKATI-88X",
+      "konamiIdMasked": "cheb****26@gmail.com",
+      "vaultPrivacyStatus": "PROTECTED_IN_VAULT",
+      "createdDate": "2026-07-26",
+      "description": "Official verified eFootball 2026 squad for Chebukati. Division 1 Global Rank #18 player with 3210 squad rating, 48 Booster Epics led by L. Roman (88 Quick Counter Manager)."
+    },
+    {
+      "id": "ef-9901",
+      "title": "👑 Division 1 Top 100 Squad | 42 Epics (Gullit, Big Time Messi, Rummenigge) | 1.8M GP",
+      "sellerName": "ProGamer_Alex",
+      "sellerBadge": {
+        "phoneVerified": true,
+        "tradesCount": 24,
+        "idVerified": true,
+        "disputeFreeRecord": true,
+        "trustScore": 99
+      },
+      "price": 340,
+      "platform": "Mobile (Android/iOS)",
+      "region": "Europe",
+      "ownerUsername": "@Alex_eFB_Div1",
+      "ownerId": "892-410-032",
+      "epicCount": 42,
+      "showtimeCount": 15,
+      "gpBalance": 1850000,
+      "coinBalance": 5400,
+      "eFootballPoints": 24500,
+      "maxDivision": "Division 1 (Rank #42)",
+      "squadRating": 3195,
+      "squadFormation": "4-1-2-3 Quick Counter",
+      "mainManager": "L. Roman (88 Quick Counter)",
+      "featuredPlayers": [
+        {
+          "id": "p1",
+          "name": "R. Gullit",
+          "rating": 104,
+          "position": "AMF",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 106
+        },
+        {
+          "id": "p2",
+          "name": "L. Messi",
+          "rating": 105,
+          "position": "SS",
+          "cardType": "Big Time",
+          "club": "Argentina",
+          "boostedRating": 107
+        },
+        {
+          "id": "p3",
+          "name": "K. Rummenigge",
+          "rating": 103,
+          "position": "CF",
+          "cardType": "Epic",
+          "club": "FC Bayern",
+          "boostedRating": 105
+        },
+        {
+          "id": "p4",
+          "name": "P. Vieira",
+          "rating": 102,
+          "position": "DMF",
+          "cardType": "Epic",
+          "club": "Arsenal",
+          "boostedRating": 104
+        },
+        {
+          "id": "p5",
+          "name": "A. Nesta",
+          "rating": 102,
+          "position": "CB",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 104
+        },
+        {
+          "id": "p6",
+          "name": "K. Mbappé",
+          "rating": 102,
+          "position": "LWF",
+          "cardType": "Showtime",
+          "club": "Real Madrid",
+          "boostedRating": 104
+        }
+      ],
+      "startingXI": [
+        {
+          "id": "p2",
+          "name": "L. Messi",
+          "rating": 105,
+          "position": "RWF",
+          "cardType": "Big Time",
+          "club": "Argentina",
+          "boostedRating": 107
+        },
+        {
+          "id": "p3",
+          "name": "K. Rummenigge",
+          "rating": 103,
+          "position": "CF",
+          "cardType": "Epic",
+          "club": "FC Bayern",
+          "boostedRating": 105
+        },
+        {
+          "id": "p6",
+          "name": "K. Mbappé",
+          "rating": 102,
+          "position": "LWF",
+          "cardType": "Showtime",
+          "club": "Real Madrid",
+          "boostedRating": 104
+        },
+        {
+          "id": "p1",
+          "name": "R. Gullit",
+          "rating": 104,
+          "position": "AMF",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 106
+        },
+        {
+          "id": "p8",
+          "name": "Kaká",
+          "rating": 102,
+          "position": "AMF",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 104
+        },
+        {
+          "id": "p4",
+          "name": "P. Vieira",
+          "rating": 102,
+          "position": "DMF",
+          "cardType": "Epic",
+          "club": "Arsenal",
+          "boostedRating": 104
+        },
+        {
+          "id": "p12",
+          "name": "R. Carlos",
+          "rating": 100,
+          "position": "LB",
+          "cardType": "Epic",
+          "club": "Real Madrid",
+          "boostedRating": 102
+        },
+        {
+          "id": "p5",
+          "name": "A. Nesta",
+          "rating": 102,
+          "position": "CB",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 104
+        },
+        {
+          "id": "p7",
+          "name": "P. Maldini",
+          "rating": 103,
+          "position": "CB",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 105
+        },
+        {
+          "id": "p11",
+          "name": "D. Beckham",
+          "rating": 101,
+          "position": "RB",
+          "cardType": "Epic",
+          "club": "Manchester Utd",
+          "boostedRating": 103
+        },
+        {
+          "id": "p16",
+          "name": "P. Schmeichel",
+          "rating": 102,
+          "position": "GK",
+          "cardType": "Epic",
+          "club": "Manchester Utd",
+          "boostedRating": 104
+        }
+      ],
+      "snapshotVerified": true,
+      "snapshotHash": "KONAMI-SNAPSHOT-VERIFIED-77A902B",
+      "konamiIdMasked": "kon****99@gmail.com",
+      "vaultPrivacyStatus": "PROTECTED_IN_VAULT",
+      "createdDate": "2026-07-24",
+      "description": "Stacked high-end Division 1 eFootball 2026 account. Contains maxed out R. Gullit booster, 2022 World Cup Big Time Messi, Vieira destroyer DMF, and 5,400 eFootball coins ready for upcoming booster packs."
+    },
+    {
+      "id": "ef-9902",
+      "title": "🔥 Meta Long Ball Counter Squad | 28 Epics (Maldini, Vieira, Kaká) | 3,800 Coins",
+      "sellerName": "TacticalMaster",
+      "sellerBadge": {
+        "phoneVerified": true,
+        "tradesCount": 18,
+        "idVerified": true,
+        "disputeFreeRecord": true,
+        "trustScore": 96
+      },
+      "price": 210,
+      "platform": "PlayStation 5",
+      "region": "South America",
+      "ownerUsername": "@Tactical_Maldini_FC",
+      "ownerId": "412-990-112",
+      "epicCount": 28,
+      "showtimeCount": 9,
+      "gpBalance": 2400000,
+      "coinBalance": 3800,
+      "eFootballPoints": 18200,
+      "maxDivision": "Division 1 (Rank #210)",
+      "squadRating": 3170,
+      "squadFormation": "4-2-1-3 Long Ball Counter",
+      "mainManager": "D. Deschamps (88 LBC)",
+      "featuredPlayers": [
+        {
+          "id": "p7",
+          "name": "P. Maldini",
+          "rating": 103,
+          "position": "CB",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 105
+        },
+        {
+          "id": "p8",
+          "name": "Kaká",
+          "rating": 102,
+          "position": "AMF",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 104
+        },
+        {
+          "id": "p9",
+          "name": "A. Shevchenko",
+          "rating": 103,
+          "position": "CF",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 105
+        },
+        {
+          "id": "p10",
+          "name": "J. Bellingham",
+          "rating": 101,
+          "position": "CMF",
+          "cardType": "Showtime",
+          "club": "Real Madrid",
+          "boostedRating": 103
+        }
+      ],
+      "snapshotVerified": true,
+      "snapshotHash": "KONAMI-SNAPSHOT-VERIFIED-441098B",
+      "konamiIdMasked": "tact****22@hotmail.com",
+      "vaultPrivacyStatus": "PROTECTED_IN_VAULT",
+      "createdDate": "2026-07-25",
+      "description": "Perfect Long Ball Counter setup with 88-rated Deschamps. Untouched Konami ID linkable to Google/Apple ID. Never received any warnings or suspensions."
+    },
+    {
+      "id": "ef-9903",
+      "title": "⚽ Budget Starter Account | 14 Epics + 1,200 Coins + Div 2 Rank",
+      "sellerName": "eFootballRookie",
+      "sellerBadge": {
+        "phoneVerified": true,
+        "tradesCount": 12,
+        "idVerified": false,
+        "disputeFreeRecord": true,
+        "trustScore": 91
+      },
+      "price": 85,
+      "platform": "PC (Steam)",
+      "region": "Asia/Japan",
+      "ownerUsername": "@Rookie_Steam_eFB",
+      "ownerId": "104-582-991",
+      "epicCount": 14,
+      "showtimeCount": 4,
+      "gpBalance": 950000,
+      "coinBalance": 1200,
+      "eFootballPoints": 9100,
+      "maxDivision": "Division 2",
+      "squadRating": 3110,
+      "squadFormation": "4-3-3 Out Wide",
+      "mainManager": "G. Southgate (85 Out Wide)",
+      "featuredPlayers": [
+        {
+          "id": "p11",
+          "name": "D. Beckham",
+          "rating": 101,
+          "position": "RMF",
+          "cardType": "Epic",
+          "club": "Manchester Utd",
+          "boostedRating": 103
+        },
+        {
+          "id": "p12",
+          "name": "R. Carlos",
+          "rating": 100,
+          "position": "LB",
+          "cardType": "Epic",
+          "club": "Real Madrid",
+          "boostedRating": 102
+        }
+      ],
+      "snapshotVerified": true,
+      "snapshotHash": "KONAMI-SNAPSHOT-VERIFIED-882031C",
+      "konamiIdMasked": "steam****01@gmail.com",
+      "vaultPrivacyStatus": "PROTECTED_IN_VAULT",
+      "createdDate": "2026-07-25",
+      "description": "Great starter account for PC users. Clean history with 14 Epics including Beckham double booster and Roberto Carlos rocket foot."
+    },
+    {
+      "id": "ef-9904",
+      "title": "⚡ Japanese Server God Squad | 50+ Epics + Blitz Curler Son & Chiesa",
+      "sellerName": "TokyoStriker",
+      "sellerBadge": {
+        "phoneVerified": true,
+        "tradesCount": 31,
+        "idVerified": true,
+        "disputeFreeRecord": true,
+        "trustScore": 100
+      },
+      "price": 490,
+      "platform": "Mobile (Android/iOS)",
+      "region": "Asia/Japan",
+      "ownerUsername": "@TokyoStriker_eFB",
+      "ownerId": "712-004-381",
+      "epicCount": 52,
+      "showtimeCount": 22,
+      "gpBalance": 4200000,
+      "coinBalance": 8900,
+      "eFootballPoints": 35000,
+      "maxDivision": "Division 1 (Rank #12)",
+      "squadRating": 3215,
+      "squadFormation": "4-1-2-3 Possession",
+      "mainManager": "Xabi Alonso (88 Possession)",
+      "featuredPlayers": [
+        {
+          "id": "p13",
+          "name": "Son Heung-Min",
+          "rating": 103,
+          "position": "LWF",
+          "cardType": "Showtime",
+          "club": "Tottenham",
+          "boostedRating": 105
+        },
+        {
+          "id": "p14",
+          "name": "F. Rijkaard",
+          "rating": 103,
+          "position": "DMF",
+          "cardType": "Epic",
+          "club": "AC Milan",
+          "boostedRating": 105
+        },
+        {
+          "id": "p15",
+          "name": "Ronaldinho",
+          "rating": 104,
+          "position": "AMF",
+          "cardType": "Epic",
+          "club": "FC Barcelona",
+          "boostedRating": 106
+        }
+      ],
+      "snapshotVerified": true,
+      "snapshotHash": "KONAMI-SNAPSHOT-VERIFIED-991823F",
+      "konamiIdMasked": "tokyo****88@yahoo.co.jp",
+      "vaultPrivacyStatus": "PROTECTED_IN_VAULT",
+      "createdDate": "2026-07-26",
+      "description": "Ultimate whale account from Japan server. Top 15 division finishes. Full Blitz Curler Trio, 52 Epics with max boost levels."
+    }
+  ],
+  "escrowTrade": {
+    "tradeId": "ESCROW-TRADE-715280",
+    "listing": {
+      "id": "ef-9903",
+      "title": "⚽ Budget Starter Account | 14 Epics + 1,200 Coins + Div 2 Rank",
+      "sellerName": "eFootballRookie",
+      "sellerBadge": {
+        "phoneVerified": true,
+        "tradesCount": 12,
+        "idVerified": false,
+        "disputeFreeRecord": true,
+        "trustScore": 91
+      },
+      "price": 85,
+      "platform": "PC (Steam)",
+      "region": "Asia/Japan",
+      "ownerUsername": "@Rookie_Steam_eFB",
+      "ownerId": "104-582-991",
+      "epicCount": 14,
+      "showtimeCount": 4,
+      "gpBalance": 950000,
+      "coinBalance": 1200,
+      "eFootballPoints": 9100,
+      "maxDivision": "Division 2",
+      "squadRating": 3110,
+      "squadFormation": "4-3-3 Out Wide",
+      "mainManager": "G. Southgate (85 Out Wide)",
+      "featuredPlayers": [
+        {
+          "id": "p11",
+          "name": "D. Beckham",
+          "rating": 101,
+          "position": "RMF",
+          "cardType": "Epic",
+          "club": "Manchester Utd",
+          "boostedRating": 103
+        },
+        {
+          "id": "p12",
+          "name": "R. Carlos",
+          "rating": 100,
+          "position": "LB",
+          "cardType": "Epic",
+          "club": "Real Madrid",
+          "boostedRating": 102
+        }
+      ],
+      "snapshotVerified": true,
+      "snapshotHash": "KONAMI-SNAPSHOT-VERIFIED-882031C",
+      "konamiIdMasked": "steam****01@gmail.com",
+      "vaultPrivacyStatus": "PROTECTED_IN_VAULT",
+      "createdDate": "2026-07-25",
+      "description": "Great starter account for PC users. Clean history with 14 Epics including Beckham double booster and Roberto Carlos rocket foot."
+    },
+    "buyerName": "You (Buyer)",
+    "sellerName": "eFootballRookie",
+    "amount": 85,
+    "platformFee": 4,
+    "currentStep": 3,
+    "step1FundsSecured": false,
+    "step2CredentialsHandoff": true,
+    "step3VerificationPassed": false,
+    "step4FundsReleased": true,
+    "konamiId": "steam****01@gmail.com",
+    "konamiPasswordMasked": "eFB_2026_SecureKey!",
+    "konamiPasswordFull": "KonamiVault_Pass_2026!#",
+    "oneTimePasscode": "894201",
+    "credentialsRevealed": true,
+    "credentialsExpireInSeconds": 300,
+    "vaultStatus": "RELEASED_TO_SELLER",
+    "vaultLockedAt": "12:43 PM",
+    "protectionPeriodRemainingSeconds": 259200,
+    "isDisputed": false,
+    "verificationReport": {
+      "epicsMatch": true,
+      "coinsMatch": true,
+      "gpMatch": true,
+      "divisionMatch": true,
+      "noActiveBans": true
+    },
+    "vpnRecommendedRegion": "Tokyo, Japan",
+    "vpnConnected": false
+  },
+  "blacklist": [
+    {
+      "id": "scam-01",
+      "konamiId": "scammer_konami_fake99@gmail.com",
+      "discordHandle": "eFootballMaster_Trust#9912",
+      "whatsappNumber": "+44 7911 123456",
+      "gameName": "Konami_Official_Seller",
+      "scamType": "Account Recovery Theft",
+      "stolenAmount": 280,
+      "dateReported": "2026-07-21",
+      "verifiedByModerator": true,
+      "evidenceSummary": "Sold Division 1 account, waited 24 hours until money was cleared outside escrow, then submitted fake support ticket to Konami to recover Konami ID with original email.",
+      "status": "PERMANENTLY_BLACKLISTED"
+    },
+    {
+      "id": "scam-02",
+      "konamiId": "fake_middleman_admin@yahoo.com",
+      "discordHandle": "eFootball_Escrow_Admin#0001",
+      "whatsappNumber": "+1 555 019 2831",
+      "gameName": "Official_Escrow_Bot",
+      "scamType": "Fake Middleman",
+      "stolenAmount": 450,
+      "dateReported": "2026-07-19",
+      "verifiedByModerator": true,
+      "evidenceSummary": "Created fake Discord server impersonating our official platform. Intercepted buyer deposit and blocked both buyer and seller.",
+      "status": "PERMANENTLY_BLACKLISTED"
+    },
+    {
+      "id": "scam-03",
+      "konamiId": "eFoot_Coins_Hack@outlook.com",
+      "discordHandle": "CoinGenerator_Pro#4412",
+      "whatsappNumber": "+62 812 3456 7890",
+      "gameName": "UnlimitedCoins_Seller",
+      "scamType": "Chargeback Scam",
+      "stolenAmount": 150,
+      "dateReported": "2026-07-15",
+      "verifiedByModerator": true,
+      "evidenceSummary": "Purchased account via fraudulent PayPal stolen credentials, then triggered chargeback dispute resulting in account freeze.",
+      "status": "PERMANENTLY_BLACKLISTED"
+    },
+    {
+      "id": "scam-04",
+      "konamiId": "stolen_epics_buyer@gmail.com",
+      "discordHandle": "GhostTrader#1109",
+      "whatsappNumber": "+33 612 345 678",
+      "gameName": "Ghost_EFOOTBALL",
+      "scamType": "Fake Payment Proof",
+      "stolenAmount": 190,
+      "dateReported": "2026-07-11",
+      "verifiedByModerator": true,
+      "evidenceSummary": "Sent inspect-element edited bank wire receipt and pressurized seller to transfer Konami ID before platform vault confirmed deposit.",
+      "status": "PERMANENTLY_BLACKLISTED"
+    }
+  ],
+  "patchNotes": [
+    {
+      "version": "v5.2.0",
+      "releaseDate": "July 2026 Update",
+      "title": "eFootball™ 2026 Update v5.2.0: Physicality Overhaul & Manager Boosters",
+      "highlights": [
+        "Reworked Physical Contact mechanic: Defenders with 95+ Physical Contact now press with higher balance retention.",
+        "Double Touch Speed Nerf: Reduced consecutive skill move acceleration by 12% to promote realistic passing build-up.",
+        "New Manager Booster System: Managers with 88+ Proficiency now grant +3 Stat Boost to all starting players.",
+        "Smart Assist Refinement: Assisted passing trajectory smoothed for cross-platform matches.",
+        "Enhanced Anti-Handover Security: Automated AI tracking for sudden IP changes during Konami ID handovers."
+      ],
+      "metaChanges": [
+        {
+          "title": "Physical Contact & Destroyer DMFs",
+          "description": "Defensive midfielders like Patrick Vieira and Frank Rijkaard now dominate midfield transitions with improved tackle recovery animation speed.",
+          "impact": "HIGH"
+        },
+        {
+          "title": "4-1-2-3 Counter Attack Meta",
+          "description": "With wingers pushing wider, the 4-1-2-3 formation with two creative AMFs (Gullit, Ronaldinho) dominates Division 1 matchmaking.",
+          "impact": "HIGH"
+        },
+        {
+          "title": "Blitz Curler Shots Adjustment",
+          "description": "Curled shots from outside 25 yards require tighter timing and 90+ Curl stat for maximum curve trajectory.",
+          "impact": "MEDIUM"
+        }
+      ],
+      "featuredEpics": [
+        "R. Gullit (Booster)",
+        "P. Vieira (Destroyer)",
+        "L. Messi (Big Time WC)",
+        "A. Nesta (Wall)",
+        "K. Rummenigge (Speed Monster)"
+      ]
+    }
+  ],
+  "metaTierItems": [
+    {
+      "id": "m1",
+      "name": "Ruud Gullit (Booster)",
+      "category": "Epics",
+      "tier": "SS+",
+      "roleOrStyle": "Hole Player / Box-to-Box AMF/CMF/CF",
+      "pros": [
+        "191cm height with 95+ Physical Contact",
+        "95+ Finishing, Passing & Defending",
+        "Plays any position on pitch"
+      ],
+      "keyAttributes": "Height 190cm, Weak Foot Very High, Physical 96",
+      "badgeColor": "from-amber-500 to-yellow-600"
+    },
+    {
+      "id": "m2",
+      "name": "Patrick Vieira (Destroyer)",
+      "category": "Epics",
+      "tier": "SS+",
+      "roleOrStyle": "Destroyer DMF",
+      "pros": [
+        "Unmatched leg reach for interception",
+        "98 Defending Awareness",
+        "High stamina & aggression"
+      ],
+      "keyAttributes": "Interception, Blocker, Sliding Tackle",
+      "badgeColor": "from-amber-500 to-yellow-600"
+    },
+    {
+      "id": "m3",
+      "name": "Karl-Heinz Rummenigge",
+      "category": "Epics",
+      "tier": "SS",
+      "roleOrStyle": "Goal Poacher CF",
+      "pros": [
+        "Double Touch + Marseille Turn skills",
+        "99 Speed & Acceleration",
+        "Both-footed lethal finishing"
+      ],
+      "keyAttributes": "Speed 98, Acceleration 96, Finishing 96",
+      "badgeColor": "from-amber-500 to-yellow-600"
+    },
+    {
+      "id": "m4",
+      "name": "L. Roman (Quick Counter 88)",
+      "category": "Managers",
+      "tier": "SS+",
+      "roleOrStyle": "Quick Counter / High Press",
+      "pros": [
+        "Highest defensive line recovery",
+        "Instant forward runs on turn-over",
+        "+3 Stat boost to starters"
+      ],
+      "keyAttributes": "Manager Rating 88, Tactical Playstyle QC",
+      "badgeColor": "from-emerald-500 to-teal-600"
+    },
+    {
+      "id": "m5",
+      "name": "D. Deschamps (Long Ball Counter 88)",
+      "category": "Managers",
+      "tier": "SS",
+      "roleOrStyle": "Long Ball Counter / Deep Block",
+      "pros": [
+        "Extremely compact defensive shape",
+        "Protects against through balls",
+        "Fast wing counter attacks"
+      ],
+      "keyAttributes": "Manager Rating 88, Tactical Playstyle LBC",
+      "badgeColor": "from-emerald-500 to-teal-600"
+    },
+    {
+      "id": "m6",
+      "name": "4-1-2-3 Counter Attack (2 AMFs)",
+      "category": "Formations",
+      "tier": "SS+",
+      "roleOrStyle": "Offensive Overload",
+      "pros": [
+        "2 Hole Player AMFs overwhelm central defenders",
+        "Wide LWF/RWF stretch opposition fullbacks",
+        "Fast 1-2 passing triangles"
+      ],
+      "keyAttributes": "1 DMF, 2 AMFs, 2 Wingers, 1 Central Striker",
+      "badgeColor": "from-cyan-500 to-blue-600"
+    },
+    {
+      "id": "m7",
+      "name": "Son Heung-Min (Blitz Curler)",
+      "category": "Showtimes",
+      "tier": "SS",
+      "roleOrStyle": "Inside Forward LWF/CF",
+      "pros": [
+        "Special Blitz Curler animation",
+        "Long Range Shooting skill",
+        "Lethal from outside box"
+      ],
+      "keyAttributes": "Curl 94, Kicking Power 95, Speed 95",
+      "badgeColor": "from-purple-500 to-pink-600"
+    }
+  ],
+  "vaultTotal": 42595,
+  "userBalance": 1250
+}

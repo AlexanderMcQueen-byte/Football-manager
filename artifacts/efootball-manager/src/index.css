@@ -34,20 +34,20 @@
   ─────────────────────────────────────────────────────────────────────────── */
 
   /* Base surfaces */
-  --background:    220 40% 5%;    /* #080D17 — near-black navy */
+  --background:    230 45% 5%;    /* indigo-950 deep navy */
   --foreground:    210 30% 96%;   /* #F0F4FA — near-white */
 
   /* Cards */
-  --card:          220 35% 9%;    /* #0E1520 — dark blue-grey */
+  --card:          230 40% 8%;    /* dark indigo */
   --card-foreground: 210 30% 96%;
 
   /* Popover */
-  --popover:       220 35% 10%;
+  --popover:       230 40% 10%;
   --popover-foreground: 210 30% 96%;
 
-  /* Primary — eFootball electric green */
-  --primary:       145 80% 42%;   /* #15C55A */
-  --primary-foreground: 220 40% 5%;
+  /* Primary — Orange */
+  --primary:       25 95% 53%;   /* #f97316 */
+  --primary-foreground: 0 0% 100%;
 
   /* Secondary */
   --secondary:     220 30% 14%;   /* #182030 */
@@ -68,7 +68,7 @@
   /* Structural */
   --border:        220 25% 16%;   /* subtle blue-grey border */
   --input:         220 30% 12%;
-  --ring:          145 80% 42%;
+  --ring:          25 95% 53%;
 
   --radius: 0.75rem;
 }
@@ -86,14 +86,14 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     background-image:
-      radial-gradient(ellipse 80% 50% at 20% -10%, hsl(145 80% 42% / 0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 50% at 20% -10%, hsl(25 95% 53% / 0.06) 0%, transparent 60%),
       radial-gradient(ellipse 60% 40% at 80% 110%, hsl(210 80% 50% / 0.05) 0%, transparent 60%);
     background-attachment: fixed;
-    selection-color: hsl(145 80% 42% / 0.3);
+    selection-color: hsl(25 95% 53% / 0.3);
   }
 
   ::selection {
-    background: hsl(145 80% 42% / 0.3);
+    background: hsl(25 95% 53% / 0.3);
     color: hsl(var(--primary));
   }
 
@@ -111,7 +111,7 @@
   ::-webkit-scrollbar        { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track  { background: hsl(var(--background)); }
   ::-webkit-scrollbar-thumb  { background: hsl(var(--border)); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary) / 0.6); }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary)); }
 }
 
 /* ── Utility classes ─────────────────────────────────────────────────────── */
@@ -198,7 +198,7 @@
 
   /* Progress bar fill */
   .progress-fill {
-    background: linear-gradient(90deg, hsl(var(--primary)), hsl(145 90% 60%));
+    background: linear-gradient(90deg, hsl(var(--primary)), hsl(25 90% 60%));
     box-shadow: 0 0 8px hsl(var(--primary) / 0.5);
   }
 
@@ -215,8 +215,8 @@
       0deg,
       transparent,
       transparent 40px,
-      hsl(145 50% 30% / 0.03) 40px,
-      hsl(145 50% 30% / 0.03) 80px
+      hsl(25 50% 30% / 0.03) 40px,
+      hsl(25 50% 30% / 0.03) 80px
     );
   }
 }
