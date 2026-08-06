@@ -147,30 +147,10 @@ export function EFootballUpdates() {
           <h2 className="font-display text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
             Featured eFootball Packs
           </h2>
-          <p className="mt-1 max-w-2xl text-sm text-zinc-400">
-            Scan the latest EFHub player packs, compare their featured squads, and open a player to see the strongest role-based training focus.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-500">
-          <span className={cn("h-2 w-2 rounded-full", data.sourceStatus === "live-index" ? "bg-emerald-400" : "bg-primary")} />
-          {data.sourceStatus === "live-index" ? "Index checked live" : "Verified snapshot"}
-          <span>·</span>
-          {new Date(data.checkedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
         </div>
       </div>
 
       <div className="relative mt-6">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <div>
-            <p className="font-gaming text-[10px] font-bold uppercase tracking-[0.24em] text-zinc-500">
-              Pack directory
-            </p>
-            <p className="mt-1 text-xs text-zinc-400">Select a campaign to inspect its featured players.</p>
-          </div>
-          <span className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 font-gaming text-[10px] uppercase tracking-wider text-zinc-500 sm:inline-flex">
-            {data.packs.length} active listings
-          </span>
-        </div>
         <div className="grid gap-3 lg:grid-cols-2">
         {data.packs.map((item, index) => (
           <button
