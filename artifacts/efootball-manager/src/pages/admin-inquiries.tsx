@@ -182,11 +182,43 @@ export default function AdminInquiries() {
 
   useEffect(() => {
     if (!isAdmin) return;
-    fetch(`${BASE}/api/admin/inquiries`, { credentials: "include" })
-      .then((r) => r.json())
-      .then(setInquiries)
-      .catch(() => setError("Could not load inquiries."))
-      .finally(() => setLoading(false));
+
+    let cancelled = false;
+
+    async function fetchInquiries() {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`${BASE}/api/admin/inquiries`, { credentials: "include" });
+        const payload = await response.json().catch(() => null) as unknown;
+
+        if (!response.ok) {
+          const message =
+            typeof payload === "object" && payload !== null && "error" in payload && typeof payload.error === "string"
+              ? payload.error
+              : "Could not load inquiries.";
+          throw new Error(message);
+        }
+
+        if (!Array.isArray(payload)) {
+          throw new Error("The inquiries response was not a list.");
+        }
+
+        if (!cancelled) setInquiries(payload as Inquiry[]);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Could not load inquiries.");
+          setInquiries([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void fetchInquiries();
+    return () => {
+      cancelled = true;
+    };
   }, [isAdmin]);
 
   function handleUpdate(updated: Inquiry) {
