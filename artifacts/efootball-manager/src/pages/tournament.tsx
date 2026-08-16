@@ -12,6 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth";
 import { Trophy, CalendarDays, GitMerge, Loader2, Save, UserPlus, Phone, Gamepad2, CheckCircle, XCircle, Clock, ClipboardList, AlertCircle, Users, Pencil, X, ChevronDown, ChevronUp, Link2, Check } from "lucide-react";
 
+const BASE = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+
 export default function TournamentDetail() {
   const [, params] = useRoute("/tournaments/:id");
   const tournamentId = parseInt(params?.id || "0", 10);
@@ -21,7 +23,11 @@ export default function TournamentDetail() {
   const { isAdmin, isPaid } = useAuth();
   const canManage = isAdmin || isPaid;
 
-  const inviteLink = window.location.href;
+  const { data: tournament, isLoading: isTourneyLoading } = useGetTournament(tournamentId);
+
+  const inviteLink = tournament?.inviteCode
+    ? `${window.location.origin}${window.location.pathname}?invite=${encodeURIComponent(tournament.inviteCode)}`
+    : window.location.href.split("?")[0];
 
   function copyLink() {
     navigator.clipboard.writeText(inviteLink).then(() => {
@@ -34,8 +40,6 @@ export default function TournamentDetail() {
     const text = `Join my tournament "${tournament?.name}" on eFootball Manager!\n\n${inviteLink}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   }
-
-  const { data: tournament, isLoading: isTourneyLoading } = useGetTournament(tournamentId);
 
   if (isTourneyLoading) {
     return <div className="flex h-[50vh] items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
@@ -70,6 +74,11 @@ export default function TournamentDetail() {
               )}>
                 {tournament.status === 'completed' ? '🏆 Finished' : tournament.status}
               </span>
+              {tournament.visibility === "private" && (
+                <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                  Private • {tournament.inviteCode ?? "Invite Required"}
+                </span>
+              )}
             </div>
             <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-2 text-glow">
               {tournament.name}
@@ -143,6 +152,8 @@ export default function TournamentDetail() {
           tournamentId={tournamentId}
           tournamentName={tournament.name}
           tournamentStatus={tournament.status}
+          visibility={tournament.visibility}
+          inviteCode={tournament.inviteCode ?? null}
           approvedPlayers={tournament.players.length}
           maxPlayers={tournament.maxPlayers ?? null}
         />
@@ -571,18 +582,20 @@ function BracketNode({ match, hasConnector = false, isFinal = false }: { match: 
 
 // ── Register to Play card (shown to viewers) ─────────────────────────────────
 
-const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-
 function RegisterCard({
   tournamentId,
   tournamentName,
   tournamentStatus,
+  visibility,
+  inviteCode,
   approvedPlayers,
   maxPlayers,
 }: {
   tournamentId: number;
   tournamentName: string;
   tournamentStatus: string;
+  visibility?: "public" | "private";
+  inviteCode?: string | null;
   approvedPlayers: number;
   maxPlayers: number | null;
 }) {
@@ -626,15 +639,27 @@ function RegisterCard({
   }
 
   // Otherwise render the normal registration form below
-  return <RegisterForm tournamentId={tournamentId} tournamentName={tournamentName} maxPlayers={maxPlayers} approvedPlayers={approvedPlayers} />;
+  return <RegisterForm
+    tournamentId={tournamentId}
+    tournamentName={tournamentName}
+    visibility={visibility}
+    inviteCode={inviteCode}
+    maxPlayers={maxPlayers}
+    approvedPlayers={approvedPlayers}
+  />;
 }
 
-function RegisterForm({ tournamentId, tournamentName, maxPlayers, approvedPlayers }: {
-  tournamentId: number; tournamentName: string; maxPlayers: number | null; approvedPlayers: number;
+function RegisterForm({ tournamentId, tournamentName, visibility, inviteCode, maxPlayers, approvedPlayers }: {
+  tournamentId: number; tournamentName: string; visibility?: "public" | "private"; inviteCode?: string | null; maxPlayers: number | null; approvedPlayers: number;
 }) {
   const { toast } = useToast();
   const [efootballUsername, setEfootballUsername] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [inviteInput, setInviteInput] = useState(() => {
+    if (typeof window === "undefined") return "";
+    const params = new URLSearchParams(window.location.search);
+    return params.get("invite") ?? "";
+  });
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -642,11 +667,16 @@ function RegisterForm({ tournamentId, tournamentName, maxPlayers, approvedPlayer
     e.preventDefault();
     setLoading(true);
     try {
+      const effectiveInvite = visibility === "private" ? (inviteInput.trim() || inviteCode || "") : "";
       const res = await fetch(`${BASE}/api/tournaments/${tournamentId}/register`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ efootballUsername: efootballUsername.trim(), whatsappNumber: whatsappNumber.trim() }),
+        body: JSON.stringify({
+          efootballUsername: efootballUsername.trim(),
+          whatsappNumber: whatsappNumber.trim(),
+          inviteCode: effectiveInvite,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -687,6 +717,19 @@ function RegisterForm({ tournamentId, tournamentName, maxPlayers, approvedPlayer
           <p className="text-zinc-500 text-xs mt-0.5">Submit your details to join <span className="text-zinc-300">{tournamentName}</span></p>
         </div>
       </div>
+
+      {visibility === "private" && (
+        <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3">
+          <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-amber-300 mb-2">Private tournament invite</label>
+          <input
+            type="text"
+            value={inviteInput}
+            onChange={(e) => setInviteInput(e.target.value.toUpperCase())}
+            placeholder="Enter invite code"
+            className="w-full bg-input border border-border text-white placeholder:text-zinc-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/10 transition-all uppercase"
+          />
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">

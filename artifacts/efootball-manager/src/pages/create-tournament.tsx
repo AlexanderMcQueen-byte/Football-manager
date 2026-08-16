@@ -106,6 +106,8 @@ export default function CreateTournament() {
   const [name, setName]     = useState("");
   const [format, setFormat] = useState<TournamentFormat>("league");
   const [mode, setMode]     = useState<"registration" | "manual">("registration");
+  const [visibility, setVisibility] = useState<"public" | "private">("public");
+  const [inviteCode, setInviteCode] = useState("");
   const [maxPlayers, setMaxPlayers] = useState<number>(8);
   const [selectedPlayers, setSelectedPlayers] = useState<Set<number>>(new Set());
 
@@ -170,14 +172,31 @@ export default function CreateTournament() {
       if (isKnockoutStyle && !isSizeValid) {
         toast({ title: "Invalid player count", description: `${def.label} requires ${validSizes!.join(", ")} players.`, variant: "destructive" }); return;
       }
-      create({ data: { name, type: format as any, maxPlayers, playerIds: [] } });
+      create({
+        data: {
+          name,
+          type: format as any,
+          maxPlayers,
+          playerIds: [],
+          visibility,
+          inviteCode: visibility === "private" ? (inviteCode.trim() || undefined) : undefined,
+        },
+      });
     } else {
       const count = selectedPlayers.size;
       if (count < minPlayers) { toast({ title: `Select at least ${minPlayers} players`, variant: "destructive" }); return; }
       if (isKnockoutStyle && !validSizes!.includes(count)) {
         toast({ title: "Invalid player count", description: `${def.label} requires ${validSizes!.join(", ")} players.`, variant: "destructive" }); return;
       }
-      create({ data: { name, type: format as any, playerIds: Array.from(selectedPlayers) } });
+      create({
+        data: {
+          name,
+          type: format as any,
+          playerIds: Array.from(selectedPlayers),
+          visibility,
+          inviteCode: visibility === "private" ? (inviteCode.trim() || undefined) : undefined,
+        },
+      });
     }
   };
 
@@ -259,6 +278,56 @@ export default function CreateTournament() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Visibility / invite setup */}
+        <div className="glass-card rounded-2xl p-6">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div>
+              <h3 className="font-display font-semibold text-white text-base">Tournament Visibility</h3>
+              <p className="text-zinc-500 text-xs mt-0.5">Choose whether the competition is public or only accessible by invite.</p>
+            </div>
+            <div className="inline-flex rounded-xl border border-white/10 bg-black/20 p-1">
+              {(["public", "private"] as const).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => setVisibility(option)}
+                  className={cn(
+                    "px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                    visibility === option
+                      ? "bg-primary text-primary-foreground"
+                      : "text-zinc-400 hover:text-white"
+                  )}
+                >
+                  {option === "public" ? "Public" : "Private"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {visibility === "private" && (
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-zinc-300">Invite Code</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12))}
+                  placeholder="e.g. HJ7K4P"
+                  className="flex-1 bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all uppercase"
+                />
+                <button
+                  type="button"
+                  onClick={() => setInviteCode(Math.random().toString(36).slice(2, 8).toUpperCase())}
+                  className="px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-zinc-300 text-sm hover:bg-white/10 transition-colors"
+                >
+                  Generate
+                </button>
+              </div>
+              <p className="text-xs text-zinc-500">Use the invite code in the share link so only invited players can register.</p>
+            </div>
+          )}
         </div>
 
         {/* Player setup mode */}

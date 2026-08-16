@@ -17,6 +17,7 @@ const router: IRouter = Router();
 const RegisterBody = z.object({
   efootballUsername: z.string().min(2).max(60),
   whatsappNumber: z.string().min(7).max(20).regex(/^\+?[0-9\s\-()]+$/, "Invalid phone number"),
+  inviteCode: z.string().trim().max(24).optional(),
 });
 
 const UpdateStatusBody = z.object({
@@ -82,7 +83,15 @@ router.post("/tournaments/:id/register", async (req, res) => {
     return;
   }
 
-  const { efootballUsername, whatsappNumber } = parsed.data;
+  const { efootballUsername, whatsappNumber, inviteCode } = parsed.data;
+
+  if (tournament.visibility === "private") {
+    const providedCode = (inviteCode ?? "").trim();
+    if (!tournament.inviteCode || providedCode !== tournament.inviteCode) {
+      res.status(403).json({ error: "This tournament is private. Use the invite link provided by the creator." });
+      return;
+    }
+  }
 
   const existing = await db
     .select()

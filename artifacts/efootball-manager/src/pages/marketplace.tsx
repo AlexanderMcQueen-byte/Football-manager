@@ -31,6 +31,8 @@ import { NewListingModal } from "@/components/marketplace/NewListingModal";
 import { RateSellerModal } from "@/components/marketplace/RateSellerModal";
 import { SellerPortalModal } from "@/components/marketplace/SellerPortalModal";
 
+const BASE = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+
 // NOTE: Listings are now fetched from the backend API and polled periodically
 // during development. The previous hard-coded `MOCK_LISTINGS` have been removed
 // so the UI reflects real data.

@@ -59,6 +59,8 @@ export const CreateTournamentBody = zod.object({
   type: zod.enum(["league", "knockout", "cup", "groups_knockout", "double_elimination", "swiss"]),
   playerIds: zod.array(zod.number()).optional().default([]),
   maxPlayers: zod.number().int().min(2).optional().nullable(),
+  visibility: zod.enum(["public", "private"]).optional().default("public"),
+  inviteCode: zod.string().min(4).max(24).optional().nullable(),
 });
 
 /**
@@ -74,6 +76,8 @@ export const PatchTournamentParams = zod.object({
 export const PatchTournamentBody = zod.object({
   name: zod.string().min(1).optional(),
   maxPlayers: zod.number().int().min(2).nullable().optional(),
+  visibility: zod.enum(["public", "private"]).optional(),
+  inviteCode: zod.string().min(4).max(24).nullable().optional(),
   scheduledAt: zod.string().nullable().optional(),
 });
 
@@ -82,6 +86,8 @@ export const GetTournamentResponse = zod.object({
   name: zod.string(),
   type: zod.enum(["league", "knockout", "cup", "groups_knockout", "double_elimination", "swiss"]),
   status: zod.enum(["setup", "active", "completed"]),
+  visibility: zod.enum(["public", "private"]).default("public"),
+  inviteCode: zod.string().nullable().optional(),
   maxPlayers: zod.number().nullable().optional(),
   scheduledAt: zod.coerce.date().nullable().optional(),
   createdAt: zod.date(),

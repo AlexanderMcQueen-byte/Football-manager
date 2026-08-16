@@ -9,7 +9,7 @@ import {
 } from "@workspace/db/schema";
 import { requireAdmin } from "../middlewares/requireAdmin";
 import { requireCreator } from "../middlewares/requireCreator";
-import { eq, and, inArray, sql } from "drizzle-orm";
+import { eq, and, inArray, or, sql } from "drizzle-orm";
 import {
   CreateTournamentBody,
   GetTournamentParams,
@@ -19,6 +19,10 @@ import {
   PatchTournamentBody,
 } from "@workspace/api-zod";
 import { buildFixturesData, type TournamentFormat } from "../lib/generateFixtures";
+
+function generateInviteCode(): string {
+  return Math.random().toString(36).slice(2, 8).toUpperCase();
+}
 
 const FREE_PLAN_MAX_TOURNAMENTS = 3;
 const FREE_PLAN_MAX_PLAYERS = 8;
@@ -51,7 +55,24 @@ router.get("/tournaments", async (req, res, next) => {
   }
 
   try {
-    const tournaments = await db.select().from(tournamentsTable).orderBy(tournamentsTable.createdAt);
+    const userId = (req as any).session?.userId as number | undefined;
+    const tournaments = userId
+      ? await db
+          .select()
+          .from(tournamentsTable)
+          .where(
+            or(
+              eq(tournamentsTable.visibility, "public"),
+              eq(tournamentsTable.createdByUserId, userId),
+            ),
+          )
+          .orderBy(tournamentsTable.createdAt)
+      : await db
+          .select()
+          .from(tournamentsTable)
+          .where(eq(tournamentsTable.visibility, "public"))
+          .orderBy(tournamentsTable.createdAt);
+
     res.json(tournaments);
   } catch (err: any) {
     // Log the error once and enable short backoff; return a small
@@ -69,7 +90,14 @@ router.post("/tournaments", requireCreator, async (req, res) => {
   const creatorUser = (req as any).creatorUser as typeof usersTable.$inferSelect | undefined;
 
   const body = CreateTournamentBody.parse(req.body);
-  const { name, type, playerIds = [], maxPlayers } = body;
+  const {
+    name,
+    type,
+    playerIds = [],
+    maxPlayers,
+    visibility = "public",
+    inviteCode,
+  } = body;
 
   // Enforce free plan limits (non-admin paid users only)
   if (creatorUser) {
@@ -85,11 +113,30 @@ router.post("/tournaments", requireCreator, async (req, res) => {
   // Registration mode: maxPlayers set, no pre-selected players → wait for registrations
   const isRegistrationMode = !!effectiveMaxPlayers && playerIds.length === 0;
 
+  const finalVisibility = visibility === "private" ? "private" : "public";
+  let finalInviteCode: string | null = null;
+
+  if (finalVisibility === "private") {
+    finalInviteCode = (inviteCode ?? "").trim() || generateInviteCode();
+    const existingCode = await db
+      .select({ id: tournamentsTable.id })
+      .from(tournamentsTable)
+      .where(eq(tournamentsTable.inviteCode, finalInviteCode))
+      .limit(1);
+
+    if (existingCode.length > 0) {
+      finalInviteCode = generateInviteCode();
+    }
+  }
+
   const [tournament] = await db
     .insert(tournamentsTable)
     .values({
       name,
       type,
+      visibility: finalVisibility,
+      inviteCode: finalInviteCode,
+      createdByUserId: creatorUser?.id ?? null,
       maxPlayers: effectiveMaxPlayers,
       status: isRegistrationMode ? "setup" : "active",
     })
@@ -153,6 +200,20 @@ router.patch("/tournaments/:id", requireAdmin, async (req, res) => {
 
   // Only allow edits while still in setup (or scheduling date on any non-completed)
   const updates: Record<string, unknown> = {};
+
+  if (body.visibility !== undefined) {
+    updates.visibility = body.visibility;
+  }
+
+  if (body.inviteCode !== undefined) {
+    const nextInvite = body.inviteCode?.trim() || null;
+    updates.inviteCode = nextInvite;
+  }
+
+  if (tournament.visibility === "private" && body.visibility === undefined && tournament.inviteCode === null) {
+    const generatedInvite = generateInviteCode();
+    updates.inviteCode = generatedInvite;
+  }
 
   if (body.scheduledAt !== undefined) {
     updates.scheduledAt = body.scheduledAt ? new Date(body.scheduledAt) : null;

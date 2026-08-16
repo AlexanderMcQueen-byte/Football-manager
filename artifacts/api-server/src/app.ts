@@ -56,7 +56,7 @@ if (fs.existsSync(frontendStatic)) {
   app.use(express.static(frontendStatic));
 
   // SPA fallback: serve index.html for any non-API GET request
-  app.get("/*", (req, res, next) => {
+  app.get("/*splat", (req, res, next) => {
     if (req.path.startsWith("/api")) return next();
     res.sendFile(path.join(frontendStatic, "index.html"));
   });

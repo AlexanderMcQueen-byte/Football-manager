@@ -45,6 +45,8 @@ export interface Tournament {
   name: string;
   type: TournamentType;
   status: TournamentStatus;
+  visibility?: "public" | "private";
+  inviteCode?: string | null;
   createdAt: string;
   maxPlayers?: number | null;
   scheduledAt?: string | null;
@@ -67,6 +69,8 @@ export interface CreateTournamentRequest {
   type: CreateTournamentRequestType;
   playerIds: number[];
   maxPlayers?: number | null;
+  visibility?: "public" | "private";
+  inviteCode?: string | null;
 }
 
 export type TournamentDetailsType =
@@ -95,6 +99,8 @@ export interface TournamentDetails {
   name: string;
   type: TournamentDetailsType;
   status: TournamentDetailsStatus;
+  visibility?: "public" | "private";
+  inviteCode?: string | null;
   createdAt: string;
   maxPlayers?: number | null;
   scheduledAt?: string | null;

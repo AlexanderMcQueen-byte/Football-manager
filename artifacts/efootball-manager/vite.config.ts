@@ -2,11 +2,12 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-const rawPort = process.env.PORT;
+const rawPort = process.env.VITE_PORT ?? process.env.FRONTEND_PORT ?? process.env.PORT;
 const port = rawPort ? Number(rawPort) : 3000;
 
+const apiPort = Number(process.env.API_PORT ?? process.env.PORT ?? 4100);
+const apiTarget = process.env.VITE_API_PROXY_TARGET ?? `http://localhost:${apiPort}`;
 const basePath = process.env.BASE_PATH ?? "/";
 
 export default defineConfig({
@@ -14,20 +15,6 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer({
-              root: path.resolve(import.meta.dirname, ".."),
-            }),
-          ),
-          await import("@replit/vite-plugin-dev-banner").then((m) =>
-            m.devBanner(),
-          ),
-        ]
-      : []),
   ],
   resolve: {
     alias: {
@@ -47,7 +34,7 @@ export default defineConfig({
     proxy: {
       // Proxy API requests to backend during local development
       "/api": {
-        target: "http://localhost:4000",
+        target: apiTarget,
         changeOrigin: true,
         secure: false,
       },
