@@ -84,7 +84,8 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans, 'Montserrat', 'Outfit', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
     background-image:
       radial-gradient(ellipse 80% 50% at 20% -10%, hsl(337 60% 61% / 0.08) 0%, transparent 60%),
       radial-gradient(ellipse 60% 40% at 80% 110%, hsl(0 0% 100% / 0.04) 0%, transparent 60%);
@@ -223,7 +224,7 @@
 
 /* Uploaded soccer-master theme details */
 .soccer-theme-heading {
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: 0.045em;
 }
@@ -255,14 +256,14 @@
   object-fit: contain;
 }
 
-.soccer-matchup-team strong {
-  display: block;
-  margin-top: 0.35rem;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
+  .soccer-matchup-team strong {
+    display: block;
+    margin-top: 0.35rem;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
 
 .soccer-matchup-dark {
   background: hsl(218 17% 9%);
@@ -284,11 +285,11 @@
   color: hsl(218 17% 12%);
 }
 
-.soccer-matchup-vs span {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1.35rem;
-  font-weight: 900;
-}
+  .soccer-matchup-vs span {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 900;
+  }
 
 .soccer-matchup-vs small {
   font-size: 0.48rem;

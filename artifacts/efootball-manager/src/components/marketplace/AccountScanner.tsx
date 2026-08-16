@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { AccountListing, PlayerCard } from '@/types/marketplace';
 import { calculateAccountRating } from '@/utils/ratingCalculator';
+import { useAuth } from '@/contexts/auth';
+import { useLocation } from 'wouter';
 import { 
   Search, 
   Sparkles, 
@@ -49,12 +51,31 @@ export const AccountScanner: React.FC<AccountScannerProps> = ({
   const [activeTab, setActiveTab] = useState<'squad' | 'ranks' | 'currencies' | 'security'>('squad');
   const [scannerUploadedImages, setScannerUploadedImages] = useState<string[]>([]);
 
-  const buildPublishableListing = (baseListing: AccountListing): AccountListing => ({
-    ...baseListing,
-    price: customAskingPrice > 0 ? customAskingPrice : baseListing.price,
-    listingIntent: selectedIntent,
-    squadImages: [],
-  });
+  const { isLoggedIn } = useAuth();
+  const [, setLocation] = useLocation();
+
+  const buildPublishableListing = (baseListing: AccountListing): AccountListing => {
+    const base = {
+      ...baseListing,
+      price: customAskingPrice > 0 ? customAskingPrice : baseListing.price,
+      listingIntent: selectedIntent,
+    } as AccountListing;
+
+    // If the user uploaded images, publish the squad exactly as uploaded (unaltered)
+    if (scannerUploadedImages && scannerUploadedImages.length > 0) {
+      return {
+        ...base,
+        squadImages: scannerUploadedImages.slice(),
+        // Prevent AI-refined player lists from being auto-applied when posting raw screenshots
+        featuredPlayers: [],
+        startingXI: [],
+        description: (base.description || '') + ' (Posted from uploaded screenshot, unmodified.)',
+      };
+    }
+
+    // Fallback: keep any existing images or empty array
+    return { ...base, squadImages: baseListing.squadImages ?? [] };
+  };
 
   const handleScannerImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -147,7 +168,7 @@ export const AccountScanner: React.FC<AccountScannerProps> = ({
               snapshotHash: data.snapshotHash || `KONAMI-HASH-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
               konamiIdMasked: sq.konamiIdMasked || 'user***@gmail.com',
               vaultPrivacyStatus: 'PROTECTED_IN_VAULT',
-              squadImages: [],
+              squadImages: scannerUploadedImages && scannerUploadedImages.length > 0 ? scannerUploadedImages.slice() : [],
               listingIntent: intentToUse,
               createdDate: new Date().toISOString().split('T')[0],
               description: `Evaluated eFootball squad for Konami Username ${searchQuery} in ${divisionRank}. Team composition rated for ${intentToUse === 'sell' ? 'Direct Sale' : 'Account Exchange'}.`,
@@ -171,7 +192,7 @@ export const AccountScanner: React.FC<AccountScannerProps> = ({
             price: customAskingPrice > 0 ? customAskingPrice : match.price,
             ownerUsername: searchQuery,
             maxDivision: divisionRank,
-            squadImages: [],
+            squadImages: scannerUploadedImages && scannerUploadedImages.length > 0 ? scannerUploadedImages.slice() : [],
             listingIntent: intentToUse,
           };
           setScannedResult(fallbackResult);
@@ -373,7 +394,13 @@ export const AccountScanner: React.FC<AccountScannerProps> = ({
 
           <button
             type="button"
-            onClick={(e) => handleStartScan(e, 'sell')}
+            onClick={(e) => {
+              if (!isLoggedIn) {
+                setLocation('/login');
+                return;
+              }
+              handleStartScan(e, 'sell');
+            }}
             disabled={scanning}
             className="w-full sm:w-auto px-6 py-3 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white font-black text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer border-b-2 border-orange-800"
           >
@@ -391,7 +418,13 @@ export const AccountScanner: React.FC<AccountScannerProps> = ({
 
           <button
             type="button"
-            onClick={(e) => handleStartScan(e, 'exchange')}
+            onClick={(e) => {
+              if (!isLoggedIn) {
+                setLocation('/login');
+                return;
+              }
+              handleStartScan(e, 'exchange');
+            }}
             disabled={scanning}
             className="w-full sm:w-auto px-6 py-3 rounded-xl bg-indigo-950 hover:bg-indigo-900 border border-indigo-700/60 disabled:opacity-50 text-white font-black text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer border-b-2 border-indigo-950"
           >
@@ -664,6 +697,14 @@ export const AccountScanner: React.FC<AccountScannerProps> = ({
                     type="button"
                     onClick={() => {
                       if (!scannedResult) return;
+                      // Require account creation / login before publishing
+                      if (!isLoggedIn) {
+                        // Redirect to login/signup flow
+                        setLocation('/login');
+                        return;
+                      }
+
+                      // Publish listing exactly as uploaded when images present
                       onPublishListingToMarketplace && onPublishListingToMarketplace(buildPublishableListing(scannedResult));
                     }}
                     className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-black text-xs sm:text-sm transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer border-b-2 border-orange-800 shrink-0"
@@ -696,11 +737,11 @@ export const AccountScanner: React.FC<AccountScannerProps> = ({
             </div>
             <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
               <span className="text-[10px] text-slate-400 uppercase block">Coins Balance</span>
-              <span className="text-lg font-black text-cyan-300">{scannedResult.coinBalance.toLocaleString()}</span>
+              <span className="text-lg font-black text-cyan-300">{typeof scannedResult.coinBalance === 'number' ? scannedResult.coinBalance.toLocaleString() : '—'}</span>
             </div>
             <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
               <span className="text-[10px] text-slate-400 uppercase block">GP Balance</span>
-              <span className="text-lg font-black text-slate-200">{(scannedResult.gpBalance / 1000000).toFixed(2)}M</span>
+              <span className="text-lg font-black text-slate-200">{typeof scannedResult.gpBalance === 'number' ? `${(scannedResult.gpBalance / 1000000).toFixed(2)}M` : '—'}</span>
             </div>
           </div>
 
@@ -809,8 +850,11 @@ export const AccountScanner: React.FC<AccountScannerProps> = ({
                 </div>
 
                 {/* Pitch Starting XI Cards Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 relative z-10">
-                  {(scannedResult.startingXI || scannedResult.featuredPlayers).map((player, idx) => {
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 relative z-10">
+                    {( (scannedResult?.startingXI && scannedResult.startingXI.length > 0)
+                      ? scannedResult.startingXI
+                      : (scannedResult?.featuredPlayers ?? [])
+                    ).map((player, idx) => {
                     const isEpic = player.cardType === 'Epic' || player.cardType === 'Big Time';
                     const isShowtime = player.cardType === 'Showtime';
                     return (
@@ -921,17 +965,17 @@ export const AccountScanner: React.FC<AccountScannerProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="bg-slate-950 p-4 rounded-xl border border-cyan-500/30">
                   <span className="text-slate-400 text-[10px] uppercase block">eFootball Coins</span>
-                  <span className="text-xl font-black text-cyan-300">{scannedResult.coinBalance.toLocaleString()} Coins</span>
+                  <span className="text-xl font-black text-cyan-300">{typeof scannedResult.coinBalance === 'number' ? scannedResult.coinBalance.toLocaleString() + ' Coins' : '—'}</span>
                   <span className="text-[10px] text-slate-500 block pt-1">Ready for upcoming Epic Packs</span>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
                   <span className="text-slate-400 text-[10px] uppercase block">GP Balance</span>
-                  <span className="text-xl font-black text-slate-200">{scannedResult.gpBalance.toLocaleString()} GP</span>
+                  <span className="text-xl font-black text-slate-200">{typeof scannedResult.gpBalance === 'number' ? scannedResult.gpBalance.toLocaleString() + ' GP' : '—'}</span>
                   <span className="text-[10px] text-slate-500 block pt-1">Sufficient for 100+ Skill Renewals</span>
                 </div>
                 <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
                   <span className="text-slate-400 text-[10px] uppercase block">eFootball Points</span>
-                  <span className="text-xl font-black text-amber-400">{scannedResult.eFootballPoints.toLocaleString()} Points</span>
+                  <span className="text-xl font-black text-amber-400">{typeof scannedResult.eFootballPoints === 'number' ? scannedResult.eFootballPoints.toLocaleString() + ' Points' : '—'}</span>
                   <span className="text-[10px] text-slate-500 block pt-1">Redeemable in eFootball Point Shop</span>
                 </div>
               </div>
@@ -939,7 +983,7 @@ export const AccountScanner: React.FC<AccountScannerProps> = ({
               <div className="space-y-2">
                 <h4 className="font-bold text-slate-200 text-xs uppercase tracking-wider">Featured Epic &amp; Showtime Players</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {scannedResult.featuredPlayers.map((player) => (
+                  {(scannedResult.featuredPlayers ?? []).map((player) => (
                     <div key={player.id} className="bg-slate-950 p-3 rounded-xl border border-amber-500/30 flex items-center justify-between">
                       <div>
                         <span className="font-bold text-white text-xs block">{player.name}</span>

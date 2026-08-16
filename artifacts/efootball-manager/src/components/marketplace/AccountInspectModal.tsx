@@ -213,11 +213,11 @@ export const AccountInspectModal: React.FC<AccountInspectModalProps> = ({
           </div>
           <div className="bg-indigo-950 p-3 rounded-xl text-white">
             <span className="text-[10px] text-slate-300 uppercase block font-sans font-bold">Coin Balance</span>
-            <span className="text-lg font-black text-orange-400">{listing.coinBalance.toLocaleString()}</span>
+            <span className="text-lg font-black text-orange-400">{typeof listing.coinBalance === 'number' ? listing.coinBalance.toLocaleString() : '—'}</span>
           </div>
           <div className="bg-indigo-950 p-3 rounded-xl text-white">
             <span className="text-[10px] text-slate-300 uppercase block font-sans font-bold">GP Balance</span>
-            <span className="text-lg font-black text-slate-100">{(listing.gpBalance / 1000000).toFixed(2)}M</span>
+            <span className="text-lg font-black text-slate-100">{typeof listing.gpBalance === 'number' ? `${(listing.gpBalance / 1000000).toFixed(2)}M` : '—'}</span>
           </div>
           <div className="bg-indigo-950 p-3 rounded-xl text-white">
             <span className="text-[10px] text-emerald-300 uppercase block font-sans font-bold">Squad Rating</span>
@@ -237,7 +237,7 @@ export const AccountInspectModal: React.FC<AccountInspectModalProps> = ({
             <Sparkles className="w-4 h-4 text-orange-500" /> Extracted Booster Players
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {listing.featuredPlayers.map((player) => (
+            {(listing.featuredPlayers ?? []).map((player) => (
               <div key={player.id} className="bg-orange-50/70 p-2.5 rounded-xl border border-orange-200 flex items-center justify-between text-xs">
                 <div>
                   <span className="font-bold text-slate-900">{player.name}</span>

@@ -25,7 +25,10 @@ export default function Dashboard() {
   const [showFilters, setShowFilters] = useState(false);
 
   const filtered = useMemo(() => {
-    if (!tournaments) return [];
+    // Defensive: ensure tournaments is an array (the API/client may return
+    // unexpected shapes during development). If it's not an array, coerce
+    // to an empty list to avoid runtime crashes in the UI overlay.
+    if (!Array.isArray(tournaments)) return [];
     const q = query.toLowerCase().trim();
     return tournaments.filter((t) => {
       if (q && !t.name.toLowerCase().includes(q)) return false;
@@ -46,12 +49,67 @@ export default function Dashboard() {
     setStatusF("all");
   }
 
+  const upcoming = useMemo(() => {
+    if (!Array.isArray(tournaments)) return [];
+    return tournaments
+      .slice()
+      .sort((a, b) => {
+        const ta = a.scheduledAt ? new Date(a.scheduledAt).getTime() : new Date(a.createdAt).getTime();
+        const tb = b.scheduledAt ? new Date(b.scheduledAt).getTime() : new Date(b.createdAt).getTime();
+        return ta - tb;
+      })
+      .slice(0, 3);
+  }, [tournaments]);
+
   return (
     <div className="space-y-8 pb-12">
+
+      {/* Tournaments Hub - quick access to view and create tournaments */}
+      <section className="glass-card rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-display font-bold text-white">Tournaments</h2>
+          <p className="text-zinc-400 text-sm mt-1">View active tournaments, finished events, and create a new one.</p>
+          <div className="mt-3 text-xs text-zinc-400">
+            <span className="font-semibold text-white mr-2">{tournaments?.length ?? 0}</span>
+            tournaments total
+          </div>
+        </div>
+        <div className="flex items-center gap-3 ml-auto">
+          <Link href="/tournaments/new">
+            <button className="px-4 py-2 bg-primary text-primary-foreground rounded-xl font-semibold">Create Tournament</button>
+          </Link>
+          <Link href="#tournaments-list">
+            <button className="px-4 py-2 bg-white/5 text-white rounded-xl border border-white/8">Browse All</button>
+          </Link>
+        </div>
+
+        {/* Upcoming small preview */}
+        <div className="w-full md:w-96 mt-4 md:mt-0">
+          <h3 className="text-sm text-zinc-400 font-semibold mb-2">Upcoming</h3>
+          <div className="space-y-2">
+            {upcoming.length === 0 ? (
+              <div className="text-xs text-zinc-500">No upcoming tournaments</div>
+            ) : (
+              upcoming.map((t) => (
+                <Link key={t.id} href={`/tournaments/${t.id}`} className="block">
+                  <div className="px-3 py-2 rounded-lg bg-zinc-900/40 hover:bg-zinc-900/60 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-semibold text-white">{t.name}</div>
+                      <div className="text-xs text-zinc-400">{t.type}</div>
+                    </div>
+                    <div className="text-xs text-zinc-500 mt-1">{t.scheduledAt ? format(new Date(t.scheduledAt), 'MMM d, yyyy') : format(new Date(t.createdAt), 'MMM d, yyyy')}</div>
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
+
       <EFootballUpdates />
 
       {/* ── Search & Filters ─────────────────────────────────────────────── */}
-      <div className="pt-16">
+      <div id="tournaments-list" className="pt-16">
       {!isLoading && !!tournaments?.length && (
         <div className="space-y-3">
           {/* Search row */}

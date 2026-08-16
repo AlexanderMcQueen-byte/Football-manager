@@ -31,87 +31,9 @@ import { NewListingModal } from "@/components/marketplace/NewListingModal";
 import { RateSellerModal } from "@/components/marketplace/RateSellerModal";
 import { SellerPortalModal } from "@/components/marketplace/SellerPortalModal";
 
-// Seed Data
-const MOCK_LISTINGS: AccountListing[] = [
-  {
-    id: 'LIST-8801',
-    title: 'God Squad 110+ Epics (Messi, Ronaldinho, Romario) - Div 1',
-    sellerName: 'eFBMaster99',
-    sellerAvatar: '',
-    sellerBadge: {
-      phoneVerified: true,
-      tradesCount: 42,
-      idVerified: true,
-      disputeFreeRecord: true,
-      trustScore: 99,
-      averageRating: 4.9,
-      totalReviews: 28,
-    },
-    price: 350,
-    platform: 'Mobile (Android/iOS)',
-    region: 'Europe',
-    ownerUsername: '@GodSquad_eFB',
-    ownerId: '109-842-100',
-    epicCount: 115,
-    showtimeCount: 40,
-    gpBalance: 12500000,
-    coinBalance: 5400,
-    eFootballPoints: 45000,
-    maxDivision: 'Division 1 (Rank #204)',
-    squadRating: 3210,
-    squadFormation: '4-2-1-3 Quick Counter',
-    mainManager: 'L. Roman (88 QC)',
-    featuredPlayers: [
-      { id: '1', name: 'L. Messi', rating: 105, position: 'RWF', cardType: 'Epic', club: 'Barcelona' },
-      { id: '2', name: 'Ronaldinho', rating: 104, position: 'AMF', cardType: 'Epic', club: 'AC Milan' },
-      { id: '3', name: 'P. Vieira', rating: 103, position: 'DMF', cardType: 'Epic', club: 'Arsenal' }
-    ],
-    snapshotVerified: true,
-    konamiIdMasked: 'mas***99@gmail.com',
-    vaultPrivacyStatus: 'PROTECTED_IN_VAULT',
-    squadImages: ['/images/marketplace/pitch1.jpg', '/images/marketplace/pitch1.jpg'],
-    accountRatingScore: 9.6,
-    listingIntent: 'sell',
-    createdDate: new Date().toISOString(),
-    description: 'Selling my main account since day 1. All top tier epics included.',
-  },
-  {
-    id: 'LIST-4402',
-    title: 'Great Starter Account - 25 Epics (Cruyff, Neymar) 12K Coins',
-    sellerName: 'SafeTrader_Alex',
-    sellerBadge: {
-      phoneVerified: true,
-      tradesCount: 15,
-      idVerified: false,
-      disputeFreeRecord: true,
-      trustScore: 92,
-      averageRating: 4.5,
-      totalReviews: 10,
-    },
-    price: 85,
-    platform: 'PlayStation 5',
-    region: 'North America',
-    ownerUsername: '@Alex_PS5_eFB',
-    ownerId: '422-109-883',
-    epicCount: 25,
-    showtimeCount: 5,
-    gpBalance: 4000000,
-    coinBalance: 12500,
-    eFootballPoints: 12000,
-    maxDivision: 'Division 3',
-    squadRating: 3080,
-    mainManager: 'G. Zeitzler (87 LBC)',
-    featuredPlayers: [
-      { id: '4', name: 'J. Cruyff', rating: 103, position: 'SS', cardType: 'Epic', club: 'Barcelona' },
-      { id: '5', name: 'Neymar Jr', rating: 102, position: 'LWF', cardType: 'Epic', club: 'Santos' }
-    ],
-    snapshotVerified: true,
-    konamiIdMasked: 'ale***77@hotmail.com',
-    listingIntent: 'sell',
-    createdDate: new Date().toISOString(),
-    description: 'Perfect starter with lots of coins saved for upcoming packs.',
-  }
-];
+// NOTE: Listings are now fetched from the backend API and polled periodically
+// during development. The previous hard-coded `MOCK_LISTINGS` have been removed
+// so the UI reflects real data.
 
 export default function MarketplacePage() {
   const [location, setLocation] = useLocation();
@@ -130,12 +52,32 @@ export default function MarketplacePage() {
     createdAt: user.createdAt,
   } : null;
 
-  // Initialize data
+  // Poll listings from backend every second and update store when data arrives.
   useEffect(() => {
-    if (store.listings.length === 0) {
-      store.setListings(MOCK_LISTINGS);
+    let mounted = true;
+
+    async function fetchListings() {
+      try {
+        const res = await fetch(`${BASE}/api/marketplace/listings`, { credentials: 'include' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!mounted) return;
+        if (Array.isArray(data)) {
+          store.setListings(data as AccountListing[]);
+        }
+      } catch (err) {
+        // ignore network/parse errors — backend may not expose this endpoint yet
+      }
     }
-  }, []);
+
+    // initial fetch
+    void fetchListings();
+    const id = setInterval(fetchListings, 1000);
+    return () => {
+      mounted = false;
+      clearInterval(id);
+    };
+  }, [store]);
 
   // Modals state
   const [inspectListing, setInspectListing] = useState<AccountListing | null>(null);

@@ -1,4 +1,6 @@
 import express, { type Express, type Request, type Response, type NextFunction } from "express";
+import path from "path";
+import fs from "fs";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import router from "./routes";
@@ -47,6 +49,18 @@ app.use(express.json({
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+
+// Serve built frontend (if present) to make the app reachable without running Vite.
+const frontendStatic = path.resolve(process.cwd(), "../efootball-manager/dist/public");
+if (fs.existsSync(frontendStatic)) {
+  app.use(express.static(frontendStatic));
+
+  // SPA fallback: serve index.html for any non-API GET request
+  app.get("/*", (req, res, next) => {
+    if (req.path.startsWith("/api")) return next();
+    res.sendFile(path.join(frontendStatic, "index.html"));
+  });
+}
 
 // Global async error handler — catches unhandled promise rejections in route handlers
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

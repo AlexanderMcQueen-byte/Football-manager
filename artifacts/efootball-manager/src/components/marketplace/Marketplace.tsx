@@ -71,7 +71,7 @@ export const Marketplace: React.FC<MarketplaceProps> = ({
         item.sellerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (item.ownerUsername && item.ownerUsername.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (item.ownerId && item.ownerId.includes(searchTerm)) ||
-        item.featuredPlayers.some(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        (item.featuredPlayers ?? []).some(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
       if (!matchesSearch) return false;
 
@@ -440,11 +440,11 @@ export const Marketplace: React.FC<MarketplaceProps> = ({
                   </div>
                   <div className="space-y-0.5">
                     <span className="text-[10px] text-slate-300 uppercase font-sans font-bold tracking-wider block">Coins</span>
-                    <span className="text-sm font-black text-orange-400">{listing.coinBalance.toLocaleString()}</span>
+                    <span className="text-sm font-black text-orange-400">{typeof listing.coinBalance === 'number' ? listing.coinBalance.toLocaleString() : '—'}</span>
                   </div>
                   <div className="space-y-0.5">
                     <span className="text-[10px] text-slate-300 uppercase font-sans font-bold tracking-wider block">GP</span>
-                    <span className="text-sm font-black text-slate-100">{(listing.gpBalance / 1000000).toFixed(1)}M</span>
+                    <span className="text-sm font-black text-slate-100">{typeof listing.gpBalance === 'number' ? `${(listing.gpBalance / 1000000).toFixed(1)}M` : '—'}</span>
                   </div>
                   <div className="space-y-0.5">
                     <span className="text-[10px] text-emerald-300 uppercase font-sans font-bold tracking-wider block">Rating</span>
@@ -469,7 +469,7 @@ export const Marketplace: React.FC<MarketplaceProps> = ({
                     Featured Boosted Stars
                   </span>
                   <div className="flex flex-wrap gap-1.5">
-                    {listing.featuredPlayers.map((player) => (
+                    {(listing.featuredPlayers ?? []).map((player) => (
                       <div
                         key={player.id}
                         className="px-2.5 py-1 rounded-lg bg-orange-50 border border-orange-200 text-orange-900 text-xs flex items-center gap-1.5 font-bold"

@@ -24,6 +24,8 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 5,
+      // Poll for updates every second to keep UI in sync with backend
+      refetchInterval: 1000,
     }
   }
 });
