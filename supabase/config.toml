@@ -1,0 +1,40 @@
+# Supabase Local Development Configuration
+# https://supabase.com/docs/guides/local-development
+
+[project]
+# Project ID used by the Supabase CLI
+project_id = "efootball-organizer"
+
+[api]
+# Port that the API server will run on
+port = 54321
+# Hostname for the API server
+host = "127.0.0.1"
+
+[db]
+# Port that the PostgreSQL database will run on
+port = 5432
+# Major version of PostgreSQL
+major_version = 15
+
+[studio]
+# Port for Supabase Studio (web UI)
+port = 54323
+# Hostname for Supabase Studio
+host = "127.0.0.1"
+
+[auth]
+# Enable/disable JWT verification
+enable_signup = true
+enable_confirmable_email = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = [
+    "http://localhost:3000/**"
+]
+
+[storage]
+# File size limit in bytes (100MB)
+file_size_limit_bytes = 104857600
+
+[realtime]
+enabled = true
