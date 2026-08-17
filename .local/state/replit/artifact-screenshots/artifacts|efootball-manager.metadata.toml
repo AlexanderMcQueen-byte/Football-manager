@@ -1,0 +1,84 @@
+[[pages]]
+path = "/"
+screenshotTimestamp = "2026-08-06T06:44:24.366Z"
+
+[pages.screenshotAssetRef]
+replId = "982cbb3c-c95b-4aae-8ad8-945a9ed35a2d"
+kind = 2
+id = "019fd5d0-d92a-7275-bf86-d59c8a20f300"
+
+[[pages]]
+path = "/players"
+screenshotTimestamp = "2026-03-26T18:34:00Z"
+screenshotUri = "https://storage.googleapis.com/screenshot-production-us-central1/982cbb3c-c95b-4aae-8ad8-945a9ed35a2d/1c970299-8532-4a19-ba98-4ce9f1647252/bqSVybn"
+
+[[pages]]
+path = "/tournaments/new"
+screenshotTimestamp = "2026-03-28T20:05:30Z"
+screenshotUri = "https://storage.googleapis.com/screenshot-production-us-central1/982cbb3c-c95b-4aae-8ad8-945a9ed35a2d/1c970299-8532-4a19-ba98-4ce9f1647252/IERR3ne"
+
+[[pages]]
+path = "/tournaments/1"
+screenshotTimestamp = "2026-03-28T21:32:20Z"
+screenshotUri = "https://storage.googleapis.com/screenshot-production-us-central1/982cbb3c-c95b-4aae-8ad8-945a9ed35a2d/1c970299-8532-4a19-ba98-4ce9f1647252/N9vw603"
+
+[[pages]]
+path = "/login"
+screenshotTimestamp = "2026-03-28T13:42:25Z"
+screenshotUri = "https://storage.googleapis.com/screenshot-production-us-central1/982cbb3c-c95b-4aae-8ad8-945a9ed35a2d/1c970299-8532-4a19-ba98-4ce9f1647252/LdPR36q"
+
+[[pages]]
+path = "/efootball-manager/tournaments/1"
+screenshotTimestamp = "2026-03-26T18:59:35Z"
+screenshotUri = "https://storage.googleapis.com/screenshot-production-us-central1/982cbb3c-c95b-4aae-8ad8-945a9ed35a2d/1c970299-8532-4a19-ba98-4ce9f1647252/TeboFbW"
+
+[[pages]]
+path = "/efootball-manager/"
+screenshotTimestamp = "2026-03-26T19:01:56Z"
+screenshotUri = "https://storage.googleapis.com/screenshot-production-us-central1/982cbb3c-c95b-4aae-8ad8-945a9ed35a2d/1c970299-8532-4a19-ba98-4ce9f1647252/acoSXqM"
+
+[[pages]]
+path = "/signup"
+screenshotTimestamp = "2026-03-28T19:34:14Z"
+screenshotUri = "https://storage.googleapis.com/screenshot-production-us-central1/982cbb3c-c95b-4aae-8ad8-945a9ed35a2d/1c970299-8532-4a19-ba98-4ce9f1647252/Ktfup0k"
+
+[[pages]]
+path = "/pricing"
+screenshotTimestamp = "2026-08-06T07:12:43.164Z"
+
+[pages.screenshotAssetRef]
+replId = "982cbb3c-c95b-4aae-8ad8-945a9ed35a2d"
+kind = 2
+id = "019fd5ea-b5ad-761c-8387-a8027e1d8e85"
+
+[[pages]]
+path = "/admin/users"
+screenshotTimestamp = "2026-08-06T06:37:32.866Z"
+
+[pages.screenshotAssetRef]
+replId = "982cbb3c-c95b-4aae-8ad8-945a9ed35a2d"
+kind = 2
+id = "019fd5ca-86db-7209-b66d-b874fc69fbd3"
+
+[[pages]]
+path = "/contact"
+screenshotTimestamp = "2026-03-28T19:39:35Z"
+screenshotUri = "https://storage.googleapis.com/screenshot-production-us-central1/982cbb3c-c95b-4aae-8ad8-945a9ed35a2d/1c970299-8532-4a19-ba98-4ce9f1647252/fT9pnMV"
+
+[[pages]]
+path = "/marketplace"
+screenshotTimestamp = "2026-08-06T07:12:45.849Z"
+
+[pages.screenshotAssetRef]
+replId = "982cbb3c-c95b-4aae-8ad8-945a9ed35a2d"
+kind = 2
+id = "019fd5ea-cebe-735c-8088-b6ff4c1d7106"
+
+[[pages]]
+path = "/admin/inquiries"
+screenshotTimestamp = "2026-08-06T06:37:35.358Z"
+
+[pages.screenshotAssetRef]
+replId = "982cbb3c-c95b-4aae-8ad8-945a9ed35a2d"
+kind = 2
+id = "019fd5ca-9b61-7262-aad4-200522b8f93f"
