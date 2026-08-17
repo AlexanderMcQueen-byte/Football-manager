@@ -19,6 +19,16 @@ export default function Login() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    
+    if (!identifier.trim()) {
+      setError("Email or username is required.");
+      return;
+    }
+    if (!password.trim()) {
+      setError("Password is required.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -31,7 +41,7 @@ export default function Login() {
       }
 
       // Try user (email) login
-      const result = await loginUser(identifier.trim(), password);
+      const result = await loginUser(identifier.trim().toLowerCase(), password);
       if (result.ok) {
         navigate("/");
         return;
@@ -39,8 +49,9 @@ export default function Login() {
 
       // If both failed, show a generic message
       setError("Invalid credentials. Please check your email/username and password.");
-    } catch {
+    } catch (err) {
       setError("Could not reach the server. Please try again.");
+      console.error("Login error:", err);
     } finally {
       setIsLoading(false);
     }

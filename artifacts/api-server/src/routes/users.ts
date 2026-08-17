@@ -176,6 +176,57 @@ router.post("/users/verify-email", async (req, res) => {
   });
 });
 
+router.post("/users/register", async (req, res) => {
+  const { email, password, displayName } = req.body ?? {};
+
+  if (!email || !password || !displayName) {
+    res.status(400).json({ error: "email, password and displayName are required" });
+    return;
+  }
+
+  const trimmedEmail = String(email).trim();
+  const trimmedDisplayName = String(displayName).trim();
+
+  if (!EMAIL_RE.test(trimmedEmail)) {
+    res.status(400).json({ error: "Please enter a valid email address" });
+    return;
+  }
+
+  if (String(password).length < 6) {
+    res.status(400).json({ error: "Password must be at least 6 characters" });
+    return;
+  }
+
+  const domainLive = await isEmailDomainLive(trimmedEmail);
+  if (!domainLive) {
+    res.status(400).json({ error: "That email address doesn't appear to be valid. Please use a real email." });
+    return;
+  }
+
+  const existing = await db.select().from(usersTable).where(eq(usersTable.email, trimmedEmail.toLowerCase())).limit(1);
+  if (existing.length > 0) {
+    res.status(409).json({ error: "Email already registered" });
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash(String(password), 10);
+  const [user] = await db
+    .insert(usersTable)
+    .values({
+      email: trimmedEmail.toLowerCase(),
+      passwordHash,
+      displayName: trimmedDisplayName,
+      plan: "free",
+    })
+    .returning();
+
+  req.session.userId = user.id;
+  req.session.save((err) => {
+    if (err) { res.status(500).json({ error: "Session error" }); return; }
+    res.status(201).json(safeUser(user));
+  });
+});
+
 // ─── Login (user) ─────────────────────────────────────────────────────────────
 router.post("/users/login", async (req, res) => {
   const { email, password } = req.body ?? {};
@@ -202,7 +253,16 @@ router.post("/users/login", async (req, res) => {
   req.session.userId = user.id;
   req.session.save((saveError) => {
     if (saveError) { res.status(500).json({ error: "Session error" }); return; }
-    void getFreshUserById(user.id).then((freshUser) => res.json(freshUser ? safeUser(freshUser) : safeUser(user)));
+    getFreshUserById(user.id)
+      .then((freshUser) => {
+        res.json(freshUser ? safeUser(freshUser) : safeUser(user));
+      })
+      .catch((err) => {
+        console.error("Error fetching fresh user:", err);
+        if (!res.headersSent) {
+          res.status(500).json({ error: "Internal server error" });
+        }
+      });
   });
 });
 

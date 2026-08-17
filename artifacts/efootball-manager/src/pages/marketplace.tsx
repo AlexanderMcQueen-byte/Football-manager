@@ -54,7 +54,8 @@ export default function MarketplacePage() {
     createdAt: user.createdAt,
   } : null;
 
-  // Poll listings from backend every second and update store when data arrives.
+  // Poll listings from backend every 5 seconds and update store when data arrives.
+  // Reduced from 1s to avoid excessive network requests and log flooding.
   useEffect(() => {
     let mounted = true;
 
@@ -74,7 +75,7 @@ export default function MarketplacePage() {
 
     // initial fetch
     void fetchListings();
-    const id = setInterval(fetchListings, 1000);
+    const id = setInterval(fetchListings, 5000); // Reduced from 1000ms to 5000ms
     return () => {
       mounted = false;
       clearInterval(id);

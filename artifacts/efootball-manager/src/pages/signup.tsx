@@ -13,14 +13,16 @@ import { RatingModal } from "@/components/rating-modal";
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 export default function Signup() {
-  const { loginUser } = useAuth();
+  const { refreshUser } = useAuth();
   const [, navigate] = useLocation();
 
   // Step 1 fields
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Step 2
   const [code, setCode] = useState("");
@@ -30,20 +32,38 @@ export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const [showRating, setShowRating] = useState(false);
 
+  // Email regex for validation
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Validation helpers
+  function validateStep1(): string | null {
+    if (!displayName.trim()) return "Display name is required.";
+    if (!email.trim()) return "Email is required.";
+    if (!EMAIL_REGEX.test(email)) return "Please enter a valid email address.";
+    if (password.length < 6) return "Password must be at least 6 characters.";
+    if (password !== confirmPassword) return "Passwords do not match.";
+    return null;
+  }
+
   // ─── Step 1: send verification code ───────────────────────────────────────
   async function handleSendCode(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    
+    // Validate all fields
+    const validationError = validateStep1();
+    if (validationError) {
+      setError(validationError);
       return;
     }
+
     setIsLoading(true);
     try {
       const res = await fetch(`${BASE}/api/users/send-verification`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), password, displayName: displayName.trim() }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password, displayName: displayName.trim() }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -51,8 +71,9 @@ export default function Signup() {
       } else {
         setError(data.error ?? "Failed to send verification code.");
       }
-    } catch {
+    } catch (err) {
       setError("Could not reach the server. Please try again.");
+      console.error("Send verification error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -72,16 +93,18 @@ export default function Signup() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), code: code.trim() }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), code: code.trim() }),
       });
       const data = await res.json();
       if (res.ok) {
+        await refreshUser();
         setShowRating(true);
       } else {
         setError(data.error ?? "Verification failed.");
       }
-    } catch {
+    } catch (err) {
       setError("Could not reach the server. Please try again.");
+      console.error("Verify email error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -95,13 +118,15 @@ export default function Signup() {
     try {
       const res = await fetch(`${BASE}/api/users/send-verification`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), password, displayName: displayName.trim() }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password, displayName: displayName.trim() }),
       });
       const data = await res.json();
       if (!res.ok) setError(data.error ?? "Failed to resend code.");
-    } catch {
+    } catch (err) {
       setError("Could not reach the server.");
+      console.error("Resend code error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -194,6 +219,21 @@ export default function Signup() {
                     <button type="button" onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors" tabIndex={-1}>
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="confirmPassword" className="text-zinc-300 text-sm font-medium">Confirm Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <Input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm your password"
+                      className="pl-10 pr-10 bg-input border-border text-white placeholder:text-zinc-600"
+                      autoComplete="new-password" required />
+                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors" tabIndex={-1}>
+                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>

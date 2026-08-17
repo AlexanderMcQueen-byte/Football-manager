@@ -30,7 +30,6 @@ interface AuthState {
 interface AuthActions {
   loginAdmin: (username: string, password: string) => Promise<boolean>;
   loginUser: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>;
-  registerUser: (email: string, password: string, displayName: string) => Promise<{ ok: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -47,95 +46,127 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function fetchMe() {
     try {
       // Check admin session first
-      const adminRes = await fetch(`${BASE}/api/admin/auth/me`, { credentials: "include" });
-      const adminData = await adminRes.json();
-      if (adminData.role === "admin") {
-        setRole("admin");
-        setUser(null);
-        return;
+      try {
+        const adminRes = await fetch(`${BASE}/api/admin/auth/me`, { credentials: "include" });
+        const adminData = await adminRes.json().catch(() => ({}));
+        if (adminRes.ok && adminData.role === "admin") {
+          setRole("admin");
+          setUser(null);
+          return;
+        }
+      } catch (adminErr) {
+        console.warn("Admin auth check failed:", adminErr);
+        // Continue to user check
       }
-    } catch {}
 
-    // Check user account session
-    try {
-      const userRes = await fetch(`${BASE}/api/users/me`, { credentials: "include" });
-      if (userRes.ok) {
-        const userData: UserAccount = await userRes.json();
-        setUser(userData);
-        setRole("user");
-        return;
+      // Check user account session
+      try {
+        const userRes = await fetch(`${BASE}/api/users/me`, { credentials: "include" });
+        if (userRes.ok) {
+          const userData: UserAccount = await userRes.json();
+          setUser(userData);
+          setRole("user");
+          return;
+        } else if (userRes.status === 401) {
+          // Explicitly not authenticated - this is expected
+          setRole("viewer");
+          setUser(null);
+          return;
+        }
+      } catch (userErr) {
+        console.warn("User auth check failed:", userErr);
       }
-    } catch {}
+    } catch (err) {
+      console.error("Session fetch error:", err);
+    }
 
+    // Default to viewer if all checks fail or error
     setRole("viewer");
     setUser(null);
   }
 
   useEffect(() => {
-    fetchMe().finally(() => setIsLoading(false));
+    let mounted = true;
+    fetchMe()
+      .catch((err) => {
+        console.error("Initial session fetch failed:", err);
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
+    
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   async function loginAdmin(username: string, password: string): Promise<boolean> {
-    const res = await fetch(`${BASE}/api/admin/auth/login`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-    if (res.ok) {
-      setRole("admin");
-      setUser(null);
-      return true;
+    try {
+      const res = await fetch(`${BASE}/api/admin/auth/login`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      if (res.ok) {
+        setRole("admin");
+        setUser(null);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error("Admin login error:", err);
+      return false;
     }
-    return false;
   }
 
   async function loginUser(email: string, password: string): Promise<{ ok: boolean; error?: string }> {
-    const res = await fetch(`${BASE}/api/users/login`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    if (res.ok) {
-      const data: UserAccount = await res.json();
-      setUser(data);
-      setRole("user");
-      return { ok: true };
+    try {
+      const res = await fetch(`${BASE}/api/users/login`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (res.ok) {
+        const data: UserAccount = await res.json();
+        setUser(data);
+        setRole("user");
+        return { ok: true };
+      }
+      const err = await res.json().catch(() => ({}));
+      return { ok: false, error: err.error ?? "Login failed" };
+    } catch (err) {
+      console.error("User login error:", err);
+      return { ok: false, error: "Could not reach the server" };
     }
-    const err = await res.json().catch(() => ({}));
-    return { ok: false, error: err.error ?? "Login failed" };
-  }
-
-  async function registerUser(email: string, password: string, displayName: string): Promise<{ ok: boolean; error?: string }> {
-    const res = await fetch(`${BASE}/api/users/register`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, displayName }),
-    });
-    if (res.ok) {
-      const data: UserAccount = await res.json();
-      setUser(data);
-      setRole("user");
-      return { ok: true };
-    }
-    const err = await res.json().catch(() => ({}));
-    return { ok: false, error: err.error ?? "Registration failed" };
   }
 
   async function logout(): Promise<void> {
-    if (role === "admin") {
-      await fetch(`${BASE}/api/admin/auth/logout`, { method: "POST", credentials: "include" });
-    } else {
-      await fetch(`${BASE}/api/users/logout`, { method: "POST", credentials: "include" });
+    try {
+      if (role === "admin") {
+        await fetch(`${BASE}/api/admin/auth/logout`, { method: "POST", credentials: "include" });
+      } else if (role === "user") {
+        await fetch(`${BASE}/api/users/logout`, { method: "POST", credentials: "include" });
+      }
+    } catch (err) {
+      console.warn("Logout error:", err);
+    } finally {
+      // Always clear local state, even if server logout fails
+      setRole("viewer");
+      setUser(null);
     }
-    setRole("viewer");
-    setUser(null);
   }
 
   async function refreshUser() {
-    await fetchMe();
+    try {
+      await fetchMe();
+    } catch (err) {
+      console.error("User refresh error:", err);
+      // On error, fall back to viewer
+      setRole("viewer");
+      setUser(null);
+    }
   }
 
   const plan: Plan | null = role === "admin" ? null : (user?.plan ?? null);
@@ -153,7 +184,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         loginAdmin,
         loginUser,
-        registerUser,
         logout,
         refreshUser,
       }}

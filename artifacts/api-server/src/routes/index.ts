@@ -10,6 +10,7 @@ import adminRouter from "./admin";
 import ratingsRouter from "./ratings";
 import inquiriesRouter from "./inquiries";
 import efootballUpdatesRouter from "./efootball-updates";
+import marketplaceRouter from "./marketplace";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use(adminRouter);
 router.use(ratingsRouter);
 router.use(inquiriesRouter);
 router.use(efootballUpdatesRouter);
+router.use(marketplaceRouter);
 
 export default router;
