@@ -47,3 +47,21 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Environment variables (SENSITIVE - NEVER COMMIT)
+.env
+.env.local
+.env.*.local
+
+# Supabase CLI
+.branches
+.supabase
+
+# Database backups
+*.sql
+*.dump
+
+# API keys and secrets
+.keys/
+*.key
+*.pem
